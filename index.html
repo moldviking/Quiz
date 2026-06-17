@@ -9,10 +9,12 @@
         :root {
             --bg-body: #f5f5f7;
             --bg-card: #ffffff;
+            --bg-alert: rgba(255, 255, 255, 0.95);
             --text-main: #1d1d1f;
             --text-secondary: #86868b;
             --apple-blue: #0071e3;
             --border-color: #e8e8ed;
+            --alert-border: rgba(0, 0, 0, 0.1);
             
             --option-bg: #f5f5f7;
             --option-hover: #e8e8ed;
@@ -27,6 +29,7 @@
             --error-text: #c5221f;
             
             --score-bg: #e1f0ff;
+            --overlay-bg: rgba(0, 0, 0, 0.3);
         }
 
         /* DARK MODE (OS szinkronizáció) */
@@ -34,10 +37,12 @@
             :root {
                 --bg-body: #000000;
                 --bg-card: #1c1c1e;
+                --bg-alert: rgba(30, 30, 30, 0.95);
                 --text-main: #f5f5f7;
                 --text-secondary: #98989d;
                 --apple-blue: #0a84ff;
                 --border-color: #38383a;
+                --alert-border: rgba(255, 255, 255, 0.1);
                 
                 --option-bg: #2c2c2e;
                 --option-hover: #3a3a3c;
@@ -52,6 +57,7 @@
                 --error-text: #ff453a;
                 
                 --score-bg: #1a2b3c;
+                --overlay-bg: rgba(0, 0, 0, 0.6);
             }
         }
 
@@ -61,13 +67,13 @@
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            align-items: center; /* Asztali nézetben középre igazítva */
+            align-items: center;
             min-height: 100vh;
             min-height: 100dvh; /* iOS Safari dinamikus magasság fix */
             margin: 0;
             padding: 16px;
             transition: background-color 0.3s ease, color 0.3s ease;
-            -webkit-tap-highlight-color: transparent; /* iOS gombnyomás villogás eltüntetése */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .quiz-container {
@@ -87,7 +93,6 @@
             }
         }
 
-        /* TÖMÖRÍTETT FEJLÉC DIZÁJN */
         .header-info {
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 16px;
@@ -131,7 +136,7 @@
         }
 
         .quiz-desc:empty {
-            display: none; /* Ha nincs leírás, nem foglal egy pixel helyet sem */
+            display: none;
         }
 
         h2 {
@@ -177,7 +182,6 @@
             background-color: var(--option-selected-bg);
         }
 
-        /* INLINE FEEDBACK STATES */
         .option-btn.correct-state {
             background-color: var(--success-bg) !important;
             color: var(--success-text) !important;
@@ -228,6 +232,28 @@
             cursor: not-allowed;
         }
 
+        /* APPLE HIG PLAIN BUTTON DIZÁJN (KILÉPÉS GOMB) */
+        .exit-btn-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .exit-plain-btn {
+            background: none;
+            border: none;
+            color: var(--error-red);
+            font-size: 16px;
+            font-weight: 400;
+            cursor: pointer;
+            padding: 8px 16px;
+            transition: opacity 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .exit-plain-btn:active {
+            opacity: 0.4;
+        }
+
         .summary-card {
             text-align: center;
         }
@@ -247,7 +273,6 @@
             transition: all 0.3s ease;
         }
 
-        /* HIG UNBOUNDED REVIEW AREA */
         .review-area {
             margin-top: 32px;
             border-top: 1px solid var(--border-color);
@@ -319,14 +344,109 @@
         
         p { color: var(--text-secondary); margin-bottom: 24px; }
 
-        /* MOBILOS OPTIMALIZÁCIÓ (Itt javítjuk az iOS problémákat) */
+        /* APPLE HIG iOS DIALOG MODAL (EGYEDI FIGYELMEZTETŐ ABLAK) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--overlay-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .apple-alert {
+            background: var(--bg-alert);
+            width: 270px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            animation: alertPop 0.25s cubic-bezier(0.1, 0.8, 0.25, 1);
+            overflow: hidden;
+            border: 1px solid var(--alert-border);
+        }
+
+        @keyframes alertPop {
+            from { transform: scale(1.15); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .alert-content {
+            padding: 20px 16px;
+        }
+
+        .alert-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            color: var(--text-main);
+        }
+
+        .alert-message {
+            font-size: 13px;
+            font-weight: 400;
+            margin: 0;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .alert-buttons {
+            display: flex;
+            border-top: 0.5px solid var(--alert-border);
+        }
+
+        .alert-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 12px 8px;
+            font-size: 17px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            box-sizing: border-box;
+        }
+
+        .alert-btn:first-child {
+            border-right: 0.5px solid var(--alert-border);
+            color: var(--apple-blue);
+            font-weight: 400;
+        }
+
+        .alert-btn.destructive {
+            color: var(--error-red);
+            font-weight: 600; /* Apple irányelv szerint a fő/romboló akció félkövér */
+        }
+
+        .alert-btn:active {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        @media (prefers-color-scheme: dark) {
+            .alert-btn:active {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        /* MOBILOS OPTIMALIZÁCIÓ */
         @media (max-width: 600px) {
             body {
-                align-items: flex-start; /* Ne legyen középre rögzítve, így eltűnik a hatalmas fekete űr felül */
+                align-items: flex-start;
                 padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px;
             }
             .quiz-container {
-                padding: 20px; /* Kevesebb belső margó kis kijelzőn */
+                padding: 20px;
             }
             .header-info {
                 padding-bottom: 12px;
@@ -364,6 +484,10 @@
         <h2 id="question-text">Loading...</h2>
         <div class="options-container" id="options"></div>
         <button class="next-btn" id="next-button" disabled onclick="handleMainAction()">Check</button>
+        
+        <div class="exit-btn-container">
+            <button class="exit-plain-btn" onclick="openExitModal()">Exit Quiz</button>
+        </div>
     </div>
     
     <div id="quiz-results" class="summary-card" style="display: none;">
@@ -377,6 +501,19 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="exit-modal">
+    <div class="apple-alert">
+        <div class="alert-content">
+            <h3 class="alert-title">Exit Quiz?</h3>
+            <p class="alert-message">Are you sure you want to leave? Your current progress in this session will be lost.</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-btn" onclick="closeExitModal()">Cancel</button>
+            <button class="alert-btn destructive" onclick="confirmExit()">Exit</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let quizData = [];
     let userAnswers = []; 
@@ -384,6 +521,7 @@
     let score = 0;
     let selectedOptionIndex = null;
     let isQuestionReviewed = false;
+    let quizMetadata = { name: "Quiz", desc: "" };
 
     const progressEl = document.getElementById('progress');
     const questionTextEl = document.getElementById('question-text');
@@ -399,8 +537,60 @@
     const scoreCircleEl = document.getElementById('final-score');
     const errorDisplayEl = document.getElementById('error-display');
     const reviewListEl = document.getElementById('review-list');
+    const exitModalEl = document.getElementById('exit-modal');
 
-    // FILE READING AND PARSING
+    // MENTETT ÁLLAPOT ELLENŐRZÉSE BETÖLTÉSKOR
+    window.addEventListener('DOMContentLoaded', () => {
+        loadProgressFromStorage();
+    });
+
+    function saveProgressToStorage() {
+        const state = {
+            quizData,
+            userAnswers,
+            currentQuestionIndex,
+            score,
+            selectedOptionIndex,
+            isQuestionReviewed,
+            quizMetadata
+        };
+        localStorage.setItem('active_quiz_session', JSON.stringify(state));
+    }
+
+    function loadProgressFromStorage() {
+        const savedState = localStorage.getItem('active_quiz_session');
+        if (!savedState) return;
+
+        try {
+            const state = JSON.parse(savedState);
+            quizData = state.quizData || [];
+            userAnswers = state.userAnswers || [];
+            currentQuestionIndex = state.currentQuestionIndex || 0;
+            score = state.score || 0;
+            selectedOptionIndex = state.selectedOptionIndex;
+            isQuestionReviewed = state.isQuestionReviewed || false;
+            quizMetadata = state.quizMetadata || { name: "Quiz", desc: "" };
+
+            if (quizData.length > 0) {
+                displayNameEl.innerText = quizMetadata.name;
+                displayDescEl.innerText = quizMetadata.desc;
+                
+                uploadSection.style.display = 'none';
+                gameSection.style.display = 'block';
+                
+                restoreQuestionState();
+            }
+        } catch (e) {
+            console.error("Failed to restore quiz state", e);
+            clearStorage();
+        }
+    }
+
+    function clearStorage() {
+        localStorage.removeItem('active_quiz_session');
+    }
+
+    // PARSING JSON FILE
     fileSelector.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -415,8 +605,11 @@
                     throw new Error("The file structure is valid JSON, but it is missing the required 'questions' property.");
                 }
 
-                displayNameEl.innerText = rawData.name || "Quiz";
-                displayDescEl.innerText = rawData.desc || "";
+                quizMetadata.name = rawData.name || "Quiz";
+                quizMetadata.desc = rawData.desc || "";
+
+                displayNameEl.innerText = quizMetadata.name;
+                displayDescEl.innerText = quizMetadata.desc;
 
                 const questionsArray = Array.isArray(rawData.questions) ? rawData.questions : [rawData.questions];
 
@@ -458,6 +651,49 @@
         nextButtonEl.disabled = true;
         nextButtonEl.innerText = "Check";
         
+        buildOptionsDOM();
+        saveProgressToStorage();
+    }
+
+    // ÚJRAÉPÍTI A KÉRDÉST FRISSÍTÉS UTÁN, HA SZÜKSÉGES
+    function restoreQuestionState() {
+        progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+        questionTextEl.innerText = quizData[currentQuestionIndex].question;
+        
+        buildOptionsDOM();
+
+        if (isQuestionReviewed) {
+            const correctIdx = quizData[currentQuestionIndex].correct;
+            const buttons = optionsContainerEl.querySelectorAll('.option-btn');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === correctIdx) {
+                    btn.classList.add('correct-state');
+                } else if (idx === selectedOptionIndex) {
+                    btn.classList.add('incorrect-state');
+                } else {
+                    btn.classList.add('dimmed-state');
+                }
+                if (idx === selectedOptionIndex) {
+                    const metaSpan = document.createElement('span');
+                    metaSpan.className = 'btn-meta';
+                    metaSpan.innerText = "Your Choice";
+                    btn.appendChild(metaSpan);
+                }
+            });
+            nextButtonEl.disabled = false;
+            nextButtonEl.innerText = currentQuestionIndex === quizData.length - 1 ? "Done" : "Next";
+        } else if (selectedOptionIndex !== null) {
+            const buttons = optionsContainerEl.querySelectorAll('.option-btn');
+            if(buttons[selectedOptionIndex]) {
+                buttons[selectedOptionIndex].classList.add('selected');
+            }
+            nextButtonEl.disabled = false;
+            nextButtonEl.innerText = "Check";
+        }
+    }
+
+    function buildOptionsDOM() {
         const currentData = quizData[currentQuestionIndex];
         progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
         questionTextEl.innerText = currentData.question;
@@ -486,6 +722,7 @@
             else btn.classList.remove('selected');
         });
         nextButtonEl.disabled = false;
+        saveProgressToStorage();
     }
 
     function handleMainAction() {
@@ -520,6 +757,7 @@
             });
 
             nextButtonEl.innerText = currentQuestionIndex === quizData.length - 1 ? "Done" : "Next";
+            saveProgressToStorage();
         } else {
             if (currentQuestionIndex < quizData.length - 1) {
                 currentQuestionIndex++;
@@ -531,6 +769,7 @@
     }
 
     function showResults() {
+        clearStorage(); // Ha végzett, töröljük a memóriát, hogy a következő tiszta lappal induljon
         gameSection.style.display = 'none';
         resultsSection.style.display = 'block';
         
@@ -594,7 +833,22 @@
         });
     }
 
+    // MODAL MODULOK (APPLE HIG APPERANCE)
+    function openExitModal() {
+        exitModalEl.classList.add('active');
+    }
+
+    function closeExitModal() {
+        exitModalEl.classList.remove('active');
+    }
+
+    function confirmExit() {
+        closeExitModal();
+        resetToUpload();
+    }
+
     function resetToUpload() {
+        clearStorage();
         resultsSection.style.display = 'none';
         gameSection.style.display = 'none';
         uploadSection.style.display = 'block';
