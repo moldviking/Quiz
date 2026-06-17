@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Quiz</title>
     <style>
         /* LIGHT MODE (Alapértelmezett) */
@@ -61,11 +61,13 @@
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: center; /* Asztali nézetben középre igazítva */
             min-height: 100vh;
+            min-height: 100dvh; /* iOS Safari dinamikus magasság fix */
             margin: 0;
             padding: 16px;
             transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-tap-highlight-color: transparent; /* iOS gombnyomás villogás eltüntetése */
         }
 
         .quiz-container {
@@ -85,33 +87,51 @@
             }
         }
 
+        /* TÖMÖRÍTETT FEJLÉC DIZÁJN */
         .header-info {
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 16px;
             margin-bottom: 24px;
         }
 
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
         .quiz-name {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--apple-blue);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin: 0 0 4px 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .progress {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin: 0;
+            white-space: nowrap;
         }
 
         .quiz-desc {
             font-size: 13px;
             color: var(--text-secondary);
             margin: 0;
+            line-height: 1.4;
         }
 
-        .progress {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            font-weight: 500;
-            text-align: right;
+        .quiz-desc:not(:empty) {
+            margin-top: 6px;
+        }
+
+        .quiz-desc:empty {
+            display: none; /* Ha nincs leírás, nem foglal egy pixel helyet sem */
         }
 
         h2 {
@@ -298,12 +318,33 @@
         }
         
         p { color: var(--text-secondary); margin-bottom: 24px; }
+
+        /* MOBILOS OPTIMALIZÁCIÓ (Itt javítjuk az iOS problémákat) */
+        @media (max-width: 600px) {
+            body {
+                align-items: flex-start; /* Ne legyen középre rögzítve, így eltűnik a hatalmas fekete űr felül */
+                padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px;
+            }
+            .quiz-container {
+                padding: 20px; /* Kevesebb belső margó kis kijelzőn */
+            }
+            .header-info {
+                padding-bottom: 12px;
+                margin-bottom: 16px;
+            }
+            h2 {
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+            .option-btn {
+                padding: 14px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="quiz-container">
-    <!-- STEP 1: WELCOME SCREEN -->
     <div id="upload-view" class="summary-card">
         <h2>Quiz</h2>
         <p>Choose a quiz file to begin your study session.</p>
@@ -312,19 +353,19 @@
         <div id="error-display" class="error-banner"></div>
     </div>
 
-    <!-- STEP 2: THE GAME -->
     <div id="quiz-game" style="display: none;">
         <div class="header-info">
-            <p class="quiz-name" id="display-name">Loading...</p>
+            <div class="header-top">
+                <p class="quiz-name" id="display-name">Loading...</p>
+                <p class="progress" id="progress">Question 1 of 3</p>
+            </div>
             <p class="quiz-desc" id="display-desc"></p>
         </div>
-        <div class="progress" id="progress">Question 1 of 3</div>
         <h2 id="question-text">Loading...</h2>
         <div class="options-container" id="options"></div>
         <button class="next-btn" id="next-button" disabled onclick="handleMainAction()">Check</button>
     </div>
     
-    <!-- STEP 3: SUMMARY & UNBOUNDED REVIEW -->
     <div id="quiz-results" class="summary-card" style="display: none;">
         <div class="score-circle" id="final-score">0%</div>
         <h2 id="result-status">Results</h2>
@@ -402,9 +443,7 @@
                 loadQuestion();
                 
             } catch (err) {
-                errorDisplayEl.innerText = `Cannot Open File
-
-${err.message}`;
+                errorDisplayEl.innerText = `Cannot Open File\n\n${err.message}`;
                 errorDisplayEl.style.display = 'block';
                 console.error("Quiz Parser Error:", err);
                 resetToUpload();
