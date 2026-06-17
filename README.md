@@ -1,2 +1,572 @@
-# Quiz
-Choose a quiz file to begin your study session.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        /* LIGHT MODE (Alapértelmezett) */
+        :root {
+            --bg-body: #f5f5f7;
+            --bg-card: #ffffff;
+            --text-main: #1d1d1f;
+            --text-secondary: #86868b;
+            --apple-blue: #0071e3;
+            --border-color: #e8e8ed;
+            
+            --option-bg: #f5f5f7;
+            --option-hover: #e8e8ed;
+            --option-selected-bg: #e1f0ff;
+            
+            --success-green: #34c759;
+            --success-bg: #e6f4ea;
+            --success-text: #137333;
+            
+            --error-red: #ff3b30;
+            --error-bg: #fce8e6;
+            --error-text: #c5221f;
+            
+            --score-bg: #e1f0ff;
+        }
+
+        /* DARK MODE (OS szinkronizáció) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #000000;
+                --bg-card: #1c1c1e;
+                --text-main: #f5f5f7;
+                --text-secondary: #98989d;
+                --apple-blue: #0a84ff;
+                --border-color: #38383a;
+                
+                --option-bg: #2c2c2e;
+                --option-hover: #3a3a3c;
+                --option-selected-bg: #1a2b3c;
+                
+                --success-green: #32d74b;
+                --success-bg: #0b3d1b;
+                --success-text: #32d74b;
+                
+                --error-red: #ff453a;
+                --error-bg: #4a0f0d;
+                --error-text: #ff453a;
+                
+                --score-bg: #1a2b3c;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .quiz-container {
+            background: var(--bg-card);
+            padding: 32px;
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .quiz-container {
+                box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            }
+        }
+
+        .header-info {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .quiz-name {
+            font-size: 14px;
+            color: var(--apple-blue);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 4px 0;
+        }
+
+        .quiz-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .progress {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 24px;
+            line-height: 1.3;
+            color: var(--text-main);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .option-btn {
+            background-color: var(--option-bg);
+            color: var(--text-main);
+            border: 2px solid transparent;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: var(--option-hover);
+        }
+
+        .option-btn.selected {
+            border-color: var(--apple-blue);
+            background-color: var(--option-selected-bg);
+        }
+
+        /* INLINE FEEDBACK STATES */
+        .option-btn.correct-state {
+            background-color: var(--success-bg) !important;
+            color: var(--success-text) !important;
+            border-color: transparent;
+            cursor: default;
+        }
+
+        .option-btn.incorrect-state {
+            background-color: var(--error-bg) !important;
+            color: var(--error-text) !important;
+            border-color: transparent;
+            cursor: default;
+        }
+
+        .option-btn.dimmed-state {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .btn-meta {
+            font-size: 13px;
+            font-weight: 400;
+            opacity: 0.6;
+            white-space: nowrap;
+            margin-left: 12px;
+        }
+
+        .next-btn {
+            width: 100%;
+            background-color: var(--apple-blue);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .next-btn:active {
+            opacity: 0.8;
+        }
+
+        .next-btn:disabled {
+            background-color: var(--option-hover);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .summary-card {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            background-color: var(--score-bg);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--apple-blue);
+            margin: 0 auto 24px;
+            transition: all 0.3s ease;
+        }
+
+        /* HIG UNBOUNDED REVIEW AREA */
+        .review-area {
+            margin-top: 32px;
+            border-top: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .review-item {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-question-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 0 0 14px 0;
+        }
+
+        .review-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .review-badge {
+            font-size: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            background-color: var(--option-bg);
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .review-badge.correct-review {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .review-badge.incorrect-review {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+        }
+
+        .review-meta {
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.6;
+            white-space: nowrap;
+        }
+
+        .error-banner {
+            background-color: var(--error-bg);
+            color: var(--error-red);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 16px;
+            display: none;
+            text-align: left;
+        }
+        
+        p { color: var(--text-secondary); margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <!-- STEP 1: WELCOME SCREEN -->
+    <div id="upload-view" class="summary-card">
+        <h2>Quiz</h2>
+        <p>Choose a quiz file to begin your study session.</p>
+        <input type="file" id="file-selector" accept=".json" style="display:none;">
+        <button class="next-btn" onclick="document.getElementById('file-selector').click()">Choose Quiz</button>
+        <div id="error-display" class="error-banner"></div>
+    </div>
+
+    <!-- STEP 2: THE GAME -->
+    <div id="quiz-game" style="display: none;">
+        <div class="header-info">
+            <p class="quiz-name" id="display-name">Loading...</p>
+            <p class="quiz-desc" id="display-desc"></p>
+        </div>
+        <div class="progress" id="progress">Question 1 of 3</div>
+        <h2 id="question-text">Loading...</h2>
+        <div class="options-container" id="options"></div>
+        <button class="next-btn" id="next-button" disabled onclick="handleMainAction()">Check</button>
+    </div>
+    
+    <!-- STEP 3: SUMMARY & UNBOUNDED REVIEW -->
+    <div id="quiz-results" class="summary-card" style="display: none;">
+        <div class="score-circle" id="final-score">0%</div>
+        <h2 id="result-status">Results</h2>
+        <p id="detailed-results"></p>
+        
+        <button class="next-btn" onclick="resetToUpload()" style="margin-bottom: 8px;">Done</button>
+        
+        <div class="review-area" id="review-list"></div>
+    </div>
+</div>
+
+<script>
+    let quizData = [];
+    let userAnswers = []; 
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedOptionIndex = null;
+    let isQuestionReviewed = false;
+
+    const progressEl = document.getElementById('progress');
+    const questionTextEl = document.getElementById('question-text');
+    const optionsContainerEl = document.getElementById('options');
+    const nextButtonEl = document.getElementById('next-button');
+    const uploadSection = document.getElementById('upload-view');
+    const gameSection = document.getElementById('quiz-game');
+    const resultsSection = document.getElementById('quiz-results');
+    const displayNameEl = document.getElementById('display-name');
+    const displayDescEl = document.getElementById('display-desc');
+    const fileSelector = document.getElementById('file-selector');
+    const resultStatusEl = document.getElementById('result-status');
+    const scoreCircleEl = document.getElementById('final-score');
+    const errorDisplayEl = document.getElementById('error-display');
+    const reviewListEl = document.getElementById('review-list');
+
+    // FILE READING AND PARSING
+    fileSelector.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                errorDisplayEl.style.display = 'none';
+                const rawData = JSON.parse(e.target.result);
+                
+                if (!rawData.questions) {
+                    throw new Error("The file structure is valid JSON, but it is missing the required 'questions' property.");
+                }
+
+                displayNameEl.innerText = rawData.name || "Quiz";
+                displayDescEl.innerText = rawData.desc || "";
+
+                const questionsArray = Array.isArray(rawData.questions) ? rawData.questions : [rawData.questions];
+
+                quizData = questionsArray.map((q, idx) => {
+                    if (!q.question) throw new Error(`Question at index ${idx} is missing the question text.`);
+                    if (!q.options || !Array.isArray(q.options)) throw new Error(`Question "${q.question || idx}" is missing its options array.`);
+
+                    const correctIndex = q.options.findIndex(opt => opt.correct == 1 || opt.correct === true || opt.correct === 'true');
+                    const optionsText = q.options.map(opt => typeof opt === 'object' ? opt.option : opt);
+
+                    return {
+                        question: q.question,
+                        options: optionsText,
+                        correct: correctIndex !== -1 ? correctIndex : 0 
+                    };
+                });
+                
+                uploadSection.style.display = 'none';
+                gameSection.style.display = 'block';
+                
+                currentQuestionIndex = 0;
+                score = 0;
+                userAnswers = [];
+                loadQuestion();
+                
+            } catch (err) {
+                errorDisplayEl.innerText = `Cannot Open File
+
+${err.message}`;
+                errorDisplayEl.style.display = 'block';
+                console.error("Quiz Parser Error:", err);
+                resetToUpload();
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    function loadQuestion() {
+        selectedOptionIndex = null;
+        isQuestionReviewed = false;
+        nextButtonEl.disabled = true;
+        nextButtonEl.innerText = "Check";
+        
+        const currentData = quizData[currentQuestionIndex];
+        progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+        questionTextEl.innerText = currentData.question;
+        
+        optionsContainerEl.innerHTML = '';
+        currentData.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.classList.add('option-btn');
+            
+            const textSpan = document.createElement('span');
+            textSpan.innerText = option;
+            button.appendChild(textSpan);
+
+            button.onclick = () => selectOption(index);
+            optionsContainerEl.appendChild(button);
+        });
+    }
+
+    function selectOption(index) {
+        if (isQuestionReviewed) return;
+
+        selectedOptionIndex = index;
+        const buttons = optionsContainerEl.querySelectorAll('.option-btn');
+        buttons.forEach((btn, idx) => {
+            if(idx === index) btn.classList.add('selected');
+            else btn.classList.remove('selected');
+        });
+        nextButtonEl.disabled = false;
+    }
+
+    function handleMainAction() {
+        if (!isQuestionReviewed) {
+            isQuestionReviewed = true;
+            userAnswers.push(selectedOptionIndex);
+            
+            const correctIdx = quizData[currentQuestionIndex].correct;
+            if (selectedOptionIndex === correctIdx) {
+                score++;
+            }
+
+            const buttons = optionsContainerEl.querySelectorAll('.option-btn');
+            buttons.forEach((btn, idx) => {
+                btn.classList.remove('selected');
+                btn.disabled = true; 
+                
+                if (idx === correctIdx) {
+                    btn.classList.add('correct-state');
+                } else if (idx === selectedOptionIndex) {
+                    btn.classList.add('incorrect-state');
+                } else {
+                    btn.classList.add('dimmed-state'); 
+                }
+
+                if (idx === selectedOptionIndex) {
+                    const metaSpan = document.createElement('span');
+                    metaSpan.className = 'btn-meta';
+                    metaSpan.innerText = "Your Choice";
+                    btn.appendChild(metaSpan);
+                }
+            });
+
+            nextButtonEl.innerText = currentQuestionIndex === quizData.length - 1 ? "Done" : "Next";
+        } else {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+    }
+
+    function showResults() {
+        gameSection.style.display = 'none';
+        resultsSection.style.display = 'block';
+        
+        const percentage = Math.round((score / quizData.length) * 100);
+        scoreCircleEl.innerText = `${percentage}%`;
+        
+        if (percentage >= 40) {
+            resultStatusEl.innerText = "Passed";
+            scoreCircleEl.style.backgroundColor = "var(--success-bg)"; 
+            scoreCircleEl.style.color = "var(--success-green)";
+        } else {
+            resultStatusEl.innerText = "Did Not Pass";
+            scoreCircleEl.style.backgroundColor = "var(--error-bg)"; 
+            scoreCircleEl.style.color = "var(--error-red)";
+        }
+        
+        document.getElementById('detailed-results').innerText = `You answered ${score} of ${quizData.length} questions correctly.`;
+
+        reviewListEl.innerHTML = '';
+        quizData.forEach((data, qIdx) => {
+            const chosenIdx = userAnswers[qIdx];
+            const correctIdx = data.correct;
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'review-item';
+
+            const qText = document.createElement('p');
+            qText.className = 'review-question-text';
+            qText.innerText = `${qIdx + 1}. ${data.question}`;
+            itemDiv.appendChild(qText);
+
+            const choicesDiv = document.createElement('div');
+            choicesDiv.className = 'review-choices';
+
+            data.options.forEach((option, oIdx) => {
+                const badge = document.createElement('div');
+                badge.className = 'review-badge';
+
+                const textSpan = document.createElement('span');
+                textSpan.innerText = option;
+                badge.appendChild(textSpan);
+
+                if (oIdx === correctIdx) {
+                    badge.classList.add('correct-review');
+                } else if (oIdx === chosenIdx && chosenIdx !== correctIdx) {
+                    badge.classList.add('incorrect-review');
+                }
+
+                if (oIdx === chosenIdx) {
+                    const metaSpan = document.createElement('span');
+                    metaSpan.className = 'review-meta';
+                    metaSpan.innerText = "Your Choice";
+                    badge.appendChild(metaSpan);
+                }
+
+                choicesDiv.appendChild(badge);
+            });
+
+            itemDiv.appendChild(choicesDiv);
+            reviewListEl.appendChild(itemDiv);
+        });
+    }
+
+    function resetToUpload() {
+        resultsSection.style.display = 'none';
+        gameSection.style.display = 'none';
+        uploadSection.style.display = 'block';
+        fileSelector.value = '';
+        userAnswers = [];
+        reviewListEl.innerHTML = '';
+        
+        scoreCircleEl.style.backgroundColor = "var(--score-bg)";
+        scoreCircleEl.style.color = "var(--apple-blue)";
+    }
+</script>
+
+</body>
+</html>
