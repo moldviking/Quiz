@@ -916,6 +916,217 @@
             line-height: 1.4;
         }
 
+        /* IMAGE UPLOAD ICON & PREVIEW */
+        .img-upload-btn {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            padding: 0;
+            position: relative;
+        }
+
+        .img-upload-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .img-upload-btn:hover {
+            background-color: var(--option-hover);
+            color: var(--apple-blue);
+        }
+
+        .img-upload-btn.has-image {
+            color: var(--apple-blue);
+        }
+
+        .img-upload-btn.has-image::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--apple-blue);
+        }
+
+        .question-input-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .question-input-row .builder-question-input {
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .question-img-btn-wrap {
+            flex-shrink: 0;
+            padding-top: 12px;
+        }
+
+        /* IMAGE MODAL */
+        .img-modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: var(--overlay-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s;
+            touch-action: none;
+        }
+
+        .img-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.15s ease-out, visibility 0s linear 0s;
+        }
+
+        .img-modal-box {
+            background: var(--bg-alert);
+            width: 340px;
+            border-radius: 24px;
+            text-align: left;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
+            backdrop-filter: blur(50px) saturate(200%);
+            -webkit-backdrop-filter: blur(50px) saturate(200%);
+            border: 1px solid var(--alert-border);
+            box-sizing: border-box;
+            padding: 24px 20px 20px 20px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .img-modal-box {
+                box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+            }
+        }
+
+        .img-modal-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 0 0 6px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .img-modal-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0 0 16px 0;
+            line-height: 1.4;
+        }
+
+        .img-preview-area {
+            width: 100%;
+            height: 140px;
+            border-radius: 12px;
+            border: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 14px;
+            background-color: var(--option-bg);
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .img-preview-area:hover {
+            border-color: var(--apple-blue);
+        }
+
+        .img-preview-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .img-preview-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-tertiary);
+        }
+
+        .img-preview-placeholder svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+        }
+
+        .img-preview-placeholder span {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .img-modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .img-modal-btn {
+            flex: 1;
+            padding: 11px 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-appearance: none;
+            box-sizing: border-box;
+            border-radius: 12px;
+            border: none;
+            transition: transform 0.15s ease, opacity 0.2s ease;
+        }
+
+        .img-modal-btn.primary {
+            background-color: var(--apple-blue);
+            color: #ffffff;
+        }
+
+        .img-modal-btn.secondary {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--text-main);
+        }
+
+        .img-modal-btn.danger {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--error-red);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .img-modal-btn.secondary, .img-modal-btn.danger {
+                background-color: rgba(255,255,255,0.1);
+            }
+        }
+
+        .img-modal-btn:active {
+            transform: scale(0.97);
+            opacity: 0.8;
+        }
+
+        .img-modal-btn-row {
+            display: flex;
+            gap: 8px;
+        }
+
         .add-question-btn {
             background-color: var(--option-bg);
             color: var(--apple-blue);
@@ -1145,6 +1356,32 @@
         <div class="alert-buttons">
             <button class="alert-btn cancel-btn" onclick="closeBuilderExitModal()">Cancel</button>
             <button class="alert-btn destructive" onclick="confirmBuilderExit()">Leave</button>
+        </div>
+    </div>
+</div>
+
+<!-- IMAGE UPLOAD MODAL -->
+<div class="img-modal-overlay" id="img-modal">
+    <div class="img-modal-box">
+        <p class="img-modal-title" id="img-modal-title">Add Image</p>
+        <p class="img-modal-sub">Tap the area below to select an image. It will be saved as Base64 inside the JSON.</p>
+        <div class="img-preview-area" id="img-preview-area" onclick="document.getElementById('img-file-input').click()">
+            <div class="img-preview-placeholder" id="img-preview-placeholder">
+                <!-- opensymbols.dev: image/photo icon -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                </svg>
+                <span>Tap to select image</span>
+            </div>
+            <img id="img-preview-img" src="" alt="" style="display:none;">
+        </div>
+        <input type="file" id="img-file-input" accept="image/*" style="display:none;">
+        <div class="img-modal-actions">
+            <div class="img-modal-btn-row" style="flex:1; display:flex; gap:8px;">
+                <button class="img-modal-btn secondary" onclick="closeImgModal()">Cancel</button>
+                <button class="img-modal-btn danger" id="img-remove-btn" onclick="removeModalImage()" style="display:none;">Remove</button>
+            </div>
+            <button class="img-modal-btn primary" onclick="saveModalImage()">Save</button>
         </div>
     </div>
 </div>
@@ -1382,21 +1619,23 @@
                         mappedOptions = q.options.map((opt, oIdx) => {
                             let text = "";
                             let isCorrect = false;
+                            let image = "";
                             if (typeof opt === 'object') {
                                 text = opt.option || "";
                                 isCorrect = (opt.correct == 1 || opt.correct === true || opt.correct === 'true');
+                                image = opt.image || "";
                             } else {
                                 text = opt;
                                 isCorrect = (oIdx === 0);
                             }
-                            return { id: makeBuilderId(), text, isCorrect };
+                            return { id: makeBuilderId(), text, isCorrect, image };
                         });
                     }
 
                     if (mappedOptions.length === 0) {
                         mappedOptions = [
-                            { id: makeBuilderId(), text: '', isCorrect: true },
-                            { id: makeBuilderId(), text: '', isCorrect: false }
+                            { id: makeBuilderId(), text: '', isCorrect: true, image: '' },
+                            { id: makeBuilderId(), text: '', isCorrect: false, image: '' }
                         ];
                     } else if (!mappedOptions.some(o => o.isCorrect)) {
                         mappedOptions[0].isCorrect = true;
@@ -1405,6 +1644,7 @@
                     return {
                         id: makeBuilderId(),
                         questionText: q.question || "",
+                        questionImage: q.questionImage || "",
                         options: mappedOptions
                     };
                 });
@@ -1691,9 +1931,10 @@
         const newQuestion = {
             id: makeBuilderId(),
             questionText: '',
+            questionImage: '',
             options: [
-                { id: makeBuilderId(), text: '', isCorrect: true },
-                { id: makeBuilderId(), text: '', isCorrect: false }
+                { id: makeBuilderId(), text: '', isCorrect: true, image: '' },
+                { id: makeBuilderId(), text: '', isCorrect: false, image: '' }
             ]
         };
         builderQuestions.push(newQuestion);
@@ -1713,7 +1954,7 @@
     function addBuilderOption(qId) {
         const question = builderQuestions.find(q => q.id === qId);
         if (!question) return;
-        question.options.push({ id: makeBuilderId(), text: '', isCorrect: false });
+        question.options.push({ id: makeBuilderId(), text: '', isCorrect: false, image: '' });
         renderBuilderQuestions();
     }
 
@@ -1777,6 +2018,10 @@
 
             card.appendChild(header);
 
+            // Question input row with image icon
+            const qRow = document.createElement('div');
+            qRow.className = 'question-input-row';
+
             const qInput = document.createElement('textarea');
             qInput.className = 'builder-question-input editable-input';
             qInput.placeholder = 'Type the question...';
@@ -1786,7 +2031,20 @@
                 updateBuilderQuestionText(question.id, e.target.value);
                 autoGrow(e.target);
             };
-            card.appendChild(qInput);
+            qRow.appendChild(qInput);
+
+            const qImgWrap = document.createElement('div');
+            qImgWrap.className = 'question-img-btn-wrap';
+            const qImgBtn = document.createElement('button');
+            qImgBtn.className = 'img-upload-btn' + (question.questionImage ? ' has-image' : '');
+            qImgBtn.title = question.questionImage ? 'Edit question image' : 'Add image to question';
+            // opensymbols.dev: image icon
+            qImgBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>';
+            qImgBtn.onclick = () => openImgModal('question', question.id, null, question.questionImage || '');
+            qImgWrap.appendChild(qImgBtn);
+            qRow.appendChild(qImgWrap);
+
+            card.appendChild(qRow);
 
             const optionsGroup = document.createElement('div');
             optionsGroup.className = 'builder-options-group';
@@ -1809,6 +2067,15 @@
                 optInput.value = option.text;
                 optInput.oninput = (e) => updateBuilderOptionText(question.id, option.id, e.target.value);
                 row.appendChild(optInput);
+
+                // Image icon for option
+                const optImgBtn = document.createElement('button');
+                optImgBtn.className = 'img-upload-btn' + (option.image ? ' has-image' : '');
+                optImgBtn.title = option.image ? 'Edit answer image' : 'Add image to answer';
+                // opensymbols.dev: image icon
+                optImgBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>';
+                optImgBtn.onclick = () => openImgModal('option', question.id, option.id, option.image || '');
+                row.appendChild(optImgBtn);
 
                 if (question.options.length > 2) {
                     const removeOptBtn = document.createElement('button');
@@ -1909,15 +2176,23 @@
         return {
             name: builderQuizNameEl.value.trim() || 'Quiz Studio Workspace Session',
             desc: builderQuizDescEl.value.trim() || '',
-            questions: builderQuestions.map(q => ({
-                question: q.questionText.trim(),
-                options: q.options
-                    .filter(o => o.text && o.text.trim())
-                    .map(o => ({
-                        option: o.text.trim(),
-                        correct: !!o.isCorrect
-                    }))
-            }))
+            questions: builderQuestions.map(q => {
+                const qObj = {
+                    question: q.questionText.trim(),
+                    options: q.options
+                        .filter(o => o.text && o.text.trim())
+                        .map(o => {
+                            const optObj = {
+                                option: o.text.trim(),
+                                correct: !!o.isCorrect
+                            };
+                            if (o.image) optObj.image = o.image;
+                            return optObj;
+                        })
+                };
+                if (q.questionImage) qObj.questionImage = q.questionImage;
+                return qObj;
+            })
         };
     }
 
@@ -1973,6 +2248,100 @@
         closeBuilderExitModal();
         resetBuilder();
         backToModeSelectFromBuilder();
+    }
+
+    /* IMAGE MODAL LOGIC */
+    let imgModalContext = { type: null, qId: null, optId: null };
+    let imgModalCurrentBase64 = '';
+    let imgModalPendingBase64 = '';
+
+    const imgModalEl = document.getElementById('img-modal');
+    const imgPreviewArea = document.getElementById('img-preview-area');
+    const imgPreviewImg = document.getElementById('img-preview-img');
+    const imgPreviewPlaceholder = document.getElementById('img-preview-placeholder');
+    const imgFileInput = document.getElementById('img-file-input');
+    const imgRemoveBtn = document.getElementById('img-remove-btn');
+    const imgModalTitle = document.getElementById('img-modal-title');
+
+    imgFileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            imgModalPendingBase64 = ev.target.result;
+            imgPreviewImg.src = imgModalPendingBase64;
+            imgPreviewImg.style.display = 'block';
+            imgPreviewPlaceholder.style.display = 'none';
+            imgRemoveBtn.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+        imgFileInput.value = '';
+    });
+
+    function openImgModal(type, qId, optId, currentBase64) {
+        imgModalContext = { type, qId, optId };
+        imgModalCurrentBase64 = currentBase64 || '';
+        imgModalPendingBase64 = imgModalCurrentBase64;
+
+        imgModalTitle.innerText = type === 'question' ? 'Question Image' : 'Answer Image';
+
+        if (imgModalPendingBase64) {
+            imgPreviewImg.src = imgModalPendingBase64;
+            imgPreviewImg.style.display = 'block';
+            imgPreviewPlaceholder.style.display = 'none';
+            imgRemoveBtn.style.display = 'block';
+        } else {
+            imgPreviewImg.src = '';
+            imgPreviewImg.style.display = 'none';
+            imgPreviewPlaceholder.style.display = 'flex';
+            imgRemoveBtn.style.display = 'none';
+        }
+
+        imgModalEl.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImgModal() {
+        imgModalEl.classList.remove('active');
+        document.body.style.overflow = '';
+        imgModalPendingBase64 = '';
+        imgFileInput.value = '';
+    }
+
+    function removeModalImage() {
+        imgModalPendingBase64 = '';
+        imgPreviewImg.src = '';
+        imgPreviewImg.style.display = 'none';
+        imgPreviewPlaceholder.style.display = 'flex';
+        imgRemoveBtn.style.display = 'none';
+    }
+
+    function saveModalImage() {
+        const { type, qId, optId } = imgModalContext;
+        const question = builderQuestions.find(q => q.id === qId);
+        if (!question) { closeImgModal(); return; }
+
+        if (type === 'question') {
+            question.questionImage = imgModalPendingBase64;
+        } else if (type === 'option') {
+            const option = question.options.find(o => o.id === optId);
+            if (option) option.image = imgModalPendingBase64;
+        }
+
+        closeImgModal();
+        renderBuilderQuestions();
+    }
+
+    function updateBuilderQuestionImage(qId, base64) {
+        const question = builderQuestions.find(q => q.id === qId);
+        if (question) question.questionImage = base64;
+    }
+
+    function updateBuilderOptionImage(qId, optId, base64) {
+        const question = builderQuestions.find(q => q.id === qId);
+        if (!question) return;
+        const option = question.options.find(o => o.id === optId);
+        if (option) option.image = base64;
     }
 
     function resetBuilder() {
