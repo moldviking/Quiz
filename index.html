@@ -9,12 +9,12 @@
         :root {
             --bg-body: #f5f5f7;
             --bg-card: #ffffff;
-            --bg-alert: rgba(255, 255, 255, 0.95);
+            --bg-alert: rgba(255, 255, 255, 0.45); /* Erős üveghatás */
             --text-main: #1d1d1f;
             --text-secondary: #86868b;
             --apple-blue: #0071e3;
             --border-color: #e8e8ed;
-            --alert-border: rgba(0, 0, 0, 0.1);
+            --alert-border: rgba(255, 255, 255, 0.4);
             
             --option-bg: #f5f5f7;
             --option-hover: #e8e8ed;
@@ -29,7 +29,7 @@
             --error-text: #c5221f;
             
             --score-bg: #e1f0ff;
-            --overlay-bg: rgba(0, 0, 0, 0.3);
+            --overlay-bg: rgba(0, 0, 0, 0.15); /* Csak nagyon halvány sötétítés */
             --glass-bg: rgba(255,255,255,0.15);
             --glass-border: rgba(255,255,255,0.18);
             --glass-shadow: rgba(0,0,0,0.12);
@@ -40,12 +40,12 @@
             :root {
                 --bg-body: #000000;
                 --bg-card: #1c1c1e;
-                --bg-alert: rgba(30, 30, 30, 0.95);
+                --bg-alert: rgba(40, 40, 40, 0.55);
                 --text-main: #f5f5f7;
                 --text-secondary: #98989d;
                 --apple-blue: #0a84ff;
                 --border-color: #38383a;
-                --alert-border: rgba(255, 255, 255, 0.1);
+                --alert-border: rgba(255, 255, 255, 0.15);
                 
                 --option-bg: #2c2c2e;
                 --option-hover: #3a3a3c;
@@ -60,7 +60,7 @@
                 --error-text: #ff453a;
                 
                 --score-bg: #1a2b3c;
-                --overlay-bg: rgba(0, 0, 0, 0.6);
+                --overlay-bg: rgba(0, 0, 0, 0.4);
             }
         }
 
@@ -72,7 +72,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            min-height: 100dvh; /* iOS Safari dinamikus magasság fix */
+            min-height: 100dvh;
             margin: 0;
             padding: 16px;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -238,28 +238,6 @@
             cursor: not-allowed;
         }
 
-        /* APPLE HIG PLAIN BUTTON DIZÁJN (KILÉPÉS GOMB) */
-        .exit-btn-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .exit-plain-btn {
-            background: none;
-            border: none;
-            color: var(--error-red);
-            font-size: 16px;
-            font-weight: 400;
-            cursor: pointer;
-            padding: 8px 16px;
-            transition: opacity 0.2s;
-            -webkit-appearance: none;
-        }
-
-        .exit-plain-btn:active {
-            opacity: 0.4;
-        }
-
         .summary-card {
             text-align: center;
         }
@@ -350,7 +328,7 @@
         
         p { color: var(--text-secondary); margin-bottom: 24px; }
 
-        /* APPLE HIG iOS DIALOG MODAL (EGYEDI FIGYELMEZTETŐ ABLAK) */
+        /* --- iOS 26 LIQUID GLASS MODAL JAVÍTOTT ANIMÁCIÓVAL ÉS RÁDIUSSZAL --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -364,9 +342,8 @@
             z-index: 9999;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.25s ease, visibility 0.25s ease;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            touch-action: none; /* Letiltja a görgetést a háttérben */
         }
 
         .modal-overlay.active {
@@ -376,74 +353,95 @@
 
         .apple-alert {
             background: var(--bg-alert);
-            width: 270px;
-            border-radius: 14px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            animation: alertPop 0.25s cubic-bezier(0.1, 0.8, 0.25, 1);
-            overflow: hidden;
+            width: 340px; /* Picit szélesebb a nagy gombok miatt */
+            border-radius: 42px; /* Hatalmas rádiusz, hogy illeszkedjen a kapszulákhoz */
+            text-align: left; /* A referencia képen a szöveg balra zárt */
+            box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
+            backdrop-filter: blur(50px) saturate(200%);
+            -webkit-backdrop-filter: blur(50px) saturate(200%);
             border: 1px solid var(--alert-border);
+            box-sizing: border-box;
+            
+            /* Sima CSS transition az akadozó @keyframes helyett */
+            transform: scale(1.15);
+            transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.25, 1);
+            pointer-events: none;
         }
 
-        @keyframes alertPop {
-            from { transform: scale(1.15); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        @media (prefers-color-scheme: dark) {
+            .apple-alert {
+                box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+            }
+        }
+
+        /* Amikor megjelenik, a skálázás beáll a helyére */
+        .modal-overlay.active .apple-alert {
+            transform: scale(1);
+            pointer-events: auto; /* Csak az ablak interaktív */
         }
 
         .alert-content {
-            padding: 20px 16px;
+            padding: 30px 24px 20px 24px;
         }
 
         .alert-title {
-            font-size: 17px;
+            font-size: 20px;
             font-weight: 600;
-            margin: 0 0 4px 0;
+            margin: 0 0 8px 0;
             color: var(--text-main);
+            letter-spacing: -0.5px;
         }
 
         .alert-message {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 400;
             margin: 0;
             color: var(--text-main);
-            line-height: 1.4;
+            line-height: 1.35;
         }
 
         .alert-buttons {
             display: flex;
-            border-top: 0.5px solid var(--alert-border);
+            gap: 12px; /* Nagyobb térköz a gombok között */
+            padding: 0 20px 20px 20px; /* A gombok külső íve így fut együtt az ablakéval */
         }
 
         .alert-btn {
             flex: 1;
-            background: none;
-            border: none;
-            padding: 12px 8px;
+            padding: 16px 10px; /* Magasabb, hangsúlyosabb gombok */
             font-size: 17px;
+            font-weight: 600;
             cursor: pointer;
             -webkit-appearance: none;
             box-sizing: border-box;
+            border-radius: 9999px; /* Tökéletes kapszula forma */
+            border: none;
+            transition: transform 0.15s ease, opacity 0.2s ease, background-color 0.2s ease;
         }
 
-        .alert-btn:first-child {
-            border-right: 0.5px solid var(--alert-border);
-            color: var(--apple-blue);
-            font-weight: 400;
+        /* Teli kék gomb (Cancel) */
+        .alert-btn.cancel-btn {
+            background-color: var(--apple-blue);
+            color: #ffffff;
         }
 
+        /* Üvegszerű másodlagos gomb (Exit - Destructive) */
         .alert-btn.destructive {
+            background-color: rgba(0, 0, 0, 0.08); /* Áttetsző réteg */
             color: var(--error-red);
-            font-weight: 600; /* Apple irányelv szerint a fő/romboló akció félkövér */
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .alert-btn.destructive {
+                background-color: rgba(255, 255, 255, 0.15);
+            }
         }
 
         .alert-btn:active {
-            background-color: rgba(0, 0, 0, 0.05);
+            transform: scale(0.96);
+            opacity: 0.8;
         }
-        @media (prefers-color-scheme: dark) {
-            .alert-btn:active {
-                background-color: rgba(255, 255, 255, 0.05);
-            }
-        }
+        /* --- MODAL CSS VÉGE --- */
 
         
         .top-bar {
@@ -452,34 +450,19 @@
             margin-bottom:12px;
         }
 
-               .glass-exit-btn {
-            border: none;
-            border-radius: 999px;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-main);
-            /* Liquid Glass hatás */
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+        .glass-exit-btn {
+            border:none;
+            border-radius:999px;
+            padding:10px 18px;
+            font-size:15px;
+            font-weight:600;
+            color:var(--text-main);
+            background:rgba(255,255,255,0.12);
+            backdrop-filter:blur(24px) saturate(180%);
+            -webkit-backdrop-filter:blur(24px) saturate(180%);
+            border:1px solid rgba(255,255,255,0.18);
+            cursor:pointer;
         }
-
-        .glass-exit-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.02);
-        }
-
-        .glass-exit-btn:active {
-            transform: scale(0.98);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-
 
         /* MOBILOS OPTIMALIZÁCIÓ */
         @media (max-width: 600px) {
@@ -527,7 +510,7 @@
         <h2 id="question-text">Loading...</h2>
         <div class="options-container" id="options"></div>
         <button class="next-btn" id="next-button" disabled onclick="handleMainAction()">Check</button>
-</div>
+    </div>
     
     <div id="quiz-results" class="summary-card" style="display: none;">
         <div class="score-circle" id="final-score">0%</div>
@@ -547,7 +530,7 @@
             <p class="alert-message">Are you sure you want to leave? Your current progress in this session will be lost.</p>
         </div>
         <div class="alert-buttons">
-            <button class="alert-btn" onclick="closeExitModal()">Cancel</button>
+            <button class="alert-btn cancel-btn" onclick="closeExitModal()">Cancel</button>
             <button class="alert-btn destructive" onclick="confirmExit()">Exit</button>
         </div>
     </div>
@@ -578,7 +561,6 @@
     const reviewListEl = document.getElementById('review-list');
     const exitModalEl = document.getElementById('exit-modal');
 
-    // MENTETT ÁLLAPOT ELLENŐRZÉSE BETÖLTÉSKOR
     window.addEventListener('DOMContentLoaded', () => {
         loadProgressFromStorage();
     });
@@ -629,7 +611,6 @@
         localStorage.removeItem('active_quiz_session');
     }
 
-    // PARSING JSON FILE
     fileSelector.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -694,7 +675,6 @@
         saveProgressToStorage();
     }
 
-    // ÚJRAÉPÍTI A KÉRDÉST FRISSÍTÉS UTÁN, HA SZÜKSÉGES
     function restoreQuestionState() {
         progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
         questionTextEl.innerText = quizData[currentQuestionIndex].question;
@@ -808,7 +788,7 @@
     }
 
     function showResults() {
-        clearStorage(); // Ha végzett, töröljük a memóriát, hogy a következő tiszta lappal induljon
+        clearStorage();
         gameSection.style.display = 'none';
         resultsSection.style.display = 'block';
         
@@ -872,13 +852,15 @@
         });
     }
 
-    // MODAL MODULOK (APPLE HIG APPERANCE)
+    // MODAL MODULOK
     function openExitModal() {
         exitModalEl.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Letiltja az oldal görgetését
     }
 
     function closeExitModal() {
         exitModalEl.classList.remove('active');
+        document.body.style.overflow = ''; // Visszaállítja a görgetést
     }
 
     function confirmExit() {
