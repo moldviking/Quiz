@@ -30,6 +30,9 @@
             
             --score-bg: #e1f0ff;
             --overlay-bg: rgba(0, 0, 0, 0.3);
+            --glass-bg: rgba(255,255,255,0.15);
+            --glass-border: rgba(255,255,255,0.18);
+            --glass-shadow: rgba(0,0,0,0.12);
         }
 
         /* DARK MODE (OS szinkronizáció) */
@@ -77,7 +80,10 @@
         }
 
         .quiz-container {
-            background: var(--bg-card);
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--glass-border);
             padding: 32px;
             border-radius: 18px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
@@ -439,6 +445,42 @@
             }
         }
 
+        
+        .top-bar {
+            display:flex;
+            justify-content:flex-start;
+            margin-bottom:12px;
+        }
+
+               .glass-exit-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            /* Liquid Glass hatás */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .glass-exit-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .glass-exit-btn:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+
+
         /* MOBILOS OPTIMALIZÁCIÓ */
         @media (max-width: 600px) {
             body {
@@ -475,6 +517,7 @@
 
     <div id="quiz-game" style="display: none;">
         <div class="header-info">
+            <div class="top-bar"><button class="glass-exit-btn" onclick="openExitModal()">Exit</button></div>
             <div class="header-top">
                 <p class="quiz-name" id="display-name">Loading...</p>
                 <p class="progress" id="progress">Question 1 of 3</p>
@@ -484,11 +527,7 @@
         <h2 id="question-text">Loading...</h2>
         <div class="options-container" id="options"></div>
         <button class="next-btn" id="next-button" disabled onclick="handleMainAction()">Check</button>
-        
-        <div class="exit-btn-container">
-            <button class="exit-plain-btn" onclick="openExitModal()">Exit Quiz</button>
-        </div>
-    </div>
+</div>
     
     <div id="quiz-results" class="summary-card" style="display: none;">
         <div class="score-circle" id="final-score">0%</div>
