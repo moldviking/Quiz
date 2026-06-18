@@ -11,7 +11,7 @@
     <style>
         /* LIGHT MODE (Default) */
         :root {
-            --bg-body: #f5f5f7;
+            --bg-body: #F0F0F5;
             --bg-card: #ffffff;
             --bg-alert: rgba(255, 255, 255, 0.95);
             --text-main: #1d1d1f;
@@ -45,7 +45,7 @@
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-body: #000000;
-                --bg-card: #1c1c1e;
+                --bg-card: #1A1A1C;
                 --bg-alert: rgba(35, 35, 35, 0.95);
                 --text-main: #f5f5f7;
                 --text-secondary: #98989d;
@@ -82,7 +82,6 @@
             min-height: 100vh;
             min-height: 100dvh;
             margin: 0;
-            /* Ensures header background color flows directly to the top edge including Safari toolbar */
             padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)) 16px;
             box-sizing: border-box; 
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -92,7 +91,7 @@
         }
 
         #question-text, 
-        .option-btn span, 
+        .option-content-col span, 
         .review-question-text, 
         .review-badge span,
         .editable-input {
@@ -112,6 +111,7 @@
             max-width: 600px;
             box-sizing: border-box;
             transition: background-color 0.3s ease;
+            position: relative; /* Fontos a sticky sávhoz */
         }
 
         @media (prefers-color-scheme: dark) {
@@ -124,15 +124,45 @@
             max-width: 680px;
         }
 
-        .quiz-container.has-fixed-bar {
-            padding-top: 76px;
+        /* STICKY ACTION BAR */
+        .sticky-action-bar {
+            position: sticky;
+            top: 0px; 
+            z-index: 100;
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 24px;
+            pointer-events: none; /* Átengedi a kattintást, ha nincs gomb */
         }
 
-        @media (max-width: 600px) {
-            .quiz-container.has-fixed-bar {
-                padding-top: 68px;
-            }
+        .sticky-action-bar > * {
+            pointer-events: auto; /* A gomb viszont kattintható marad */
         }
+
+        .glass-exit-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .glass-exit-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        @media (prefers-color-scheme: dark) {
+            .glass-exit-btn { background: rgba(30,30,30,0.6); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        }
+        .glass-exit-btn:active { transform: scale(0.96); opacity: 0.85; }
+
 
         .header-info {
             border-bottom: 1px solid var(--border-color);
@@ -190,6 +220,23 @@
             letter-spacing: -0.5px;
         }
 
+        /* Question Image */
+        #play-question-image {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            object-fit: contain;
+            display: none;
+            background-color: var(--option-bg);
+            border: 1px solid var(--border-color);
+            cursor: zoom-in;
+            transition: opacity 0.2s;
+        }
+        #play-question-image:hover {
+            opacity: 0.9;
+        }
+
         .options-container {
             display: flex;
             flex-direction: column;
@@ -210,9 +257,46 @@
             transition: all 0.3s ease;
             width: 100%;
             display: flex;
+            flex-direction: row;
             justify-content: space-between;
             align-items: center;
+            gap: 16px;
             box-sizing: border-box;
+        }
+
+        .option-content-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        /* Right-aligned option image - Nagyobb méret, nincs zoom */
+        .option-img-wrap {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            padding: 4px;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .option-img-wrap { background: rgba(255,255,255,0.06); }
+        }
+
+        .option-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+            pointer-events: none;
         }
 
         .option-btn:hover:not(:disabled) {
@@ -245,11 +329,15 @@
 
         .btn-meta {
             font-size: 13px;
-            font-weight: 400;
-            opacity: 0.6;
+            font-weight: 600;
+            opacity: 0.8;
             white-space: nowrap;
-            margin-left: 12px;
+            color: var(--apple-blue);
+            margin-top: 2px;
         }
+
+        .option-btn.correct-state .btn-meta { color: var(--success-text); }
+        .option-btn.incorrect-state .btn-meta { color: var(--error-text); }
 
         .next-btn {
             width: 100%;
@@ -277,7 +365,7 @@
         .cancel-text-btn {
             background: transparent;
             border: none;
-            color: var(--error-red);
+            color: var(--apple-blue);
             font-size: 15px;
             font-weight: 500;
             margin-top: 16px;
@@ -332,6 +420,16 @@
             margin: 0 0 14px 0;
         }
 
+        .review-q-img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            object-fit: contain;
+            border: 1px solid var(--border-color);
+            cursor: zoom-in;
+        }
+
         .review-choices {
             display: flex;
             flex-direction: column;
@@ -346,9 +444,18 @@
             background-color: var(--option-bg);
             color: var(--text-secondary);
             display: flex;
+            flex-direction: row;
             justify-content: space-between;
             align-items: center;
             gap: 16px;
+        }
+
+        .review-badge-text-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            flex: 1;
         }
 
         .review-badge.correct-review {
@@ -363,8 +470,8 @@
 
         .review-meta {
             font-size: 12px;
-            font-weight: 400;
-            opacity: 0.6;
+            font-weight: 600;
+            opacity: 0.8;
             white-space: nowrap;
         }
 
@@ -383,12 +490,10 @@
         
         p { color: var(--text-secondary); margin-bottom: 24px; }
 
+        /* MODALS */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--overlay-bg);
             display: flex;
             justify-content: center;
@@ -423,807 +528,231 @@
         }
 
         @media (prefers-color-scheme: dark) {
-            .apple-alert {
-                box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
-            }
+            .apple-alert { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); }
         }
 
-        .alert-content {
-            padding: 24px 20px 20px 20px;
-        }
+        .alert-content { padding: 24px 20px 20px 20px; }
+        .alert-title { font-size: 19px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-main); letter-spacing: -0.5px; }
+        .alert-message { font-size: 14px; font-weight: 400; margin: 0; color: var(--text-main); line-height: 1.4; }
 
-        .alert-title {
-            font-size: 19px;
-            font-weight: 600;
-            margin: 0 0 8px 0;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
+        .alert-buttons { display: flex; gap: 12px; padding: 0 20px 20px 20px; }
+        .alert-btn { flex: 1; padding: 12px 10px; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 12px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
+        .alert-btn.cancel-btn { background-color: var(--apple-blue); color: #ffffff; }
+        .alert-btn.destructive { background-color: rgba(0, 0, 0, 0.05); color: var(--error-red); }
+        @media (prefers-color-scheme: dark) { .alert-btn.destructive { background-color: rgba(255, 255, 255, 0.1); } }
+        .alert-btn:active { transform: scale(0.97); opacity: 0.8; }
 
-        .alert-message {
-            font-size: 14px;
-            font-weight: 400;
-            margin: 0;
-            color: var(--text-main);
-            line-height: 1.4;
-        }
-
-        .alert-buttons {
-            display: flex;
-            gap: 12px;
-            padding: 0 20px 20px 20px;
-        }
-
-        .alert-btn {
-            flex: 1;
-            padding: 12px 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            -webkit-appearance: none;
-            box-sizing: border-box;
-            border-radius: 12px;
-            border: none;
-            transition: transform 0.15s ease, opacity 0.2s ease;
-        }
-
-        .alert-btn.cancel-btn {
-            background-color: var(--apple-blue);
-            color: #ffffff;
-        }
-
-        .alert-btn.destructive {
-            background-color: rgba(0, 0, 0, 0.05);
-            color: var(--error-red);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .alert-btn.destructive {
-                background-color: rgba(255, 255, 255, 0.1);
-            }
-        }
-
-        .alert-btn:active {
-            transform: scale(0.97);
-            opacity: 0.8;
-        }
-
-        .fixed-top-bar {
+        /* LIGHTBOX FOR IMAGE ZOOM */
+        .lightbox-overlay {
             position: fixed;
-            top: max(20px, env(safe-area-inset-top));
-            left: 0;
-            width: 100%;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
             display: flex;
             justify-content: center;
-            z-index: 500;
-            pointer-events: none;
+            align-items: center;
+            z-index: 20000;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.2s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
-
-        .fixed-top-bar-inner {
-            width: 100%;
-            max-width: 600px;
-            padding: 0 32px;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: flex-start;
-            pointer-events: none;
+        .lightbox-overlay.active {
+            opacity: 1; visibility: visible;
         }
-
-        .quiz-container.builder-wide ~ .fixed-top-bar .fixed-top-bar-inner,
-        .builder-wide-active .fixed-top-bar-inner {
-            max-width: 680px;
+        .lightbox-img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            object-fit: contain;
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
         }
-
-        @media (max-width: 600px) {
-            .fixed-top-bar-inner {
-                padding: 0 16px;
-            }
+        .lightbox-overlay.active .lightbox-img {
+            transform: scale(1);
         }
-
-        .glass-exit-btn {
-            border: none;
-            border-radius: 999px;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-main);
+        .lightbox-close {
+            position: absolute;
+            top: max(24px, env(safe-area-inset-top)); 
+            right: max(24px, env(safe-area-inset-right));
             background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px; height: 44px;
             cursor: pointer;
-            pointer-events: auto;
-            transition: transform 0.15s ease, opacity 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            display: flex; justify-content: center; align-items: center;
+            transition: background 0.2s;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
+        .lightbox-close svg { width: 20px; height: 20px; fill: currentColor; }
+        .lightbox-close:hover { background: rgba(255,255,255,0.3); }
 
-        .glass-exit-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .glass-exit-btn {
-                background: rgba(255,255,255,0.08);
-                box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-            }
-        }
-
-        .glass-exit-btn:active {
-            transform: scale(0.96);
-            opacity: 0.85;
-        }
-
-        /* Mode choice layout enhancements */
-        .mode-choice-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-bottom: 8px;
-        }
-
+        .mode-choice-grid { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
         .mode-choice-btn {
-            background-color: var(--option-bg);
-            color: var(--text-main);
-            border: 2px solid transparent;
-            padding: 20px;
-            border-radius: 14px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
+            background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; padding: 20px;
+            border-radius: 14px; text-align: left; cursor: pointer; transition: all 0.25s ease;
+            display: flex; align-items: flex-start; gap: 16px;
         }
-
-        .mode-choice-btn:hover {
-            background-color: var(--option-hover);
-        }
-
+        .mode-choice-btn:hover { background-color: var(--option-hover); }
         .mode-icon-container {
-            flex-shrink: 0;
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background-color: var(--bg-card);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            color: var(--apple-blue);
+            flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background-color: var(--bg-card);
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); color: var(--apple-blue);
         }
+        .mode-icon-container svg { width: 20px; height: 20px; fill: currentColor; }
+        .mode-text-container { display: flex; flex-direction: column; gap: 4px; }
+        .mode-choice-btn .mode-title { font-size: 16px; font-weight: 600; color: var(--text-main); letter-spacing: -0.2px; }
+        .mode-choice-btn .mode-sub { font-size: 13px; color: var(--text-secondary); font-weight: 400; line-height: 1.4; }
 
-        .mode-icon-container svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-
-        .mode-text-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .mode-choice-btn .mode-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-main);
-            letter-spacing: -0.2px;
-        }
-
-        .mode-choice-btn .mode-sub {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 400;
-            line-height: 1.4;
-        }
-
-        .section-header {
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin: 0 0 8px 2px;
-            display: block;
-        }
-
-        .section-header.with-top-spacing {
-            margin-top: 28px;
-        }
-
-        .field-label {
-            text-align: left;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin: 0 0 8px 0;
-            display: block;
-        }
+        .section-header { text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; margin: 0 0 8px 2px; display: block; }
+        .section-header.with-top-spacing { margin-top: 28px; }
+        .field-label { text-align: left; font-size: 13px; font-weight: 600; color: var(--text-main); margin: 0 0 8px 0; display: block; }
 
         .text-input, .textarea-input {
-            width: 100%;
-            box-sizing: border-box;
-            background-color: var(--option-bg);
-            color: var(--text-main);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 14px 16px;
-            font-size: 15px;
-            font-family: inherit;
-            line-height: 1.4;
-            margin-bottom: 20px;
-            transition: border-color 0.2s ease, background-color 0.2s ease;
+            width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main);
+            border: 2px solid transparent; border-radius: 12px; padding: 14px 16px; font-size: 15px;
+            font-family: inherit; line-height: 1.4; margin-bottom: 20px; transition: border-color 0.2s ease, background-color 0.2s ease;
         }
+        .text-input::placeholder, .textarea-input::placeholder { color: var(--text-tertiary); }
+        .text-input:focus, .textarea-input:focus { outline: none; border-color: var(--apple-blue); }
+        .textarea-input { resize: vertical; min-height: 50px; }
 
-        .text-input::placeholder, .textarea-input::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        .text-input:focus, .textarea-input:focus {
-            outline: none;
-            border-color: var(--apple-blue);
-        }
-
-        .textarea-input {
-            resize: vertical;
-            min-height: 50px;
-        }
-
-        .builder-question-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .builder-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: left;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease;
-        }
-
-        .builder-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .builder-card-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--apple-blue);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-        }
+        .builder-question-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+        .builder-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; text-align: left; box-sizing: border-box; transition: border-color 0.2s ease; }
+        .builder-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .builder-card-title { font-size: 12px; font-weight: 700; color: var(--apple-blue); text-transform: uppercase; letter-spacing: 0.6px; }
 
         .builder-icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            padding: 0;
+            background: transparent; border: none; color: var(--text-secondary); cursor: pointer;
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; transition: background-color 0.2s ease, color 0.2s ease; padding: 0;
         }
-
-        .builder-icon-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
-
-        .builder-icon-btn:hover {
-            background-color: var(--option-hover);
-            color: var(--error-red);
-        }
+        .builder-icon-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        .builder-icon-btn:hover { background-color: var(--option-hover); color: var(--error-red); }
 
         .builder-question-input {
-            width: 100%;
-            box-sizing: border-box;
-            background-color: var(--option-bg);
-            color: var(--text-main);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 14px 16px;
-            font-size: 15px;
-            font-weight: 600;
-            font-family: inherit;
-            line-height: 1.4;
-            margin-bottom: 14px;
-            resize: vertical;
-            min-height: 24px;
-            transition: border-color 0.2s ease;
+            width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main);
+            border: 2px solid transparent; border-radius: 12px; padding: 14px 16px; font-size: 15px; font-weight: 600;
+            font-family: inherit; line-height: 1.4; margin-bottom: 14px; resize: vertical; min-height: 24px; transition: border-color 0.2s ease;
         }
+        .builder-question-input::placeholder { color: var(--text-tertiary); font-weight: 400; }
+        .builder-question-input:focus { outline: none; border-color: var(--apple-blue); }
 
-        .builder-question-input::placeholder {
-            color: var(--text-tertiary);
-            font-weight: 400;
-        }
-
-        .builder-question-input:focus {
-            outline: none;
-            border-color: var(--apple-blue);
-        }
-
-        .builder-options-group {
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .builder-option-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            background-color: var(--option-bg);
-            border-bottom: 1px solid var(--separator);
-        }
-
-        .builder-option-row:last-child {
-            border-bottom: none;
-        }
+        .builder-options-group { border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: var(--option-bg); border-bottom: 1px solid var(--separator); }
+        .builder-option-row:last-child { border-bottom: none; }
 
         .correct-toggle-btn {
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 2px solid var(--border-color);
-            background-color: var(--bg-card);
-            color: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            padding: 0;
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border-color);
+            background-color: var(--bg-card); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0;
         }
+        .correct-toggle-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        .correct-toggle-btn:hover { border-color: var(--success-green); color: var(--success-green); }
+        .correct-toggle-btn.is-correct { background-color: var(--success-green); border-color: var(--success-green); color: #ffffff; }
 
-        .correct-toggle-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
+        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 8px; padding: 10px 8px; font-size: 15px; font-family: inherit; }
+        .builder-option-input::placeholder { color: var(--text-tertiary); }
+        .builder-option-input:focus { outline: none; background-color: var(--option-hover); }
 
-        .correct-toggle-btn:hover {
-            border-color: var(--success-green);
-            color: var(--success-green);
-        }
+        .remove-option-btn { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent; color: var(--text-tertiary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s ease, color 0.2s ease; padding: 0; }
+        .remove-option-btn svg { width: 12px; height: 12px; fill: currentColor; }
+        .remove-option-btn:hover { background-color: var(--option-hover); color: var(--error-red); }
 
-        .correct-toggle-btn.is-correct {
-            background-color: var(--success-green);
-            border-color: var(--success-green);
-            color: #ffffff;
-        }
+        .add-option-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+        .add-option-btn { background-color: transparent; color: var(--apple-blue); border: none; padding: 6px 0; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 8px; }
+        .add-option-btn .plus-icon { width: 22px; height: 22px; border-radius: 50%; background-color: var(--apple-blue); color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .add-option-btn .plus-icon svg { width: 12px; height: 12px; fill: currentColor; }
+        .add-option-btn:hover .plus-icon { opacity: 0.85; }
 
-        .builder-option-input {
-            flex: 1;
-            min-width: 0;
-            box-sizing: border-box;
-            background-color: transparent;
-            color: var(--text-main);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 8px;
-            font-size: 15px;
-            font-family: inherit;
-        }
+        .builder-card-error { font-size: 12px; color: var(--error-red); font-weight: 500; margin-top: 12px; display: none; line-height: 1.4; }
 
-        .builder-option-input::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        .builder-option-input:focus {
-            outline: none;
-            background-color: var(--option-hover);
-        }
-
-        .remove-option-btn {
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: none;
-            background: transparent;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            padding: 0;
-        }
-
-        .remove-option-btn svg {
-            width: 12px;
-            height: 12px;
-            fill: currentColor;
-        }
-
-        .remove-option-btn:hover {
-            background-color: var(--option-hover);
-            color: var(--error-red);
-        }
-
-        .add-option-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-        }
-
-        .add-option-btn {
-            background-color: transparent;
-            color: var(--apple-blue);
-            border: none;
-            padding: 6px 0;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .add-option-btn .plus-icon {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background-color: var(--apple-blue);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .add-option-btn .plus-icon svg {
-            width: 12px;
-            height: 12px;
-            fill: currentColor;
-        }
-
-        .add-option-btn:hover .plus-icon {
-            opacity: 0.85;
-        }
-
-        .builder-card-error {
-            font-size: 12px;
-            color: var(--error-red);
-            font-weight: 500;
-            margin-top: 12px;
-            display: none;
-            line-height: 1.4;
-        }
-
-        /* IMAGE UPLOAD ICON & PREVIEW */
         .img-upload-btn {
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            border: none;
-            background: transparent;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            padding: 0;
-            position: relative;
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; color: var(--text-tertiary);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s ease, color 0.2s ease; padding: 0; position: relative;
         }
+        .img-upload-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .img-upload-btn:hover { background-color: var(--option-hover); color: var(--apple-blue); }
+        .img-upload-btn.has-image { color: var(--apple-blue); }
+        .img-upload-btn.has-image::after { content: ''; position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background-color: var(--apple-blue); }
 
-        .img-upload-btn svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-
-        .img-upload-btn:hover {
-            background-color: var(--option-hover);
-            color: var(--apple-blue);
-        }
-
-        .img-upload-btn.has-image {
-            color: var(--apple-blue);
-        }
-
-        .img-upload-btn.has-image::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: var(--apple-blue);
-        }
-
-        .question-input-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .question-input-row .builder-question-input {
-            margin-bottom: 0;
-            flex: 1;
-        }
-
-        .question-img-btn-wrap {
-            flex-shrink: 0;
-            padding-top: 12px;
-        }
+        .question-input-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 14px; }
+        .question-input-row .builder-question-input { margin-bottom: 0; flex: 1; }
+        .question-img-btn-wrap { flex-shrink: 0; padding-top: 12px; }
 
         /* IMAGE MODAL */
         .img-modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: var(--overlay-bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s;
-            touch-action: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); display: flex;
+            justify-content: center; align-items: center; z-index: 10000; opacity: 0; visibility: hidden;
+            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none;
         }
-
-        .img-modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.15s ease-out, visibility 0s linear 0s;
-        }
-
+        .img-modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
         .img-modal-box {
-            background: var(--bg-alert);
-            width: 340px;
-            border-radius: 24px;
-            text-align: left;
+            background: var(--bg-alert); width: 340px; border-radius: 24px; text-align: left;
             box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
-            backdrop-filter: blur(50px) saturate(200%);
-            -webkit-backdrop-filter: blur(50px) saturate(200%);
-            border: 1px solid var(--alert-border);
-            box-sizing: border-box;
-            padding: 24px 20px 20px 20px;
+            backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
+            border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px;
         }
-
-        @media (prefers-color-scheme: dark) {
-            .img-modal-box {
-                box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
-            }
-        }
-
-        .img-modal-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin: 0 0 6px 0;
-            letter-spacing: -0.3px;
-        }
-
-        .img-modal-sub {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin: 0 0 16px 0;
-            line-height: 1.4;
-        }
+        @media (prefers-color-scheme: dark) { .img-modal-box { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); } }
+        .img-modal-title { font-size: 17px; font-weight: 600; color: var(--text-main); margin: 0 0 6px 0; letter-spacing: -0.3px; }
+        .img-modal-sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px 0; line-height: 1.4; }
 
         .img-preview-area {
-            width: 100%;
-            height: 140px;
-            border-radius: 12px;
-            border: 2px dashed var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin-bottom: 14px;
-            background-color: var(--option-bg);
-            cursor: pointer;
-            transition: border-color 0.2s ease;
+            width: 100%; height: 140px; border-radius: 12px; border: 2px dashed var(--border-color);
+            display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 14px;
+            background-color: var(--option-bg); cursor: pointer; transition: all 0.2s ease;
         }
+        .img-preview-area:hover, .img-preview-area.dragover { border-color: var(--apple-blue); background-color: var(--option-selected-bg); }
+        .img-preview-area img { width: 100%; height: 100%; object-fit: contain; }
+        .img-preview-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-tertiary); pointer-events: none; }
+        .img-preview-placeholder svg { width: 28px; height: 28px; fill: currentColor; }
+        .img-preview-placeholder span { font-size: 13px; font-weight: 500; }
 
-        .img-preview-area:hover {
-            border-color: var(--apple-blue);
-        }
-
-        .img-preview-area img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .img-preview-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-tertiary);
-        }
-
-        .img-preview-placeholder svg {
-            width: 28px;
-            height: 28px;
-            fill: currentColor;
-        }
-
-        .img-preview-placeholder span {
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .img-modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 4px;
-        }
-
-        .img-modal-btn {
-            flex: 1;
-            padding: 11px 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            -webkit-appearance: none;
-            box-sizing: border-box;
-            border-radius: 12px;
-            border: none;
-            transition: transform 0.15s ease, opacity 0.2s ease;
-        }
-
-        .img-modal-btn.primary {
-            background-color: var(--apple-blue);
-            color: #ffffff;
-        }
-
-        .img-modal-btn.secondary {
-            background-color: rgba(0,0,0,0.05);
-            color: var(--text-main);
-        }
-
-        .img-modal-btn.danger {
-            background-color: rgba(0,0,0,0.05);
-            color: var(--error-red);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .img-modal-btn.secondary, .img-modal-btn.danger {
-                background-color: rgba(255,255,255,0.1);
-            }
-        }
-
-        .img-modal-btn:active {
-            transform: scale(0.97);
-            opacity: 0.8;
-        }
-
-        .img-modal-btn-row {
-            display: flex;
-            gap: 8px;
-        }
+        .img-modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+        .img-modal-btn { flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 600; cursor: pointer; -webkit-appearance: none; box-sizing: border-box; border-radius: 12px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
+        .img-modal-btn.primary { background-color: var(--apple-blue); color: #ffffff; }
+        .img-modal-btn.secondary { background-color: rgba(0,0,0,0.05); color: var(--text-main); }
+        .img-modal-btn.danger { background-color: rgba(0,0,0,0.05); color: var(--error-red); }
+        @media (prefers-color-scheme: dark) { .img-modal-btn.secondary, .img-modal-btn.danger { background-color: rgba(255,255,255,0.1); } }
+        .img-modal-btn:active { transform: scale(0.97); opacity: 0.8; }
+        .img-modal-btn-row { display: flex; gap: 8px; }
 
         .add-question-btn {
-            background-color: var(--option-bg);
-            color: var(--apple-blue);
-            border: 2px dashed var(--border-color);
-            padding: 16px;
-            border-radius: 14px;
-            text-align: center;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100%;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            background-color: var(--option-bg); color: var(--apple-blue); border: 2px dashed var(--border-color);
+            padding: 16px; border-radius: 14px; text-align: center; font-size: 15px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; width: 100%; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .add-question-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        .add-question-btn:hover { background-color: var(--option-hover); border-color: var(--apple-blue); }
 
-        .add-question-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
-
-        .add-question-btn:hover {
-            background-color: var(--option-hover);
-            border-color: var(--apple-blue);
-        }
-
-        .builder-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .success-banner {
-            background-color: var(--success-bg);
-            color: var(--success-text);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            margin-top: 16px;
-            display: none;
-            text-align: left;
-        }
+        .builder-actions { display: flex; flex-direction: column; gap: 10px; }
+        .success-banner { background-color: var(--success-bg); color: var(--success-text); padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-top: 16px; display: none; text-align: left; }
 
         @media (max-width: 600px) {
-            body {
-                align-items: flex-start;
-                padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px;
-            }
-            .quiz-container {
-                padding: 20px;
-            }
-            .quiz-container.has-fixed-bar {
-                padding-top: 68px;
-            }
-            .header-info {
-                padding-bottom: 12px;
-                margin-bottom: 16px;
-            }
-            h2 {
-                font-size: 22px;
-                margin-bottom: 16px;
-            }
-            .option-btn {
-                padding: 14px;
-            }
-            .builder-card {
-                padding: 16px;
-            }
+            body { align-items: flex-start; padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px; }
+            .quiz-container { padding: 20px; }
+            .header-info { padding-bottom: 12px; margin-bottom: 16px; }
+            h2 { font-size: 22px; margin-bottom: 16px; }
+            .option-btn { padding: 14px; }
+            .builder-card { padding: 16px; }
+            .option-img-wrap { width: 80px; height: 80px; } /* Kisebb kijelzőn picit összébb húzzuk, de még mindig nagy */
         }
     </style>
 </head>
 <body>
 
-<div class="fixed-top-bar" id="exit-top-bar" style="display:none;">
-    <div class="fixed-top-bar-inner">
-        <button class="glass-exit-btn" onclick="openExitModal()">
+<div class="quiz-container" id="main-container">
+
+    <div class="sticky-action-bar" id="sticky-action-bar" style="display:none;">
+        <button class="glass-exit-btn" id="exit-btn" onclick="openExitModal()" style="display:none;">
             <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
             Exit
         </button>
-    </div>
-</div>
-
-<div class="fixed-top-bar" id="builder-back-top-bar" style="display:none;">
-    <div class="fixed-top-bar-inner">
-        <button class="glass-exit-btn" onclick="openBuilderExitModal()">
+        <button class="glass-exit-btn" id="builder-back-btn" onclick="openBuilderExitModal()" style="display:none;">
             <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             Back
         </button>
     </div>
-</div>
-
-<div class="quiz-container" id="main-container">
 
     <div id="mode-select-view" class="summary-card">
         <h2>Quiz Studio</h2>
@@ -1293,6 +822,9 @@
             <p class="quiz-desc" id="display-desc"></p>
         </div>
         <h2 id="question-text">Loading...</h2>
+        
+        <img id="play-question-image" src="" alt="Question Image" title="Nagyításhoz kattints ide" />
+        
         <div class="options-container" id="options"></div>
         <button class="next-btn" id="next-button" disabled onclick="handleMainAction()">Check</button>
     </div>
@@ -1360,18 +892,16 @@
     </div>
 </div>
 
-<!-- IMAGE UPLOAD MODAL -->
 <div class="img-modal-overlay" id="img-modal">
     <div class="img-modal-box">
         <p class="img-modal-title" id="img-modal-title">Add Image</p>
-        <p class="img-modal-sub">Tap the area below to select an image. It will be saved as Base64 inside the JSON.</p>
+        <p class="img-modal-sub">Drag & drop or tap the area below to select an image. It will be saved as Base64 inside the JSON.</p>
         <div class="img-preview-area" id="img-preview-area" onclick="document.getElementById('img-file-input').click()">
             <div class="img-preview-placeholder" id="img-preview-placeholder">
-                <!-- opensymbols.dev: image/photo icon -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                 </svg>
-                <span>Tap to select image</span>
+                <span>Drop image or tap to select</span>
             </div>
             <img id="img-preview-img" src="" alt="" style="display:none;">
         </div>
@@ -1384,6 +914,13 @@
             <button class="img-modal-btn primary" onclick="saveModalImage()">Save</button>
         </div>
     </div>
+</div>
+
+<div class="lightbox-overlay" id="lightbox-overlay" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="Zoomed" onclick="event.stopPropagation()">
 </div>
 
 <script>
@@ -1400,6 +937,7 @@
 
     const progressEl = document.getElementById('progress');
     const questionTextEl = document.getElementById('question-text');
+    const playQuestionImgEl = document.getElementById('play-question-image');
     const optionsContainerEl = document.getElementById('options');
     const nextButtonEl = document.getElementById('next-button');
     
@@ -1421,8 +959,13 @@
     const exitModalEl = document.getElementById('exit-modal');
     const mainContainerEl = document.getElementById('main-container');
 
-    const exitTopBarEl = document.getElementById('exit-top-bar');
-    const builderBackTopBarEl = document.getElementById('builder-back-top-bar');
+    const stickyActionBar = document.getElementById('sticky-action-bar');
+    const exitBtnEl = document.getElementById('exit-btn');
+    const builderBackBtnEl = document.getElementById('builder-back-btn');
+
+    /* Lightbox elements */
+    const lightboxOverlay = document.getElementById('lightbox-overlay');
+    const lightboxImg = document.getElementById('lightbox-img');
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -1432,15 +975,36 @@
         return array;
     }
 
-    function setFixedTopBar(which) {
-        exitTopBarEl.style.display = (which === 'exit') ? 'flex' : 'none';
-        builderBackTopBarEl.style.display = (which === 'builder-back') ? 'flex' : 'none';
-        mainContainerEl.classList.toggle('has-fixed-bar', which !== null);
+    function setTopBar(which) {
+        if (which === 'exit') {
+            stickyActionBar.style.display = 'flex';
+            exitBtnEl.style.display = 'flex';
+            builderBackBtnEl.style.display = 'none';
+        } else if (which === 'builder-back') {
+            stickyActionBar.style.display = 'flex';
+            exitBtnEl.style.display = 'none';
+            builderBackBtnEl.style.display = 'flex';
+        } else {
+            stickyActionBar.style.display = 'none';
+            exitBtnEl.style.display = 'none';
+            builderBackBtnEl.style.display = 'none';
+        }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        loadProgressFromStorage();
+        initializeAppState();
+        builderQuizNameEl.addEventListener('input', saveBuilderState);
+        builderQuizDescEl.addEventListener('input', saveBuilderState);
     });
+
+    function initializeAppState() {
+        const mode = localStorage.getItem('app_mode');
+        if (mode === 'play') {
+            loadProgressFromStorage();
+        } else if (mode === 'builder') {
+            loadBuilderFromStorage();
+        }
+    }
 
     function saveProgressToStorage() {
         const state = {
@@ -1453,6 +1017,7 @@
             quizMetadata
         };
         localStorage.setItem('active_quiz_session', JSON.stringify(state));
+        localStorage.setItem('app_mode', 'play');
     }
 
     function loadProgressFromStorage() {
@@ -1478,12 +1043,11 @@
                 configSection.style.display = 'none';
                 builderSection.style.display = 'none';
                 gameSection.style.display = 'block';
-                setFixedTopBar('exit');
+                setTopBar('exit');
                 
                 restoreQuestionState();
             }
         } catch (e) {
-            console.error("Failed to restore quiz state", e);
             clearStorage();
         }
     }
@@ -1492,22 +1056,37 @@
         localStorage.removeItem('active_quiz_session');
     }
 
+    function openLightbox(src) {
+        lightboxImg.src = src;
+        lightboxOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        lightboxOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        setTimeout(() => { lightboxImg.src = ''; }, 200);
+    }
+
+    playQuestionImgEl.onclick = () => openLightbox(playQuestionImgEl.src);
+
     function goToPlayUpload() {
         modeSelectSection.style.display = 'none';
         mainContainerEl.classList.remove('builder-wide');
-        setFixedTopBar(null);
+        setTopBar(null);
         uploadSection.style.display = 'block';
     }
 
-    function goToBuilderFresh() {
+    function goToBuilderFresh(isRestore = false) {
         modeSelectSection.style.display = 'none';
         mainContainerEl.classList.add('builder-wide');
-        setFixedTopBar('builder-back');
+        setTopBar('builder-back');
         builderSection.style.display = 'block';
 
-        if (builderQuestions.length === 0) {
+        if (!isRestore && builderQuestions.length === 0) {
             addBuilderQuestion();
         }
+        saveBuilderState();
     }
 
     function triggerBuilderUpload() {
@@ -1517,7 +1096,7 @@
     function backToModeSelect() {
         uploadSection.style.display = 'none';
         mainContainerEl.classList.remove('builder-wide');
-        setFixedTopBar(null);
+        setTopBar(null);
         errorDisplayEl.style.display = 'none';
         fileSelector.value = '';
         modeSelectSection.style.display = 'block';
@@ -1549,14 +1128,16 @@
                     let mappedOptions = q.options.map((opt, oIdx) => {
                         let isCorrect = false;
                         let text = "";
+                        let image = "";
                         if (typeof opt === 'object') {
                             isCorrect = (opt.correct == 1 || opt.correct === true || opt.correct === 'true');
                             text = opt.option;
+                            image = opt.image || "";
                         } else {
                             text = opt;
                             isCorrect = (oIdx === 0);
                         }
-                        return { text, isCorrect };
+                        return { text, isCorrect, image };
                     });
 
                     if (!mappedOptions.some(opt => opt.isCorrect)) {
@@ -1566,11 +1147,12 @@
                     mappedOptions = shuffleArray(mappedOptions);
 
                     const correctIndex = mappedOptions.findIndex(opt => opt.isCorrect);
-                    const optionsText = mappedOptions.map(opt => opt.text);
+                    const optionsData = mappedOptions.map(opt => ({text: opt.text, image: opt.image}));
 
                     return {
                         question: q.question,
-                        options: optionsText,
+                        questionImage: q.questionImage || "",
+                        options: optionsData,
                         correct: correctIndex 
                     };
                 });
@@ -1579,7 +1161,6 @@
                 document.getElementById('config-quiz-desc').innerText = quizMetadata.desc;
                 
                 uploadSection.style.display = 'none';
-                configSection.style.block = 'block';
                 configSection.style.display = 'block';
                 
                 selectMode('seq');
@@ -1593,7 +1174,6 @@
         reader.readAsText(file);
     });
 
-    // EVENT LISTENER FOR LOADING AN EXISTING JSON INTO THE WORKSPACE BUILDER
     builderFileSelector.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1651,9 +1231,11 @@
 
                 modeSelectSection.style.display = 'none';
                 mainContainerEl.classList.add('builder-wide');
-                setFixedTopBar('builder-back');
+                setTopBar('builder-back');
                 builderSection.style.display = 'block';
+                
                 renderBuilderQuestions();
+                saveBuilderState();
 
             } catch (err) {
                 alert(`Import Failed: ${err.message}`);
@@ -1683,7 +1265,7 @@
         configSection.style.display = 'none';
         mainContainerEl.classList.remove('builder-wide');
         gameSection.style.display = 'block';
-        setFixedTopBar('exit');
+        setTopBar('exit');
 
         currentQuestionIndex = 0;
         score = 0;
@@ -1702,9 +1284,6 @@
     }
 
     function restoreQuestionState() {
-        progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
-        questionTextEl.innerText = quizData[currentQuestionIndex].question;
-        
         buildOptionsDOM();
 
         if (isQuestionReviewed) {
@@ -1723,7 +1302,9 @@
                     const metaSpan = document.createElement('span');
                     metaSpan.className = 'btn-meta';
                     metaSpan.innerText = "Your Choice";
-                    btn.appendChild(metaSpan);
+                    
+                    const contentCol = btn.querySelector('.option-content-col');
+                    if(contentCol) contentCol.appendChild(metaSpan);
                 }
             });
             nextButtonEl.disabled = false;
@@ -1743,14 +1324,41 @@
         progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
         questionTextEl.innerText = currentData.question;
         
+        if (currentData.questionImage) {
+            playQuestionImgEl.src = currentData.questionImage;
+            playQuestionImgEl.style.display = 'block';
+        } else {
+            playQuestionImgEl.style.display = 'none';
+            playQuestionImgEl.src = '';
+        }
+        
         optionsContainerEl.innerHTML = '';
         currentData.options.forEach((option, index) => {
             const button = document.createElement('button');
             button.classList.add('option-btn');
-            
+
+            const contentCol = document.createElement('div');
+            contentCol.classList.add('option-content-col');
+
             const textSpan = document.createElement('span');
-            textSpan.innerText = option;
-            button.appendChild(textSpan);
+            textSpan.innerText = option.text;
+            contentCol.appendChild(textSpan);
+
+            button.appendChild(contentCol);
+
+            if (option.image) {
+                const imgWrap = document.createElement('div');
+                imgWrap.classList.add('option-img-wrap');
+                
+                const img = document.createElement('img');
+                img.src = option.image;
+                img.classList.add('option-img');
+                
+                imgWrap.appendChild(img);
+                
+                // Mivel el lett távolítva a nagyítás, egy sima kattintás a gombot fogja kijelölni
+                button.appendChild(imgWrap);
+            }
 
             button.onclick = () => selectOption(index);
             optionsContainerEl.appendChild(button);
@@ -1797,7 +1405,9 @@
                     const metaSpan = document.createElement('span');
                     metaSpan.className = 'btn-meta';
                     metaSpan.innerText = "Your Choice";
-                    btn.appendChild(metaSpan);
+                    
+                    const contentCol = btn.querySelector('.option-content-col');
+                    if (contentCol) contentCol.appendChild(metaSpan);
                 }
             });
 
@@ -1816,7 +1426,7 @@
     function showResults() {
         clearStorage();
         gameSection.style.display = 'none';
-        setFixedTopBar(null);
+        setTopBar(null);
         resultsSection.style.display = 'block';
         
         const percentage = Math.round((score / quizData.length) * 100);
@@ -1842,6 +1452,14 @@
             const itemDiv = document.createElement('div');
             itemDiv.className = 'review-item';
 
+            if (data.questionImage) {
+                const qImg = document.createElement('img');
+                qImg.src = data.questionImage;
+                qImg.className = 'review-q-img';
+                qImg.onclick = () => openLightbox(data.questionImage);
+                itemDiv.appendChild(qImg);
+            }
+
             const qText = document.createElement('p');
             qText.className = 'review-question-text';
             qText.innerText = `${qIdx + 1}. ${data.question}`;
@@ -1854,21 +1472,40 @@
                 const badge = document.createElement('div');
                 badge.className = 'review-badge';
 
-                const textSpan = document.createElement('span');
-                textSpan.innerText = option;
-                badge.appendChild(textSpan);
+                const textCol = document.createElement('div');
+                textCol.className = 'review-badge-text-col';
 
-                if (oIdx === correctIdx) {
-                    badge.classList.add('correct-review');
-                } else if (oIdx === chosenIdx && chosenIdx !== correctIdx) {
-                    badge.classList.add('incorrect-review');
-                }
+                const textSpan = document.createElement('span');
+                textSpan.innerText = option.text;
+                textCol.appendChild(textSpan);
 
                 if (oIdx === chosenIdx) {
                     const metaSpan = document.createElement('span');
                     metaSpan.className = 'review-meta';
                     metaSpan.innerText = "Your Choice";
-                    badge.appendChild(metaSpan);
+                    textCol.appendChild(metaSpan);
+                }
+
+                badge.appendChild(textCol);
+
+                if (option.image) {
+                    const imgWrap = document.createElement('div');
+                    imgWrap.className = 'option-img-wrap';
+                    imgWrap.style.width = '70px'; // Kis összefoglalóhoz elég egy picivel kisebb is
+                    imgWrap.style.height = '70px';
+                    
+                    const optImg = document.createElement('img');
+                    optImg.src = option.image;
+                    optImg.className = 'option-img';
+                    
+                    imgWrap.appendChild(optImg);
+                    badge.appendChild(imgWrap);
+                }
+
+                if (oIdx === correctIdx) {
+                    badge.classList.add('correct-review');
+                } else if (oIdx === chosenIdx && chosenIdx !== correctIdx) {
+                    badge.classList.add('incorrect-review');
                 }
 
                 choicesDiv.appendChild(badge);
@@ -1896,12 +1533,14 @@
 
     function resetToUpload() {
         clearStorage();
+        localStorage.removeItem('app_mode');
+        
         resultsSection.style.display = 'none';
         gameSection.style.display = 'none';
         configSection.style.display = 'none';
         builderSection.style.display = 'none';
         mainContainerEl.classList.remove('builder-wide');
-        setFixedTopBar(null);
+        setTopBar(null);
         modeSelectSection.style.display = 'block';
         fileSelector.value = '';
         userAnswers = [];
@@ -1922,6 +1561,34 @@
     const builderSuccessEl = document.getElementById('builder-success-display');
     const builderExitModalEl = document.getElementById('builder-exit-modal');
 
+    function saveBuilderState() {
+        const state = {
+            questions: builderQuestions,
+            name: builderQuizNameEl.value,
+            desc: builderQuizDescEl.value,
+            idCounter: builderIdCounter
+        };
+        localStorage.setItem('builder_session', JSON.stringify(state));
+        localStorage.setItem('app_mode', 'builder');
+    }
+
+    function loadBuilderFromStorage() {
+        const stateStr = localStorage.getItem('builder_session');
+        if (!stateStr) return;
+        try {
+            const state = JSON.parse(stateStr);
+            builderQuestions = state.questions || [];
+            builderIdCounter = state.idCounter || 0;
+            builderQuizNameEl.value = state.name || '';
+            builderQuizDescEl.value = state.desc || '';
+            
+            goToBuilderFresh(true);
+            renderBuilderQuestions();
+        } catch (e) {
+            localStorage.removeItem('builder_session');
+        }
+    }
+
     function makeBuilderId() {
         builderIdCounter++;
         return 'b' + builderIdCounter;
@@ -1939,6 +1606,7 @@
         };
         builderQuestions.push(newQuestion);
         renderBuilderQuestions();
+        saveBuilderState();
 
         requestAnimationFrame(() => {
             const card = document.getElementById('card-' + newQuestion.id);
@@ -1949,6 +1617,7 @@
     function removeBuilderQuestion(qId) {
         builderQuestions = builderQuestions.filter(q => q.id !== qId);
         renderBuilderQuestions();
+        saveBuilderState();
     }
 
     function addBuilderOption(qId) {
@@ -1956,6 +1625,7 @@
         if (!question) return;
         question.options.push({ id: makeBuilderId(), text: '', isCorrect: false, image: '' });
         renderBuilderQuestions();
+        saveBuilderState();
     }
 
     function removeBuilderOption(qId, optId) {
@@ -1970,6 +1640,7 @@
             question.options[0].isCorrect = true;
         }
         renderBuilderQuestions();
+        saveBuilderState();
     }
 
     function setBuilderCorrect(qId, optId) {
@@ -1977,11 +1648,13 @@
         if (!question) return;
         question.options.forEach(o => { o.isCorrect = (o.id === optId); });
         renderBuilderQuestions();
+        saveBuilderState();
     }
 
     function updateBuilderQuestionText(qId, value) {
         const question = builderQuestions.find(q => q.id === qId);
         if (question) question.questionText = value;
+        saveBuilderState();
     }
 
     function updateBuilderOptionText(qId, optId, value) {
@@ -1989,6 +1662,7 @@
         if (!question) return;
         const option = question.options.find(o => o.id === optId);
         if (option) option.text = value;
+        saveBuilderState();
     }
 
     function renderBuilderQuestions() {
@@ -2018,7 +1692,6 @@
 
             card.appendChild(header);
 
-            // Question input row with image icon
             const qRow = document.createElement('div');
             qRow.className = 'question-input-row';
 
@@ -2038,7 +1711,6 @@
             const qImgBtn = document.createElement('button');
             qImgBtn.className = 'img-upload-btn' + (question.questionImage ? ' has-image' : '');
             qImgBtn.title = question.questionImage ? 'Edit question image' : 'Add image to question';
-            // opensymbols.dev: image icon
             qImgBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>';
             qImgBtn.onclick = () => openImgModal('question', question.id, null, question.questionImage || '');
             qImgWrap.appendChild(qImgBtn);
@@ -2068,11 +1740,9 @@
                 optInput.oninput = (e) => updateBuilderOptionText(question.id, option.id, e.target.value);
                 row.appendChild(optInput);
 
-                // Image icon for option
                 const optImgBtn = document.createElement('button');
                 optImgBtn.className = 'img-upload-btn' + (option.image ? ' has-image' : '');
                 optImgBtn.title = option.image ? 'Edit answer image' : 'Add image to answer';
-                // opensymbols.dev: image icon
                 optImgBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>';
                 optImgBtn.onclick = () => openImgModal('option', question.id, option.id, option.image || '');
                 row.appendChild(optImgBtn);
@@ -2118,6 +1788,11 @@
 
             builderQuestionListEl.appendChild(card);
         });
+        
+        // Timeout ensures elements are painted before growing
+        setTimeout(() => {
+            document.querySelectorAll('.builder-question-input').forEach(autoGrow);
+        }, 10);
     }
 
     function autoGrow(el) {
@@ -2250,7 +1925,7 @@
         backToModeSelectFromBuilder();
     }
 
-    /* IMAGE MODAL LOGIC */
+    /* IMAGE MODAL LOGIC WITH DRAG & DROP */
     let imgModalContext = { type: null, qId: null, optId: null };
     let imgModalCurrentBase64 = '';
     let imgModalPendingBase64 = '';
@@ -2263,9 +1938,9 @@
     const imgRemoveBtn = document.getElementById('img-remove-btn');
     const imgModalTitle = document.getElementById('img-modal-title');
 
-    imgFileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+    function handleImageFile(file) {
+        if (!file.type.startsWith('image/')) return;
+        
         const reader = new FileReader();
         reader.onload = function(ev) {
             imgModalPendingBase64 = ev.target.result;
@@ -2275,7 +1950,21 @@
             imgRemoveBtn.style.display = 'block';
         };
         reader.readAsDataURL(file);
+    }
+
+    imgFileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) handleImageFile(file);
         imgFileInput.value = '';
+    });
+
+    imgPreviewArea.addEventListener('dragover', (e) => { e.preventDefault(); imgPreviewArea.classList.add('dragover'); });
+    imgPreviewArea.addEventListener('dragleave', (e) => { e.preventDefault(); imgPreviewArea.classList.remove('dragover'); });
+    imgPreviewArea.addEventListener('drop', (e) => {
+        e.preventDefault(); imgPreviewArea.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleImageFile(e.dataTransfer.files[0]);
+        }
     });
 
     function openImgModal(type, qId, optId, currentBase64) {
@@ -2330,18 +2019,7 @@
 
         closeImgModal();
         renderBuilderQuestions();
-    }
-
-    function updateBuilderQuestionImage(qId, base64) {
-        const question = builderQuestions.find(q => q.id === qId);
-        if (question) question.questionImage = base64;
-    }
-
-    function updateBuilderOptionImage(qId, optId, base64) {
-        const question = builderQuestions.find(q => q.id === qId);
-        if (!question) return;
-        const option = question.options.find(o => o.id === optId);
-        if (option) option.image = base64;
+        saveBuilderState();
     }
 
     function resetBuilder() {
@@ -2352,12 +2030,15 @@
         builderQuestionListEl.innerHTML = '';
         builderErrorEl.style.display = 'none';
         builderSuccessEl.style.display = 'none';
+        
+        localStorage.removeItem('builder_session');
+        localStorage.removeItem('app_mode');
     }
 
     function backToModeSelectFromBuilder() {
         builderSection.style.display = 'none';
         mainContainerEl.classList.remove('builder-wide');
-        setFixedTopBar(null);
+        setTopBar(null);
         modeSelectSection.style.display = 'block';
     }
 </script>
