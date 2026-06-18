@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Quiz</title>
+    <title>Quiz Studio</title>
+    
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+
     <style>
         /* LIGHT MODE (Default) */
         :root {
             --bg-body: #f5f5f7;
             --bg-card: #ffffff;
-            --bg-alert: rgba(255, 255, 255, 0.95); /* Increased opacity so it never blends into the background */
+            --bg-alert: rgba(255, 255, 255, 0.95);
             --text-main: #1d1d1f;
             --text-secondary: #86868b;
             --text-tertiary: #aeaeb2;
@@ -42,7 +46,7 @@
             :root {
                 --bg-body: #000000;
                 --bg-card: #1c1c1e;
-                --bg-alert: rgba(35, 35, 35, 0.95); /* Increased opacity in dark mode too */
+                --bg-alert: rgba(35, 35, 35, 0.95);
                 --text-main: #f5f5f7;
                 --text-secondary: #98989d;
                 --text-tertiary: #6e6e73;
@@ -78,17 +82,15 @@
             min-height: 100vh;
             min-height: 100dvh;
             margin: 0;
-            padding: 16px;
+            /* Ensures header background color flows directly to the top edge including Safari toolbar */
+            padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)) 16px;
             box-sizing: border-box; 
             transition: background-color 0.3s ease, color 0.3s ease;
             -webkit-tap-highlight-color: transparent;
-            
-            /* Disable text selection across the whole page */
             -webkit-user-select: none;
             user-select: none;
         }
 
-        /* Allow text selection only for questions and answers */
         #question-text, 
         .option-btn span, 
         .review-question-text, 
@@ -118,12 +120,10 @@
             }
         }
 
-        /* Builder mode can use a slightly wider canvas, since it holds many cards */
         .quiz-container.builder-wide {
             max-width: 680px;
         }
 
-        /* Extra top padding whenever a fixed top bar is present, so content never sits underneath it */
         .quiz-container.has-fixed-bar {
             padding-top: 76px;
         }
@@ -181,13 +181,13 @@
         }
 
         h2 {
-            font-size: 22px;
-            font-weight: 600;
+            font-size: 26px;
+            font-weight: 700;
             margin-top: 0;
             margin-bottom: 24px;
             line-height: 1.3;
             color: var(--text-main);
-            letter-spacing: -0.3px;
+            letter-spacing: -0.5px;
         }
 
         .options-container {
@@ -272,11 +272,6 @@
             background-color: var(--option-hover);
             color: var(--text-secondary);
             cursor: not-allowed;
-        }
-
-        .next-btn.secondary {
-            background-color: var(--option-bg);
-            color: var(--text-main);
         }
 
         .cancel-text-btn {
@@ -388,7 +383,6 @@
         
         p { color: var(--text-secondary); margin-bottom: 24px; }
 
-        /* --- REFINED iOS-STYLE MODAL ANIMATION WITH HARDWARE ACCELERATION --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -402,33 +396,27 @@
             z-index: 9999;
             opacity: 0;
             visibility: hidden;
-            
-            /* Fade-out: opacity animates, visibility waits for it to finish (0.15s delay) */
             transition: opacity 0.15s ease-out, visibility 0s linear 0.15s;
             touch-action: none;
-            will-change: opacity; /* GPU optimization */
+            will-change: opacity;
         }
 
         .modal-overlay.active {
             opacity: 1;
             visibility: visible;
-            
-            /* Fade-in: visibility happens INSTANTLY (0s), no stutter, only opacity builds up */
             transition: opacity 0.15s ease-out, visibility 0s linear 0s;
         }
 
         .apple-alert {
             background: var(--bg-alert);
             width: 340px;
-            border-radius: 42px;
+            border-radius: 24px;
             text-align: left;
             box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
             backdrop-filter: blur(50px) saturate(200%);
             -webkit-backdrop-filter: blur(50px) saturate(200%);
             border: 1px solid var(--alert-border);
             box-sizing: border-box;
-            
-            /* Force hardware acceleration to prevent stuttering */
             -webkit-transform: translateZ(0);
             transform: translateZ(0);
             will-change: opacity;
@@ -441,11 +429,11 @@
         }
 
         .alert-content {
-            padding: 30px 24px 20px 24px;
+            padding: 24px 20px 20px 20px;
         }
 
         .alert-title {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 600;
             margin: 0 0 8px 0;
             color: var(--text-main);
@@ -453,11 +441,11 @@
         }
 
         .alert-message {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 400;
             margin: 0;
             color: var(--text-main);
-            line-height: 1.35;
+            line-height: 1.4;
         }
 
         .alert-buttons {
@@ -468,15 +456,15 @@
 
         .alert-btn {
             flex: 1;
-            padding: 16px 10px;
-            font-size: 17px;
+            padding: 12px 10px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             -webkit-appearance: none;
             box-sizing: border-box;
-            border-radius: 9999px;
+            border-radius: 12px;
             border: none;
-            transition: transform 0.15s ease, opacity 0.2s ease, background-color 0.2s ease;
+            transition: transform 0.15s ease, opacity 0.2s ease;
         }
 
         .alert-btn.cancel-btn {
@@ -485,24 +473,21 @@
         }
 
         .alert-btn.destructive {
-            background-color: rgba(0, 0, 0, 0.08);
+            background-color: rgba(0, 0, 0, 0.05);
             color: var(--error-red);
         }
 
         @media (prefers-color-scheme: dark) {
             .alert-btn.destructive {
-                background-color: rgba(255, 255, 255, 0.15);
+                background-color: rgba(255, 255, 255, 0.1);
             }
         }
 
         .alert-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
             opacity: 0.8;
         }
 
-        /* ===================== FIXED TOP BAR (Exit / Back) ===================== */
-        /* Positioned relative to the viewport, not the card, so it stays put while the
-           card content scrolls underneath it - like a pinned navigation bar. */
         .fixed-top-bar {
             position: fixed;
             top: max(20px, env(safe-area-inset-top));
@@ -511,7 +496,7 @@
             display: flex;
             justify-content: center;
             z-index: 500;
-            pointer-events: none; /* the bar itself is just a centering shell */
+            pointer-events: none;
         }
 
         .fixed-top-bar-inner {
@@ -539,21 +524,31 @@
             border: none;
             border-radius: 999px;
             padding: 10px 18px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-main);
-            background: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.15);
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid rgba(255,255,255,0.18);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
             cursor: pointer;
-            pointer-events: auto; /* re-enable interaction on the button itself */
+            pointer-events: auto;
             transition: transform 0.15s ease, opacity 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .glass-exit-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
         }
 
         @media (prefers-color-scheme: dark) {
             .glass-exit-btn {
+                background: rgba(255,255,255,0.08);
                 box-shadow: 0 4px 16px rgba(0,0,0,0.3);
             }
         }
@@ -563,13 +558,11 @@
             opacity: 0.85;
         }
 
-        /* ===================== APPLE HIG REFINEMENTS FOR THE BUILDER ===================== */
-
-        /* Starting mode-choice big buttons (Play / Create) */
+        /* Mode choice layout enhancements */
         .mode-choice-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 8px;
         }
 
@@ -583,12 +576,37 @@
             cursor: pointer;
             transition: all 0.25s ease;
             display: flex;
-            flex-direction: column;
-            gap: 4px;
+            align-items: flex-start;
+            gap: 16px;
         }
 
         .mode-choice-btn:hover {
             background-color: var(--option-hover);
+        }
+
+        .mode-icon-container {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background-color: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            color: var(--apple-blue);
+        }
+
+        .mode-icon-container svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .mode-text-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .mode-choice-btn .mode-title {
@@ -605,8 +623,6 @@
             line-height: 1.4;
         }
 
-        /* HIG-style section headers: small, uppercase, secondary-colored, letter-spaced -
-           mirrors the section headers used throughout iOS Settings and grouped lists. */
         .section-header {
             text-align: left;
             font-size: 12px;
@@ -622,8 +638,6 @@
             margin-top: 28px;
         }
 
-        /* Text fields, restyled to read as a proper HIG text field: clear label above,
-           comfortable hit target, and a focus ring that mirrors the system focus state. */
         .field-label {
             text-align: left;
             font-size: 13px;
@@ -662,7 +676,6 @@
             min-height: 50px;
         }
 
-        /* Builder question cards (scrollable stack) */
         .builder-question-list {
             display: flex;
             flex-direction: column;
@@ -699,8 +712,6 @@
             background: transparent;
             border: none;
             color: var(--text-secondary);
-            font-size: 16px;
-            line-height: 1;
             cursor: pointer;
             width: 30px;
             height: 30px;
@@ -709,6 +720,13 @@
             justify-content: center;
             border-radius: 8px;
             transition: background-color 0.2s ease, color 0.2s ease;
+            padding: 0;
+        }
+
+        .builder-icon-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
         }
 
         .builder-icon-btn:hover {
@@ -744,9 +762,6 @@
             border-color: var(--apple-blue);
         }
 
-        /* Grouped-list styling for the answer rows: a single rounded container with
-           thin inset separators between rows, mirroring an iOS "Form" section, instead
-           of treating every answer as its own free-floating card. */
         .builder-options-group {
             border-radius: 12px;
             overflow: hidden;
@@ -774,8 +789,6 @@
             border: 2px solid var(--border-color);
             background-color: var(--bg-card);
             color: transparent;
-            font-size: 14px;
-            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -784,8 +797,15 @@
             padding: 0;
         }
 
+        .correct-toggle-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
         .correct-toggle-btn:hover {
             border-color: var(--success-green);
+            color: var(--success-green);
         }
 
         .correct-toggle-btn.is-correct {
@@ -824,12 +844,18 @@
             border: none;
             background: transparent;
             color: var(--text-tertiary);
-            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background-color 0.2s ease, color 0.2s ease;
+            padding: 0;
+        }
+
+        .remove-option-btn svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
         }
 
         .remove-option-btn:hover {
@@ -837,9 +863,6 @@
             color: var(--error-red);
         }
 
-        /* The "+" row that appears in the 3rd answer slot and can repeat indefinitely.
-           Styled as part of the same grouped list (a trailing row), per HIG conventions
-           for "Add Item" rows inside a Form/List (e.g. Add Reminder, Add Item rows). */
         .add-option-row {
             display: flex;
             align-items: center;
@@ -871,9 +894,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
             flex-shrink: 0;
+        }
+
+        .add-option-btn .plus-icon svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
         }
 
         .add-option-btn:hover .plus-icon {
@@ -902,6 +929,16 @@
             transition: all 0.2s ease;
             width: 100%;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .add-question-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
         }
 
         .add-question-btn:hover {
@@ -927,7 +964,6 @@
             text-align: left;
         }
 
-        /* MOBILE OPTIMIZATION */
         @media (max-width: 600px) {
             body {
                 align-items: flex-start;
@@ -944,7 +980,7 @@
                 margin-bottom: 16px;
             }
             h2 {
-                font-size: 20px;
+                font-size: 22px;
                 margin-bottom: 16px;
             }
             .option-btn {
@@ -958,49 +994,70 @@
 </head>
 <body>
 
-<!-- ===================== FIXED TOP BAR: Exit (player) ===================== -->
-<!-- position: fixed relative to the viewport, so it stays pinned in place and visible
-     while the quiz content scrolls underneath it. -->
 <div class="fixed-top-bar" id="exit-top-bar" style="display:none;">
     <div class="fixed-top-bar-inner">
-        <button class="glass-exit-btn" onclick="openExitModal()">Exit</button>
+        <button class="glass-exit-btn" onclick="openExitModal()">
+            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            Exit
+        </button>
     </div>
 </div>
 
-<!-- ===================== FIXED TOP BAR: Back (builder) ===================== -->
 <div class="fixed-top-bar" id="builder-back-top-bar" style="display:none;">
     <div class="fixed-top-bar-inner">
-        <button class="glass-exit-btn" onclick="openBuilderExitModal()">Back</button>
+        <button class="glass-exit-btn" onclick="openBuilderExitModal()">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Back
+        </button>
     </div>
 </div>
 
 <div class="quiz-container" id="main-container">
 
-    <!-- STARTING MODE SELECTOR: Play or Create -->
     <div id="mode-select-view" class="summary-card">
-        <h2>Quiz</h2>
-        <p>What would you like to do?</p>
+        <h2>Quiz Studio</h2>
+        <p>Select an option to start your workspace session.</p>
         <div class="mode-choice-grid">
             <button class="mode-choice-btn" onclick="goToPlayUpload()">
-                <span class="mode-title">▶︎ Play a Quiz</span>
-                <span class="mode-sub">Load an existing JSON quiz file and start answering.</span>
+                <div class="mode-icon-container">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="mode-text-container">
+                    <span class="mode-title">Play a Quiz</span>
+                    <span class="mode-sub">Load an existing JSON quiz file and start answering.</span>
+                </div>
             </button>
-            <button class="mode-choice-btn" onclick="goToBuilder()">
-                <span class="mode-title">✎ Create a Quiz</span>
-                <span class="mode-sub">Build your own questions and download them as a JSON file.</span>
+            <button class="mode-choice-btn" onclick="goToBuilderFresh()">
+                <div class="mode-icon-container">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </div>
+                <div class="mode-text-container">
+                    <span class="mode-title">Create New Quiz</span>
+                    <span class="mode-sub">Build a brand new quiz session with your own questions.</span>
+                </div>
+            </button>
+            <button class="mode-choice-btn" onclick="triggerBuilderUpload()">
+                <div class="mode-icon-container">
+                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                </div>
+                <div class="mode-text-container">
+                    <span class="mode-title">Edit Existing Quiz</span>
+                    <span class="mode-sub">Upload an existing JSON file to update or tweak questions.</span>
+                </div>
             </button>
         </div>
     </div>
 
-    <!-- PLAYER: FILE UPLOAD -->
     <div id="upload-view" class="summary-card" style="display: none;">
-        <h2>Quiz</h2>
+        <h2>Quiz Studio</h2>
         <p>Choose a quiz file to begin your study session.</p>
         <input type="file" id="file-selector" accept=".json" style="display:none;">
         <button class="next-btn" onclick="document.getElementById('file-selector').click()">Choose Quiz</button>
         <button class="cancel-text-btn" onclick="backToModeSelect()">Back</button>
         <div id="error-display" class="error-banner"></div>
     </div>
+
+    <input type="file" id="builder-file-selector" accept=".json" style="display:none;">
 
     <div id="config-view" class="summary-card" style="display: none;">
         <h2 id="config-quiz-name">Loading...</h2>
@@ -1039,10 +1096,8 @@
         <div class="review-area" id="review-list"></div>
     </div>
 
-    <!-- ===================== QUIZ BUILDER ===================== -->
     <div id="builder-view" style="display: none;">
-
-        <h2>Create a Quiz</h2>
+        <h2>Quiz Studio Builder</h2>
 
         <span class="section-header">Quiz Details</span>
         <label class="field-label" for="builder-quiz-name">Quiz Name</label>
@@ -1052,11 +1107,12 @@
         <textarea id="builder-quiz-desc" class="textarea-input" rows="2" placeholder="A short description of this quiz..."></textarea>
 
         <span class="section-header with-top-spacing">Questions</span>
-        <div class="builder-question-list" id="builder-question-list">
-            <!-- Question cards are inserted here dynamically -->
-        </div>
+        <div class="builder-question-list" id="builder-question-list"></div>
 
-        <button class="add-question-btn" onclick="addBuilderQuestion()">+ Add Question</button>
+        <button class="add-question-btn" onclick="addBuilderQuestion()">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add Question
+        </button>
 
         <div id="builder-error-display" class="error-banner"></div>
         <div id="builder-success-display" class="success-banner"></div>
@@ -1094,10 +1150,6 @@
 </div>
 
 <script>
-    /* ======================================================================
-       SHARED / PLAYER LOGIC (original functionality preserved)
-       ====================================================================== */
-
     let loadedQuizData = [];
     let quizData = []; 
     let selectedMode = 'seq'; 
@@ -1124,6 +1176,7 @@
     const displayNameEl = document.getElementById('display-name');
     const displayDescEl = document.getElementById('display-desc');
     const fileSelector = document.getElementById('file-selector');
+    const builderFileSelector = document.getElementById('builder-file-selector');
     const resultStatusEl = document.getElementById('result-status');
     const scoreCircleEl = document.getElementById('final-score');
     const errorDisplayEl = document.getElementById('error-display');
@@ -1131,11 +1184,9 @@
     const exitModalEl = document.getElementById('exit-modal');
     const mainContainerEl = document.getElementById('main-container');
 
-    // Fixed top bars (Exit for the player, Back for the builder)
     const exitTopBarEl = document.getElementById('exit-top-bar');
     const builderBackTopBarEl = document.getElementById('builder-back-top-bar');
 
-    // Helper to shuffle an array
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -1144,8 +1195,6 @@
         return array;
     }
 
-    // Centralizes which fixed top bar (if any) is visible, so every screen transition
-    // only needs to call this once instead of toggling both bars by hand.
     function setFixedTopBar(which) {
         exitTopBarEl.style.display = (which === 'exit') ? 'flex' : 'none';
         builderBackTopBarEl.style.display = (which === 'builder-back') ? 'flex' : 'none';
@@ -1206,8 +1255,6 @@
         localStorage.removeItem('active_quiz_session');
     }
 
-    /* ---------- MODE SELECTOR NAVIGATION ---------- */
-
     function goToPlayUpload() {
         modeSelectSection.style.display = 'none';
         mainContainerEl.classList.remove('builder-wide');
@@ -1215,16 +1262,19 @@
         uploadSection.style.display = 'block';
     }
 
-    function goToBuilder() {
+    function goToBuilderFresh() {
         modeSelectSection.style.display = 'none';
         mainContainerEl.classList.add('builder-wide');
         setFixedTopBar('builder-back');
         builderSection.style.display = 'block';
 
-        // If the builder has no questions yet, start with one empty card
         if (builderQuestions.length === 0) {
             addBuilderQuestion();
         }
+    }
+
+    function triggerBuilderUpload() {
+        builderFileSelector.click();
     }
 
     function backToModeSelect() {
@@ -1259,7 +1309,6 @@
                     if (!q.question) throw new Error(`Question at index ${idx} is missing the question text.`);
                     if (!q.options || !Array.isArray(q.options)) throw new Error(`Question "${q.question || idx}" is missing its options array.`);
 
-                    // Walk through the options and remember which one is correct
                     let mappedOptions = q.options.map((opt, oIdx) => {
                         let isCorrect = false;
                         let text = "";
@@ -1268,20 +1317,17 @@
                             text = opt.option;
                         } else {
                             text = opt;
-                            isCorrect = (oIdx === 0); // Default if there's no explicit 'correct' key
+                            isCorrect = (oIdx === 0);
                         }
                         return { text, isCorrect };
                     });
 
-                    // If no option is marked correct, treat the first one as correct
                     if (!mappedOptions.some(opt => opt.isCorrect)) {
                         mappedOptions[0].isCorrect = true;
                     }
 
-                    // SHUFFLE THE OPTIONS within each individual question
                     mappedOptions = shuffleArray(mappedOptions);
 
-                    // Find the new, post-shuffle index of the correct answer
                     const correctIndex = mappedOptions.findIndex(opt => opt.isCorrect);
                     const optionsText = mappedOptions.map(opt => opt.text);
 
@@ -1296,6 +1342,7 @@
                 document.getElementById('config-quiz-desc').innerText = quizMetadata.desc;
                 
                 uploadSection.style.display = 'none';
+                configSection.style.block = 'block';
                 configSection.style.display = 'block';
                 
                 selectMode('seq');
@@ -1303,8 +1350,75 @@
             } catch (err) {
                 errorDisplayEl.innerText = `Cannot Open File\n\n${err.message}`;
                 errorDisplayEl.style.display = 'block';
-                console.error("Quiz Parser Error:", err);
                 resetToUpload();
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    // EVENT LISTENER FOR LOADING AN EXISTING JSON INTO THE WORKSPACE BUILDER
+    builderFileSelector.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const rawData = JSON.parse(e.target.result);
+                if (!rawData.questions) {
+                    throw new Error("Missing structural 'questions' array inside the JSON payload.");
+                }
+
+                resetBuilder();
+
+                builderQuizNameEl.value = rawData.name || "Loaded Quiz File";
+                builderQuizDescEl.value = rawData.desc || "";
+
+                const questionsArray = Array.isArray(rawData.questions) ? rawData.questions : [rawData.questions];
+
+                builderQuestions = questionsArray.map((q) => {
+                    let mappedOptions = [];
+                    if (q.options && Array.isArray(q.options)) {
+                        mappedOptions = q.options.map((opt, oIdx) => {
+                            let text = "";
+                            let isCorrect = false;
+                            if (typeof opt === 'object') {
+                                text = opt.option || "";
+                                isCorrect = (opt.correct == 1 || opt.correct === true || opt.correct === 'true');
+                            } else {
+                                text = opt;
+                                isCorrect = (oIdx === 0);
+                            }
+                            return { id: makeBuilderId(), text, isCorrect };
+                        });
+                    }
+
+                    if (mappedOptions.length === 0) {
+                        mappedOptions = [
+                            { id: makeBuilderId(), text: '', isCorrect: true },
+                            { id: makeBuilderId(), text: '', isCorrect: false }
+                        ];
+                    } else if (!mappedOptions.some(o => o.isCorrect)) {
+                        mappedOptions[0].isCorrect = true;
+                    }
+
+                    return {
+                        id: makeBuilderId(),
+                        questionText: q.question || "",
+                        options: mappedOptions
+                    };
+                });
+
+                modeSelectSection.style.display = 'none';
+                mainContainerEl.classList.add('builder-wide');
+                setFixedTopBar('builder-back');
+                builderSection.style.display = 'block';
+                renderBuilderQuestions();
+
+            } catch (err) {
+                alert(`Import Failed: ${err.message}`);
+            } finally {
+                builderFileSelector.value = '';
             }
         };
         reader.readAsText(file);
@@ -1318,7 +1432,6 @@
 
     function startQuiz() {
         if (selectedMode === 'rnd') {
-            // Only the QUESTIONS get shuffled here - the answers were already shuffled on load
             quizData = shuffleArray([...loadedQuizData]);
         } else {
             quizData = [...loadedQuizData];
@@ -1526,7 +1639,6 @@
         });
     }
 
-    // MODAL MODULES (player exit)
     function openExitModal() {
         exitModalEl.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1559,12 +1671,7 @@
         scoreCircleEl.style.color = "var(--apple-blue)";
     }
 
-    /* ======================================================================
-       QUIZ BUILDER LOGIC
-       ====================================================================== */
-
-    // Each builder question looks like this:
-    // { id, questionText, options: [{ id, text, isCorrect }] }
+    /* QUIZ BUILDER CORE LOGIC */
     let builderQuestions = [];
     let builderIdCounter = 0;
 
@@ -1580,8 +1687,6 @@
         return 'b' + builderIdCounter;
     }
 
-    // Adds a new question card: starts with 2 empty answers by default,
-    // with the "+" control taking the 3rd slot until a third answer is added.
     function addBuilderQuestion() {
         const newQuestion = {
             id: makeBuilderId(),
@@ -1594,7 +1699,6 @@
         builderQuestions.push(newQuestion);
         renderBuilderQuestions();
 
-        // Scroll to the new card so the user sees it immediately
         requestAnimationFrame(() => {
             const card = document.getElementById('card-' + newQuestion.id);
             if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1616,14 +1720,11 @@
     function removeBuilderOption(qId, optId) {
         const question = builderQuestions.find(q => q.id === qId);
         if (!question) return;
-        // At least 2 answers must remain
         if (question.options.length <= 2) return;
 
         const wasCorrect = question.options.find(o => o.id === optId)?.isCorrect;
         question.options = question.options.filter(o => o.id !== optId);
 
-        // If the removed answer was the correct one, mark the first one correct
-        // so there's always a correct answer set.
         if (wasCorrect && !question.options.some(o => o.isCorrect)) {
             question.options[0].isCorrect = true;
         }
@@ -1649,9 +1750,6 @@
         if (option) option.text = value;
     }
 
-    // Rebuilds the entire builder UI from the current state.
-    // Since the number and order of questions/options is dynamic, it's simpler to
-    // rebuild everything than to patch it piece by piece.
     function renderBuilderQuestions() {
         builderQuestionListEl.innerHTML = '';
 
@@ -1660,7 +1758,6 @@
             card.className = 'builder-card';
             card.id = 'card-' + question.id;
 
-            // --- Card header ---
             const header = document.createElement('div');
             header.className = 'builder-card-header';
 
@@ -1669,11 +1766,10 @@
             title.innerText = `Question ${qIndex + 1}`;
             header.appendChild(title);
 
-            // Delete-question button (only shown when more than 1 question exists)
             if (builderQuestions.length > 1) {
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'builder-icon-btn';
-                removeBtn.innerText = '✕';
+                removeBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
                 removeBtn.title = 'Delete question';
                 removeBtn.onclick = () => removeBuilderQuestion(question.id);
                 header.appendChild(removeBtn);
@@ -1681,7 +1777,6 @@
 
             card.appendChild(header);
 
-            // --- Question text ---
             const qInput = document.createElement('textarea');
             qInput.className = 'builder-question-input editable-input';
             qInput.placeholder = 'Type the question...';
@@ -1693,8 +1788,6 @@
             };
             card.appendChild(qInput);
 
-            // --- Answers list, presented as a single grouped list (HIG "Form" section)
-            // with inset separators between rows, rather than separate floating cards. ---
             const optionsGroup = document.createElement('div');
             optionsGroup.className = 'builder-options-group';
 
@@ -1702,15 +1795,13 @@
                 const row = document.createElement('div');
                 row.className = 'builder-option-row';
 
-                // Correct-answer toggle (checkmark)
                 const correctBtn = document.createElement('button');
                 correctBtn.className = 'correct-toggle-btn' + (option.isCorrect ? ' is-correct' : '');
-                correctBtn.innerText = '✓';
+                correctBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
                 correctBtn.title = 'Mark as correct answer';
                 correctBtn.onclick = () => setBuilderCorrect(question.id, option.id);
                 row.appendChild(correctBtn);
 
-                // Answer text field
                 const optInput = document.createElement('input');
                 optInput.type = 'text';
                 optInput.className = 'builder-option-input editable-input';
@@ -1719,11 +1810,10 @@
                 optInput.oninput = (e) => updateBuilderOptionText(question.id, option.id, e.target.value);
                 row.appendChild(optInput);
 
-                // Remove answer (only shown when more than 2 answers exist)
                 if (question.options.length > 2) {
                     const removeOptBtn = document.createElement('button');
                     removeOptBtn.className = 'remove-option-btn';
-                    removeOptBtn.innerText = '✕';
+                    removeOptBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
                     removeOptBtn.title = 'Remove answer';
                     removeOptBtn.onclick = () => removeBuilderOption(question.id, option.id);
                     row.appendChild(removeOptBtn);
@@ -1732,8 +1822,6 @@
                 optionsGroup.appendChild(row);
             });
 
-            // --- "+" ROW: takes the 3rd answer slot, and stays as the trailing row of the
-            // grouped list after every addition - so any number of answers can be added. ---
             const addOptRow = document.createElement('div');
             addOptRow.className = 'add-option-row';
 
@@ -1744,7 +1832,7 @@
 
             const plusIcon = document.createElement('span');
             plusIcon.className = 'plus-icon';
-            plusIcon.innerText = '+';
+            plusIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
             addOptBtn.appendChild(plusIcon);
 
             const addOptLabel = document.createElement('span');
@@ -1756,7 +1844,6 @@
 
             card.appendChild(optionsGroup);
 
-            // --- Error message slot (e.g. empty question/answer at download time) ---
             const cardError = document.createElement('div');
             cardError.className = 'builder-card-error';
             cardError.id = 'card-error-' + question.id;
@@ -1766,19 +1853,15 @@
         });
     }
 
-    // Automatically grows a textarea's height to fit its content
     function autoGrow(el) {
         el.style.height = 'auto';
         el.style.height = (el.scrollHeight) + 'px';
     }
 
-    // --- VALIDATION + JSON EXPORT ---
-
     function validateBuilderQuiz() {
         let isValid = true;
         const errors = [];
 
-        // Clear any previous card-level error states
         builderQuestions.forEach(q => {
             const errEl = document.getElementById('card-error-' + q.id);
             if (errEl) {
@@ -1805,7 +1888,7 @@
             }
 
             if (!q.options.some(o => o.isCorrect && o.text && o.text.trim())) {
-                cardErrors.push('Mark a correct answer (✓ button) that has text.');
+                cardErrors.push('Mark a correct answer with custom textual context.');
             }
 
             if (cardErrors.length > 0) {
@@ -1824,7 +1907,7 @@
 
     function buildQuizJsonObject() {
         return {
-            name: builderQuizNameEl.value.trim() || 'Quiz',
+            name: builderQuizNameEl.value.trim() || 'Quiz Studio Workspace Session',
             desc: builderQuizDescEl.value.trim() || '',
             questions: builderQuestions.map(q => ({
                 question: q.questionText.trim(),
@@ -1845,9 +1928,8 @@
         const { isValid, errors } = validateBuilderQuiz();
 
         if (!isValid) {
-            builderErrorEl.innerText = `This quiz can't be saved yet:\n\n${errors.join('\n')}`;
+            builderErrorEl.innerText = `This quiz cannot be saved yet:\n\n${errors.join('\n')}`;
             builderErrorEl.style.display = 'block';
-            // Scroll to the first card showing an error
             const firstErrorEl = document.querySelector('.builder-card-error[style*="block"]');
             if (firstErrorEl) firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
@@ -1873,11 +1955,9 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        builderSuccessEl.innerText = 'Your quiz JSON file has started downloading.';
+        builderSuccessEl.innerText = 'Your quiz studio workspace file initialization has finalized and downloaded.';
         builderSuccessEl.style.display = 'block';
     }
-
-    // --- BUILDER EXIT MODAL ---
 
     function openBuilderExitModal() {
         builderExitModalEl.classList.add('active');
