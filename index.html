@@ -9,7 +9,7 @@
         :root {
             --bg-body: #f5f5f7;
             --bg-card: #ffffff;
-            --bg-alert: rgba(255, 255, 255, 0.45);
+            --bg-alert: rgba(255, 255, 255, 0.95); /* Növelt átlátszatlanság, hogy ne olvadjon be */
             --text-main: #1d1d1f;
             --text-secondary: #86868b;
             --apple-blue: #0071e3;
@@ -40,7 +40,7 @@
             :root {
                 --bg-body: #000000;
                 --bg-card: #1c1c1e;
-                --bg-alert: rgba(40, 40, 40, 0.55);
+                --bg-alert: rgba(35, 35, 35, 0.95); /* Növelt átlátszatlanság sötét módban is */
                 --text-main: #f5f5f7;
                 --text-secondary: #98989d;
                 --apple-blue: #0a84ff;
@@ -75,8 +75,22 @@
             min-height: 100dvh;
             margin: 0;
             padding: 16px;
+            box-sizing: border-box; 
             transition: background-color 0.3s ease, color 0.3s ease;
             -webkit-tap-highlight-color: transparent;
+            
+            /* Kijelölés letiltása a teljes weblapon */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Kijelölés engedélyezése csak a kérdésekre és válaszokra */
+        #question-text, 
+        .option-btn span, 
+        .review-question-text, 
+        .review-badge span {
+            -webkit-user-select: text;
+            user-select: text;
         }
 
         .quiz-container {
@@ -346,7 +360,7 @@
         
         p { color: var(--text-secondary); margin-bottom: 24px; }
 
-        /* --- iOS 26 LIQUID GLASS MODAL JAVÍTOTT ANIMÁCIÓVAL ÉS RÁDIUSSZAL --- */
+        /* --- TÖKÉLETESÍTETT iOS 26 MODAL ANIMÁCIÓ ÉS HARDVERES GYORSÍTÁS --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -360,13 +374,19 @@
             z-index: 9999;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            
+            /* Fade-out beállítás: az opacity animál, a visibility pedig megvárja a végét (0.15s késleltetés) */
+            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s;
             touch-action: none;
+            will-change: opacity; /* GPU optimalizáció */
         }
 
         .modal-overlay.active {
             opacity: 1;
             visibility: visible;
+            
+            /* Fade-in beállítás: a visibility AZONNAL megtörténik (0s), nincs akadás, csak az opacity épül fel */
+            transition: opacity 0.15s ease-out, visibility 0s linear 0s;
         }
 
         .apple-alert {
@@ -380,20 +400,16 @@
             border: 1px solid var(--alert-border);
             box-sizing: border-box;
             
-            transform: scale(1.15);
-            transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.25, 1);
-            pointer-events: none;
+            /* Hardveres gyorsítás kikényszerítése az akadozás ellen */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            will-change: opacity;
         }
 
         @media (prefers-color-scheme: dark) {
             .apple-alert {
                 box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
             }
-        }
-
-        .modal-overlay.active .apple-alert {
-            transform: scale(1);
-            pointer-events: auto;
         }
 
         .alert-content {
@@ -563,9 +579,9 @@
 </div>
 
 <script>
-    let loadedQuizData = []; // Ide töltjük be az eredeti fájlt
-    let quizData = []; // Ezt használjuk játék közben (lehet kevert)
-    let selectedMode = 'seq'; // Alapértelmezett mód
+    let loadedQuizData = [];
+    let quizData = []; 
+    let selectedMode = 'seq'; 
 
     let userAnswers = []; 
     let currentQuestionIndex = 0;
@@ -592,6 +608,15 @@
     const errorDisplayEl = document.getElementById('error-display');
     const reviewListEl = document.getElementById('review-list');
     const exitModalEl = document.getElementById('exit-modal');
+
+    // Segédfüggvény tömb keveréséhez
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
         loadProgressFromStorage();
@@ -667,24 +692,45 @@
                     if (!q.question) throw new Error(`Question at index ${idx} is missing the question text.`);
                     if (!q.options || !Array.isArray(q.options)) throw new Error(`Question "${q.question || idx}" is missing its options array.`);
 
-                    const correctIndex = q.options.findIndex(opt => opt.correct == 1 || opt.correct === true || opt.correct === 'true');
-                    const optionsText = q.options.map(opt => typeof opt === 'object' ? opt.option : opt);
+                    // Végigmegyünk az opciókon és elmentjük, hogy melyik a helyes
+                    let mappedOptions = q.options.map((opt, oIdx) => {
+                        let isCorrect = false;
+                        let text = "";
+                        if (typeof opt === 'object') {
+                            isCorrect = (opt.correct == 1 || opt.correct === true || opt.correct === 'true');
+                            text = opt.option;
+                        } else {
+                            text = opt;
+                            isCorrect = (oIdx === 0); // Alapértelmezés, ha nincs explicit 'correct' kulcs
+                        }
+                        return { text, isCorrect };
+                    });
+
+                    // Ha nincs helyes válasz megjelölve, az elsőt tekintjük annak
+                    if (!mappedOptions.some(opt => opt.isCorrect)) {
+                        mappedOptions[0].isCorrect = true;
+                    }
+
+                    // VÁLASZOK RANDOMIZÁLÁSA minden egyes kérdésen belül
+                    mappedOptions = shuffleArray(mappedOptions);
+
+                    // Megkeressük a helyes válasz új, keverés utáni indexét
+                    const correctIndex = mappedOptions.findIndex(opt => opt.isCorrect);
+                    const optionsText = mappedOptions.map(opt => opt.text);
 
                     return {
                         question: q.question,
                         options: optionsText,
-                        correct: correctIndex !== -1 ? correctIndex : 0 
+                        correct: correctIndex 
                     };
                 });
                 
-                // Váltás a konfigurációs nézetre
                 document.getElementById('config-quiz-name').innerText = quizMetadata.name;
                 document.getElementById('config-quiz-desc').innerText = quizMetadata.desc;
                 
                 uploadSection.style.display = 'none';
                 configSection.style.display = 'block';
                 
-                // Alaphelyzetbe állítjuk a kiválasztót
                 selectMode('seq');
                 
             } catch (err) {
@@ -697,25 +743,15 @@
         reader.readAsText(file);
     });
 
-    // Mód kiválasztása (Config View)
     function selectMode(mode) {
         selectedMode = mode;
         document.getElementById('btn-seq').classList.toggle('selected', mode === 'seq');
         document.getElementById('btn-rnd').classList.toggle('selected', mode === 'rnd');
     }
 
-    // Fisher-Yates keverés algoritmus
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    // Kvíz indítása a beállítások után
     function startQuiz() {
         if (selectedMode === 'rnd') {
+            // Itt csak a KÉRDÉSEKET keverjük, a válaszok már beolvasáskor meg lettek keverve
             quizData = shuffleArray([...loadedQuizData]);
         } else {
             quizData = [...loadedQuizData];
