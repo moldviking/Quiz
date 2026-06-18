@@ -9,7 +9,7 @@
         :root {
             --bg-body: #f5f5f7;
             --bg-card: #ffffff;
-            --bg-alert: rgba(255, 255, 255, 0.45); /* Erős üveghatás */
+            --bg-alert: rgba(255, 255, 255, 0.45);
             --text-main: #1d1d1f;
             --text-secondary: #86868b;
             --apple-blue: #0071e3;
@@ -29,7 +29,7 @@
             --error-text: #c5221f;
             
             --score-bg: #e1f0ff;
-            --overlay-bg: rgba(0, 0, 0, 0.15); /* Csak nagyon halvány sötétítés */
+            --overlay-bg: rgba(0, 0, 0, 0.15);
             --glass-bg: rgba(255,255,255,0.15);
             --glass-border: rgba(255,255,255,0.18);
             --glass-shadow: rgba(0,0,0,0.12);
@@ -238,6 +238,24 @@
             cursor: not-allowed;
         }
 
+        .cancel-text-btn {
+            background: transparent;
+            border: none;
+            color: var(--error-red);
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 16px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            width: 100%;
+            padding: 12px;
+            transition: opacity 0.2s;
+        }
+        
+        .cancel-text-btn:active {
+            opacity: 0.6;
+        }
+
         .summary-card {
             text-align: center;
         }
@@ -343,7 +361,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
-            touch-action: none; /* Letiltja a görgetést a háttérben */
+            touch-action: none;
         }
 
         .modal-overlay.active {
@@ -353,16 +371,15 @@
 
         .apple-alert {
             background: var(--bg-alert);
-            width: 340px; /* Picit szélesebb a nagy gombok miatt */
-            border-radius: 42px; /* Hatalmas rádiusz, hogy illeszkedjen a kapszulákhoz */
-            text-align: left; /* A referencia képen a szöveg balra zárt */
+            width: 340px;
+            border-radius: 42px;
+            text-align: left;
             box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
             backdrop-filter: blur(50px) saturate(200%);
             -webkit-backdrop-filter: blur(50px) saturate(200%);
             border: 1px solid var(--alert-border);
             box-sizing: border-box;
             
-            /* Sima CSS transition az akadozó @keyframes helyett */
             transform: scale(1.15);
             transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.25, 1);
             pointer-events: none;
@@ -374,10 +391,9 @@
             }
         }
 
-        /* Amikor megjelenik, a skálázás beáll a helyére */
         .modal-overlay.active .apple-alert {
             transform: scale(1);
-            pointer-events: auto; /* Csak az ablak interaktív */
+            pointer-events: auto;
         }
 
         .alert-content {
@@ -402,32 +418,30 @@
 
         .alert-buttons {
             display: flex;
-            gap: 12px; /* Nagyobb térköz a gombok között */
-            padding: 0 20px 20px 20px; /* A gombok külső íve így fut együtt az ablakéval */
+            gap: 12px;
+            padding: 0 20px 20px 20px;
         }
 
         .alert-btn {
             flex: 1;
-            padding: 16px 10px; /* Magasabb, hangsúlyosabb gombok */
+            padding: 16px 10px;
             font-size: 17px;
             font-weight: 600;
             cursor: pointer;
             -webkit-appearance: none;
             box-sizing: border-box;
-            border-radius: 9999px; /* Tökéletes kapszula forma */
+            border-radius: 9999px;
             border: none;
             transition: transform 0.15s ease, opacity 0.2s ease, background-color 0.2s ease;
         }
 
-        /* Teli kék gomb (Cancel) */
         .alert-btn.cancel-btn {
             background-color: var(--apple-blue);
             color: #ffffff;
         }
 
-        /* Üvegszerű másodlagos gomb (Exit - Destructive) */
         .alert-btn.destructive {
-            background-color: rgba(0, 0, 0, 0.08); /* Áttetsző réteg */
+            background-color: rgba(0, 0, 0, 0.08);
             color: var(--error-red);
         }
 
@@ -441,8 +455,6 @@
             transform: scale(0.96);
             opacity: 0.8;
         }
-        /* --- MODAL CSS VÉGE --- */
-
         
         .top-bar {
             display:flex;
@@ -498,6 +510,20 @@
         <div id="error-display" class="error-banner"></div>
     </div>
 
+    <div id="config-view" class="summary-card" style="display: none;">
+        <h2 id="config-quiz-name">Loading...</h2>
+        <p id="config-quiz-desc"></p>
+        
+        <p style="text-align: left; margin-bottom: 12px; font-weight: 600; color: var(--text-main);">Question Order</p>
+        <div class="options-container">
+            <button class="option-btn selected" id="btn-seq" onclick="selectMode('seq')">Sequential (Original)</button>
+            <button class="option-btn" id="btn-rnd" onclick="selectMode('rnd')">Randomized</button>
+        </div>
+        
+        <button class="next-btn" onclick="startQuiz()">Start Quiz</button>
+        <button class="cancel-text-btn" onclick="resetToUpload()">Cancel</button>
+    </div>
+
     <div id="quiz-game" style="display: none;">
         <div class="header-info">
             <div class="top-bar"><button class="glass-exit-btn" onclick="openExitModal()">Exit</button></div>
@@ -537,7 +563,10 @@
 </div>
 
 <script>
-    let quizData = [];
+    let loadedQuizData = []; // Ide töltjük be az eredeti fájlt
+    let quizData = []; // Ezt használjuk játék közben (lehet kevert)
+    let selectedMode = 'seq'; // Alapértelmezett mód
+
     let userAnswers = []; 
     let currentQuestionIndex = 0;
     let score = 0;
@@ -549,9 +578,12 @@
     const questionTextEl = document.getElementById('question-text');
     const optionsContainerEl = document.getElementById('options');
     const nextButtonEl = document.getElementById('next-button');
+    
     const uploadSection = document.getElementById('upload-view');
+    const configSection = document.getElementById('config-view');
     const gameSection = document.getElementById('quiz-game');
     const resultsSection = document.getElementById('quiz-results');
+    
     const displayNameEl = document.getElementById('display-name');
     const displayDescEl = document.getElementById('display-desc');
     const fileSelector = document.getElementById('file-selector');
@@ -597,6 +629,7 @@
                 displayDescEl.innerText = quizMetadata.desc;
                 
                 uploadSection.style.display = 'none';
+                configSection.style.display = 'none';
                 gameSection.style.display = 'block';
                 
                 restoreQuestionState();
@@ -628,12 +661,9 @@
                 quizMetadata.name = rawData.name || "Quiz";
                 quizMetadata.desc = rawData.desc || "";
 
-                displayNameEl.innerText = quizMetadata.name;
-                displayDescEl.innerText = quizMetadata.desc;
-
                 const questionsArray = Array.isArray(rawData.questions) ? rawData.questions : [rawData.questions];
 
-                quizData = questionsArray.map((q, idx) => {
+                loadedQuizData = questionsArray.map((q, idx) => {
                     if (!q.question) throw new Error(`Question at index ${idx} is missing the question text.`);
                     if (!q.options || !Array.isArray(q.options)) throw new Error(`Question "${q.question || idx}" is missing its options array.`);
 
@@ -647,13 +677,15 @@
                     };
                 });
                 
-                uploadSection.style.display = 'none';
-                gameSection.style.display = 'block';
+                // Váltás a konfigurációs nézetre
+                document.getElementById('config-quiz-name').innerText = quizMetadata.name;
+                document.getElementById('config-quiz-desc').innerText = quizMetadata.desc;
                 
-                currentQuestionIndex = 0;
-                score = 0;
-                userAnswers = [];
-                loadQuestion();
+                uploadSection.style.display = 'none';
+                configSection.style.display = 'block';
+                
+                // Alaphelyzetbe állítjuk a kiválasztót
+                selectMode('seq');
                 
             } catch (err) {
                 errorDisplayEl.innerText = `Cannot Open File\n\n${err.message}`;
@@ -664,6 +696,42 @@
         };
         reader.readAsText(file);
     });
+
+    // Mód kiválasztása (Config View)
+    function selectMode(mode) {
+        selectedMode = mode;
+        document.getElementById('btn-seq').classList.toggle('selected', mode === 'seq');
+        document.getElementById('btn-rnd').classList.toggle('selected', mode === 'rnd');
+    }
+
+    // Fisher-Yates keverés algoritmus
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Kvíz indítása a beállítások után
+    function startQuiz() {
+        if (selectedMode === 'rnd') {
+            quizData = shuffleArray([...loadedQuizData]);
+        } else {
+            quizData = [...loadedQuizData];
+        }
+
+        displayNameEl.innerText = quizMetadata.name;
+        displayDescEl.innerText = quizMetadata.desc;
+
+        configSection.style.display = 'none';
+        gameSection.style.display = 'block';
+
+        currentQuestionIndex = 0;
+        score = 0;
+        userAnswers = [];
+        loadQuestion();
+    }
 
     function loadQuestion() {
         selectedOptionIndex = null;
@@ -855,12 +923,12 @@
     // MODAL MODULOK
     function openExitModal() {
         exitModalEl.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Letiltja az oldal görgetését
+        document.body.style.overflow = 'hidden';
     }
 
     function closeExitModal() {
         exitModalEl.classList.remove('active');
-        document.body.style.overflow = ''; // Visszaállítja a görgetést
+        document.body.style.overflow = '';
     }
 
     function confirmExit() {
@@ -872,6 +940,7 @@
         clearStorage();
         resultsSection.style.display = 'none';
         gameSection.style.display = 'none';
+        configSection.style.display = 'none';
         uploadSection.style.display = 'block';
         fileSelector.value = '';
         userAnswers = [];
