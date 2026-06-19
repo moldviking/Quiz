@@ -11,8 +11,9 @@
     <style>
         /* LIGHT MODE (Default) */
         :root {
-            --bg-body: #F0F0F5;
+            --bg-body: #f2f2f6;
             --bg-card: #ffffff;
+            --bg-panel: #ffffff;
             --bg-alert: rgba(255, 255, 255, 0.95);
             --text-main: #1d1d1f;
             --text-secondary: #86868b;
@@ -22,7 +23,7 @@
             --alert-border: rgba(255, 255, 255, 0.4);
             
             --option-bg: #f5f5f7;
-            --option-hover: #e8e8ed;
+            --option-hover: #d1d1d5;
             --option-selected-bg: #e1f0ff;
             
             --success-green: #34c759;
@@ -46,6 +47,7 @@
             :root {
                 --bg-body: #000000;
                 --bg-card: #1A1A1C;
+                --bg-panel: #1c1c1e;
                 --bg-alert: rgba(35, 35, 35, 0.95);
                 --text-main: #f5f5f7;
                 --text-secondary: #98989d;
@@ -100,24 +102,11 @@
         }
 
         .quiz-container {
-            background: rgba(255,255,255,0.12);
-            backdrop-filter: blur(40px) saturate(180%);
-            -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid var(--glass-border);
             padding: 32px;
-            border-radius: 18px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             width: 100%;
             max-width: 600px;
             box-sizing: border-box;
-            transition: background-color 0.3s ease;
             position: relative; /* Fontos a sticky sávhoz */
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .quiz-container {
-                box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            }
         }
 
         .quiz-container.builder-wide {
@@ -165,7 +154,6 @@
 
 
         .header-info {
-            border-bottom: 1px solid var(--border-color);
             padding-bottom: 16px;
             margin-bottom: 24px;
         }
@@ -224,7 +212,7 @@
         #play-question-image {
             max-width: 100%;
             max-height: 250px;
-            border-radius: 12px;
+            border-radius: 18px;
             margin-bottom: 24px;
             object-fit: contain;
             display: none;
@@ -240,37 +228,90 @@
         .options-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 0;
             margin-bottom: 24px;
+            background-color: var(--bg-panel);
+            border-radius: 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            /* overflow: hidden SZÁNDÉKOSAN NINCS — az levágja az első/utolsó gomb sarkait */
+        }
+
+        /* Számozás a válaszok előtt */
+        .option-number {
+            flex-shrink: 0;
+            width: 22px;
+            text-align: right;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            line-height: 1.4;
+            letter-spacing: -0.2px;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .option-btn {
-            background-color: var(--option-bg);
+            background-color: transparent;
             color: var(--text-main);
+            /* 2px transparent border mindig jelen van, hogy layout ne ugorjon */
             border: 2px solid transparent;
-            padding: 16px;
-            border-radius: 12px;
+            padding: 12px 14px;
+            border-radius: 0;
             text-align: left;
             font-size: 15px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
             width: 100%;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             box-sizing: border-box;
+            position: relative;
+            /* Negatív margin: az aktív gomb 2px border-ja "lefed" 1px-t a szomszédból
+               minden egyes gombnál egységesen alkalmazzuk, így a layout stabil marad */
+            margin: -1px 0;
         }
 
-        .option-content-col {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-            flex: 1;
-            word-break: break-word;
+        /* Az első gomb ne húzódjon fel a container fölé */
+        .options-container .option-btn:first-child {
+            margin-top: 0;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+        .options-container .option-btn:last-child {
+            margin-bottom: 0;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        /* Elválasztó: a szám belső szélétől indul (padding 14 + szám 22 + gap 12 = 48px),
+           jobb oldal tükörszimmetrikusan 14px */
+        .option-btn:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 48px;
+            right: 14px;
+            bottom: 0;
+            height: 1px;
+            background-color: var(--separator);
+        }
+
+        .option-btn:hover:not(:disabled):not(:last-child)::after,
+        .option-btn:active:not(:disabled):not(:last-child)::after,
+        .option-btn.selected:not(:last-child)::after,
+        .option-btn.correct-state:not(:last-child)::after,
+        .option-btn.incorrect-state:not(:last-child)::after,
+        .option-btn.missed-state:not(:last-child)::after,
+        .option-btn:has(+ .option-btn:hover:not(:disabled))::after,
+        .option-btn:has(+ .option-btn:active:not(:disabled))::after,
+        .option-btn:has(+ .option-btn.selected)::after,
+        .option-btn:has(+ .option-btn.correct-state)::after,
+        .option-btn:has(+ .option-btn.incorrect-state)::after,
+        .option-btn:has(+ .option-btn.missed-state)::after {
+            display: none;
         }
 
         /* Right-aligned option image - Nagyobb méret, nincs zoom */
@@ -278,7 +319,7 @@
             flex-shrink: 0;
             width: 100px;
             height: 100px;
-            border-radius: 8px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -295,7 +336,7 @@
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            border-radius: 4px;
+            border-radius: 8px;
             pointer-events: none;
         }
 
@@ -306,20 +347,46 @@
         .option-btn.selected {
             border-color: var(--apple-blue);
             background-color: var(--option-selected-bg);
+            z-index: 2;
+        }
+
+        .multi-select-hint { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: -10px 0 14px 2px; display: flex; align-items: center; gap: 6px; }
+        .multi-select-hint svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
+
+        /* Used in player when an option was a correct answer the user did not pick (multi-select reveal) */
+        .option-btn.missed-state {
+            background-color: transparent !important;
+            color: var(--success-text) !important;
+            border-color: var(--success-green) !important;
+            cursor: default;
+            z-index: 2;
         }
 
         .option-btn.correct-state {
             background-color: var(--success-bg) !important;
             color: var(--success-text) !important;
-            border-color: transparent;
+            border-color: transparent !important;
             cursor: default;
+            z-index: 1;
+        }
+
+        /* User's chosen answer: keep apple-blue border, bg reflects correctness */
+        .option-btn.correct-state.was-chosen {
+            border-color: var(--apple-blue) !important;
+            z-index: 2;
         }
 
         .option-btn.incorrect-state {
             background-color: var(--error-bg) !important;
             color: var(--error-text) !important;
-            border-color: transparent;
+            border-color: transparent !important;
             cursor: default;
+            z-index: 1;
+        }
+
+        .option-btn.incorrect-state.was-chosen {
+            border-color: var(--apple-blue) !important;
+            z-index: 2;
         }
 
         .option-btn.dimmed-state {
@@ -345,7 +412,7 @@
             color: white;
             border: none;
             padding: 16px;
-            border-radius: 12px;
+            border-radius: 18px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -423,7 +490,7 @@
         .review-q-img {
             max-width: 100%;
             max-height: 150px;
-            border-radius: 8px;
+            border-radius: 14px;
             margin-bottom: 12px;
             object-fit: contain;
             border: 1px solid var(--border-color);
@@ -433,21 +500,57 @@
         .review-choices {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 0;
+            background-color: var(--bg-panel);
+            border-radius: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            overflow: hidden;
         }
 
         .review-badge {
             font-size: 14px;
             padding: 12px 16px;
-            border-radius: 10px;
+            border-radius: 0;
+            box-shadow: inset 0 0 0 0 transparent;
             font-weight: 500;
-            background-color: var(--option-bg);
+            background-color: transparent;
             color: var(--text-secondary);
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
             gap: 16px;
+            position: relative;
+        }
+
+        .review-badge:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 1px;
+            background-color: var(--separator);
+        }
+
+        .review-badge.correct-review:not(:last-child)::after,
+        .review-badge.incorrect-review:not(:last-child)::after,
+        .review-choices .review-badge:has(+ .review-badge.correct-review)::after,
+        .review-choices .review-badge:has(+ .review-badge.incorrect-review)::after {
+            display: none;
+        }
+
+        .review-choices .review-badge:first-child {
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+        .review-choices .review-badge:last-child {
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 14px;
+        }
+        .review-choices .review-badge.correct-review,
+        .review-choices .review-badge.incorrect-review {
+            z-index: 1;
         }
 
         .review-badge-text-col {
@@ -463,9 +566,17 @@
             color: var(--success-text);
         }
 
+        .review-badge.correct-review.was-chosen {
+            box-shadow: inset 0 0 0 2px var(--apple-blue);
+        }
+
         .review-badge.incorrect-review {
             background-color: var(--error-bg);
             color: var(--error-text);
+        }
+
+        .review-badge.incorrect-review.was-chosen {
+            box-shadow: inset 0 0 0 2px var(--apple-blue);
         }
 
         .review-meta {
@@ -479,7 +590,7 @@
             background-color: var(--error-bg);
             color: var(--error-red);
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 14px;
             font-size: 13px;
             font-weight: 500;
             margin-top: 16px;
@@ -515,7 +626,7 @@
         .apple-alert {
             background: var(--bg-alert);
             width: 340px;
-            border-radius: 24px;
+            border-radius: 28px;
             text-align: left;
             box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
             backdrop-filter: blur(50px) saturate(200%);
@@ -536,7 +647,7 @@
         .alert-message { font-size: 14px; font-weight: 400; margin: 0; color: var(--text-main); line-height: 1.4; }
 
         .alert-buttons { display: flex; gap: 12px; padding: 0 20px 20px 20px; }
-        .alert-btn { flex: 1; padding: 12px 10px; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 12px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
+        .alert-btn { flex: 1; padding: 12px 10px; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 16px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
         .alert-btn.cancel-btn { background-color: var(--apple-blue); color: #ffffff; }
         .alert-btn.destructive { background-color: rgba(0, 0, 0, 0.05); color: var(--error-red); }
         @media (prefers-color-scheme: dark) { .alert-btn.destructive { background-color: rgba(255, 255, 255, 0.1); } }
@@ -562,7 +673,7 @@
         .lightbox-img {
             max-width: 90vw;
             max-height: 90vh;
-            border-radius: 12px;
+            border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             object-fit: contain;
             transform: scale(0.95);
@@ -592,12 +703,12 @@
         .mode-choice-grid { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
         .mode-choice-btn {
             background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; padding: 20px;
-            border-radius: 14px; text-align: left; cursor: pointer; transition: all 0.25s ease;
+            border-radius: 20px; text-align: left; cursor: pointer; transition: all 0.25s ease;
             display: flex; align-items: flex-start; gap: 16px;
         }
         .mode-choice-btn:hover { background-color: var(--option-hover); }
         .mode-icon-container {
-            flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background-color: var(--bg-card);
+            flex-shrink: 0; width: 40px; height: 40px; border-radius: 14px; background-color: var(--bg-card);
             display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); color: var(--apple-blue);
         }
         .mode-icon-container svg { width: 20px; height: 20px; fill: currentColor; }
@@ -611,7 +722,7 @@
 
         .text-input, .textarea-input {
             width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main);
-            border: 2px solid transparent; border-radius: 12px; padding: 14px 16px; font-size: 15px;
+            border: 2px solid transparent; border-radius: 14px; padding: 14px 16px; font-size: 15px;
             font-family: inherit; line-height: 1.4; margin-bottom: 20px; transition: border-color 0.2s ease, background-color 0.2s ease;
         }
         .text-input::placeholder, .textarea-input::placeholder { color: var(--text-tertiary); }
@@ -619,39 +730,63 @@
         .textarea-input { resize: vertical; min-height: 50px; }
 
         .builder-question-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
-        .builder-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; text-align: left; box-sizing: border-box; transition: border-color 0.2s ease; }
-        .builder-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .builder-card { padding: 20px 0; text-align: left; box-sizing: border-box; border-bottom: 1px solid var(--border-color); }
+        .builder-card:last-child { border-bottom: none; }
+        .builder-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; }
         .builder-card-title { font-size: 12px; font-weight: 700; color: var(--apple-blue); text-transform: uppercase; letter-spacing: 0.6px; }
+        .builder-card-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        /* Question type toggle (Single / Multiple choice) */
+        .qtype-toggle { display: flex; background-color: var(--option-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 2px; gap: 2px; }
+        .qtype-toggle-btn {
+            border: none; background: transparent; color: var(--text-secondary); font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.3px; padding: 6px 10px; border-radius: 10px; cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+        .qtype-toggle-btn.active { background-color: var(--apple-blue); color: #ffffff; }
+        .qtype-toggle-btn:not(.active):hover { background-color: var(--option-hover); color: var(--text-main); }
+
+        .qtype-hint { font-size: 12px; color: var(--text-secondary); margin: -8px 0 12px 2px; line-height: 1.4; }
 
         .builder-icon-btn {
             background: transparent; border: none; color: var(--text-secondary); cursor: pointer;
             width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-            border-radius: 8px; transition: background-color 0.2s ease, color 0.2s ease; padding: 0;
+            border-radius: 12px; transition: background-color 0.2s ease, color 0.2s ease; padding: 0;
         }
         .builder-icon-btn svg { width: 14px; height: 14px; fill: currentColor; }
         .builder-icon-btn:hover { background-color: var(--option-hover); color: var(--error-red); }
 
         .builder-question-input {
             width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main);
-            border: 2px solid transparent; border-radius: 12px; padding: 14px 16px; font-size: 15px; font-weight: 600;
+            border: 2px solid transparent; border-radius: 14px; padding: 14px 16px; font-size: 15px; font-weight: 600;
             font-family: inherit; line-height: 1.4; margin-bottom: 14px; resize: vertical; min-height: 24px; transition: border-color 0.2s ease;
         }
         .builder-question-input::placeholder { color: var(--text-tertiary); font-weight: 400; }
         .builder-question-input:focus { outline: none; border-color: var(--apple-blue); }
 
-        .builder-options-group { border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
-        .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: var(--option-bg); border-bottom: 1px solid var(--separator); }
-        .builder-option-row:last-child { border-bottom: none; }
+        .builder-options-group { border-radius: 16px; overflow: hidden; background-color: var(--bg-panel); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: transparent; position: relative; }
+        .builder-option-row:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 1px;
+            background-color: var(--separator);
+        }
 
         .correct-toggle-btn {
             flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border-color);
-            background-color: var(--bg-card); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0;
+            background-color: var(--bg-panel); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0;
         }
         .correct-toggle-btn svg { width: 14px; height: 14px; fill: currentColor; }
         .correct-toggle-btn:hover { border-color: var(--success-green); color: var(--success-green); }
         .correct-toggle-btn.is-correct { background-color: var(--success-green); border-color: var(--success-green); color: #ffffff; }
+        /* Multiple-choice rendering: square checkbox instead of round radio */
+        .correct-toggle-btn.is-checkbox { border-radius: 10px; }
 
-        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 8px; padding: 10px 8px; font-size: 15px; font-family: inherit; }
+        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 10px 8px; font-size: 15px; font-family: inherit; }
         .builder-option-input::placeholder { color: var(--text-tertiary); }
         .builder-option-input:focus { outline: none; background-color: var(--option-hover); }
 
@@ -668,7 +803,7 @@
         .builder-card-error { font-size: 12px; color: var(--error-red); font-weight: 500; margin-top: 12px; display: none; line-height: 1.4; }
 
         .img-upload-btn {
-            flex-shrink: 0; width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; color: var(--text-tertiary);
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent; color: var(--text-tertiary);
             cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s ease, color 0.2s ease; padding: 0; position: relative;
         }
         .img-upload-btn svg { width: 16px; height: 16px; fill: currentColor; }
@@ -688,7 +823,7 @@
         }
         .img-modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
         .img-modal-box {
-            background: var(--bg-alert); width: 340px; border-radius: 24px; text-align: left;
+            background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left;
             box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
             backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
             border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px;
@@ -698,7 +833,7 @@
         .img-modal-sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px 0; line-height: 1.4; }
 
         .img-preview-area {
-            width: 100%; height: 140px; border-radius: 12px; border: 2px dashed var(--border-color);
+            width: 100%; height: 140px; border-radius: 18px; border: 2px dashed var(--border-color);
             display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 14px;
             background-color: var(--option-bg); cursor: pointer; transition: all 0.2s ease;
         }
@@ -709,7 +844,7 @@
         .img-preview-placeholder span { font-size: 13px; font-weight: 500; }
 
         .img-modal-actions { display: flex; gap: 10px; margin-top: 4px; }
-        .img-modal-btn { flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 600; cursor: pointer; -webkit-appearance: none; box-sizing: border-box; border-radius: 12px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
+        .img-modal-btn { flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 600; cursor: pointer; -webkit-appearance: none; box-sizing: border-box; border-radius: 16px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
         .img-modal-btn.primary { background-color: var(--apple-blue); color: #ffffff; }
         .img-modal-btn.secondary { background-color: rgba(0,0,0,0.05); color: var(--text-main); }
         .img-modal-btn.danger { background-color: rgba(0,0,0,0.05); color: var(--error-red); }
@@ -719,14 +854,14 @@
 
         .add-question-btn {
             background-color: var(--option-bg); color: var(--apple-blue); border: 2px dashed var(--border-color);
-            padding: 16px; border-radius: 14px; text-align: center; font-size: 15px; font-weight: 600; cursor: pointer;
+            padding: 16px; border-radius: 20px; text-align: center; font-size: 15px; font-weight: 600; cursor: pointer;
             transition: all 0.2s ease; width: 100%; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .add-question-btn svg { width: 14px; height: 14px; fill: currentColor; }
         .add-question-btn:hover { background-color: var(--option-hover); border-color: var(--apple-blue); }
 
         .builder-actions { display: flex; flex-direction: column; gap: 10px; }
-        .success-banner { background-color: var(--success-bg); color: var(--success-text); padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-top: 16px; display: none; text-align: left; }
+        .success-banner { background-color: var(--success-bg); color: var(--success-text); padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 500; margin-top: 16px; display: none; text-align: left; }
 
         @media (max-width: 600px) {
             body { align-items: flex-start; padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px; }
@@ -824,6 +959,11 @@
         <h2 id="question-text">Loading...</h2>
         
         <img id="play-question-image" src="" alt="Question Image" title="Nagyításhoz kattints ide" />
+
+        <p class="multi-select-hint" id="multi-select-hint" style="display:none;">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Select all answers that apply
+        </p>
         
         <div class="options-container" id="options"></div>
         <button class="next-btn" id="next-button" disabled onclick="handleMainAction()">Check</button>
@@ -931,13 +1071,14 @@
     let userAnswers = []; 
     let currentQuestionIndex = 0;
     let score = 0;
-    let selectedOptionIndex = null;
+    let selectedOptionIndexes = []; // array of selected option indexes (single-choice holds at most 1)
     let isQuestionReviewed = false;
     let quizMetadata = { name: "Quiz", desc: "" };
 
     const progressEl = document.getElementById('progress');
     const questionTextEl = document.getElementById('question-text');
     const playQuestionImgEl = document.getElementById('play-question-image');
+    const multiSelectHintEl = document.getElementById('multi-select-hint');
     const optionsContainerEl = document.getElementById('options');
     const nextButtonEl = document.getElementById('next-button');
     
@@ -1012,7 +1153,7 @@
             userAnswers,
             currentQuestionIndex,
             score,
-            selectedOptionIndex,
+            selectedOptionIndexes,
             isQuestionReviewed,
             quizMetadata
         };
@@ -1030,7 +1171,14 @@
             userAnswers = state.userAnswers || [];
             currentQuestionIndex = state.currentQuestionIndex || 0;
             score = state.score || 0;
-            selectedOptionIndex = state.selectedOptionIndex;
+            // Backward compatible with older sessions that stored a single selectedOptionIndex.
+            if (Array.isArray(state.selectedOptionIndexes)) {
+                selectedOptionIndexes = state.selectedOptionIndexes;
+            } else if (typeof state.selectedOptionIndex === 'number') {
+                selectedOptionIndexes = [state.selectedOptionIndex];
+            } else {
+                selectedOptionIndexes = [];
+            }
             isQuestionReviewed = state.isQuestionReviewed || false;
             quizMetadata = state.quizMetadata || { name: "Quiz", desc: "" };
 
@@ -1146,14 +1294,25 @@
 
                     mappedOptions = shuffleArray(mappedOptions);
 
-                    const correctIndex = mappedOptions.findIndex(opt => opt.isCorrect);
+                    // Determine question type: explicit field wins, otherwise infer from
+                    // how many correct answers are marked (more than 1 => multiple).
+                    const correctCount = mappedOptions.filter(opt => opt.isCorrect).length;
+                    let questionType = (q.questionType === 'multiple' || q.questionType === 'single')
+                        ? q.questionType
+                        : (correctCount > 1 ? 'multiple' : 'single');
+
+                    const correctIndexes = mappedOptions
+                        .map((opt, i) => opt.isCorrect ? i : -1)
+                        .filter(i => i !== -1);
+
                     const optionsData = mappedOptions.map(opt => ({text: opt.text, image: opt.image}));
 
                     return {
                         question: q.question,
                         questionImage: q.questionImage || "",
+                        questionType,
                         options: optionsData,
-                        correct: correctIndex 
+                        correctIndexes
                     };
                 });
                 
@@ -1221,10 +1380,16 @@
                         mappedOptions[0].isCorrect = true;
                     }
 
+                    const correctCount = mappedOptions.filter(o => o.isCorrect).length;
+                    const questionType = (q.questionType === 'multiple' || q.questionType === 'single')
+                        ? q.questionType
+                        : (correctCount > 1 ? 'multiple' : 'single');
+
                     return {
                         id: makeBuilderId(),
                         questionText: q.question || "",
                         questionImage: q.questionImage || "",
+                        questionType,
                         options: mappedOptions
                     };
                 });
@@ -1274,7 +1439,7 @@
     }
 
     function loadQuestion() {
-        selectedOptionIndex = null;
+        selectedOptionIndexes = [];
         isQuestionReviewed = false;
         nextButtonEl.disabled = true;
         nextButtonEl.innerText = "Check";
@@ -1286,34 +1451,36 @@
     function restoreQuestionState() {
         buildOptionsDOM();
 
+        const currentData = quizData[currentQuestionIndex];
+        const isMultiple = currentData.questionType === 'multiple';
+        const correctIndexes = currentData.correctIndexes || [];
+
         if (isQuestionReviewed) {
-            const correctIdx = quizData[currentQuestionIndex].correct;
             const buttons = optionsContainerEl.querySelectorAll('.option-btn');
             buttons.forEach((btn, idx) => {
                 btn.disabled = true;
-                if (idx === correctIdx) {
+                const wasChosen = selectedOptionIndexes.includes(idx);
+                const isCorrectOption = correctIndexes.includes(idx);
+
+                if (isCorrectOption) {
                     btn.classList.add('correct-state');
-                } else if (idx === selectedOptionIndex) {
+                } else if (wasChosen && !isCorrectOption) {
                     btn.classList.add('incorrect-state');
                 } else {
                     btn.classList.add('dimmed-state');
                 }
-                if (idx === selectedOptionIndex) {
-                    const metaSpan = document.createElement('span');
-                    metaSpan.className = 'btn-meta';
-                    metaSpan.innerText = "Your Choice";
-                    
-                    const contentCol = btn.querySelector('.option-content-col');
-                    if(contentCol) contentCol.appendChild(metaSpan);
+
+                if (wasChosen) {
+                    btn.classList.add('was-chosen');
                 }
             });
             nextButtonEl.disabled = false;
             nextButtonEl.innerText = currentQuestionIndex === quizData.length - 1 ? "Done" : "Next";
-        } else if (selectedOptionIndex !== null) {
+        } else if (selectedOptionIndexes.length > 0) {
             const buttons = optionsContainerEl.querySelectorAll('.option-btn');
-            if(buttons[selectedOptionIndex]) {
-                buttons[selectedOptionIndex].classList.add('selected');
-            }
+            selectedOptionIndexes.forEach(i => {
+                if (buttons[i]) buttons[i].classList.add('selected');
+            });
             nextButtonEl.disabled = false;
             nextButtonEl.innerText = "Check";
         }
@@ -1321,6 +1488,7 @@
 
     function buildOptionsDOM() {
         const currentData = quizData[currentQuestionIndex];
+        const isMultiple = currentData.questionType === 'multiple';
         progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
         questionTextEl.innerText = currentData.question;
         
@@ -1331,11 +1499,21 @@
             playQuestionImgEl.style.display = 'none';
             playQuestionImgEl.src = '';
         }
+
+        if (multiSelectHintEl) {
+            multiSelectHintEl.style.display = isMultiple ? 'flex' : 'none';
+        }
         
         optionsContainerEl.innerHTML = '';
         currentData.options.forEach((option, index) => {
             const button = document.createElement('button');
             button.classList.add('option-btn');
+
+            // Halvány sorszám
+            const numEl = document.createElement('span');
+            numEl.className = 'option-number';
+            numEl.innerText = index + 1;
+            button.appendChild(numEl);
 
             const contentCol = document.createElement('div');
             contentCol.classList.add('option-content-col');
@@ -1368,46 +1546,66 @@
     function selectOption(index) {
         if (isQuestionReviewed) return;
 
-        selectedOptionIndex = index;
+        const currentData = quizData[currentQuestionIndex];
+        const isMultiple = currentData.questionType === 'multiple';
         const buttons = optionsContainerEl.querySelectorAll('.option-btn');
-        buttons.forEach((btn, idx) => {
-            if(idx === index) btn.classList.add('selected');
-            else btn.classList.remove('selected');
-        });
-        nextButtonEl.disabled = false;
+
+        if (isMultiple) {
+            const pos = selectedOptionIndexes.indexOf(index);
+            if (pos === -1) {
+                selectedOptionIndexes.push(index);
+            } else {
+                selectedOptionIndexes.splice(pos, 1);
+            }
+            buttons.forEach((btn, idx) => {
+                btn.classList.toggle('selected', selectedOptionIndexes.includes(idx));
+            });
+            nextButtonEl.disabled = selectedOptionIndexes.length === 0;
+        } else {
+            selectedOptionIndexes = [index];
+            buttons.forEach((btn, idx) => {
+                btn.classList.toggle('selected', idx === index);
+            });
+            nextButtonEl.disabled = false;
+        }
+
         saveProgressToStorage();
     }
 
     function handleMainAction() {
         if (!isQuestionReviewed) {
             isQuestionReviewed = true;
-            userAnswers.push(selectedOptionIndex);
-            
-            const correctIdx = quizData[currentQuestionIndex].correct;
-            if (selectedOptionIndex === correctIdx) {
+            const chosen = [...selectedOptionIndexes].sort((a, b) => a - b);
+            userAnswers.push(chosen);
+
+            const currentData = quizData[currentQuestionIndex];
+            const isMultiple = currentData.questionType === 'multiple';
+            const correctIndexes = [...(currentData.correctIndexes || [])].sort((a, b) => a - b);
+
+            const isFullyCorrect = chosen.length === correctIndexes.length &&
+                chosen.every((v, i) => v === correctIndexes[i]);
+            if (isFullyCorrect) {
                 score++;
             }
 
             const buttons = optionsContainerEl.querySelectorAll('.option-btn');
             buttons.forEach((btn, idx) => {
                 btn.classList.remove('selected');
-                btn.disabled = true; 
-                
-                if (idx === correctIdx) {
+                btn.disabled = true;
+
+                const wasChosen = chosen.includes(idx);
+                const isCorrectOption = correctIndexes.includes(idx);
+
+                if (isCorrectOption) {
                     btn.classList.add('correct-state');
-                } else if (idx === selectedOptionIndex) {
+                } else if (wasChosen && !isCorrectOption) {
                     btn.classList.add('incorrect-state');
                 } else {
-                    btn.classList.add('dimmed-state'); 
+                    btn.classList.add('dimmed-state');
                 }
 
-                if (idx === selectedOptionIndex) {
-                    const metaSpan = document.createElement('span');
-                    metaSpan.className = 'btn-meta';
-                    metaSpan.innerText = "Your Choice";
-                    
-                    const contentCol = btn.querySelector('.option-content-col');
-                    if (contentCol) contentCol.appendChild(metaSpan);
+                if (wasChosen) {
+                    btn.classList.add('was-chosen');
                 }
             });
 
@@ -1446,8 +1644,8 @@
 
         reviewListEl.innerHTML = '';
         quizData.forEach((data, qIdx) => {
-            const chosenIdx = userAnswers[qIdx];
-            const correctIdx = data.correct;
+            const chosenIndexes = Array.isArray(userAnswers[qIdx]) ? userAnswers[qIdx] : (userAnswers[qIdx] != null ? [userAnswers[qIdx]] : []);
+            const correctIndexes = data.correctIndexes || [];
 
             const itemDiv = document.createElement('div');
             itemDiv.className = 'review-item';
@@ -1479,19 +1677,15 @@
                 textSpan.innerText = option.text;
                 textCol.appendChild(textSpan);
 
-                if (oIdx === chosenIdx) {
-                    const metaSpan = document.createElement('span');
-                    metaSpan.className = 'review-meta';
-                    metaSpan.innerText = "Your Choice";
-                    textCol.appendChild(metaSpan);
-                }
+                const wasChosen = chosenIndexes.includes(oIdx);
+                const isCorrectOption = correctIndexes.includes(oIdx);
 
                 badge.appendChild(textCol);
 
                 if (option.image) {
                     const imgWrap = document.createElement('div');
                     imgWrap.className = 'option-img-wrap';
-                    imgWrap.style.width = '70px'; // Kis összefoglalóhoz elég egy picivel kisebb is
+                    imgWrap.style.width = '70px';
                     imgWrap.style.height = '70px';
                     
                     const optImg = document.createElement('img');
@@ -1502,10 +1696,14 @@
                     badge.appendChild(imgWrap);
                 }
 
-                if (oIdx === correctIdx) {
+                if (isCorrectOption) {
                     badge.classList.add('correct-review');
-                } else if (oIdx === chosenIdx && chosenIdx !== correctIdx) {
+                } else if (wasChosen && !isCorrectOption) {
                     badge.classList.add('incorrect-review');
+                }
+
+                if (wasChosen) {
+                    badge.classList.add('was-chosen');
                 }
 
                 choicesDiv.appendChild(badge);
@@ -1578,6 +1776,12 @@
         try {
             const state = JSON.parse(stateStr);
             builderQuestions = state.questions || [];
+            builderQuestions.forEach(q => {
+                if (q.questionType !== 'multiple' && q.questionType !== 'single') {
+                    const correctCount = (q.options || []).filter(o => o.isCorrect).length;
+                    q.questionType = correctCount > 1 ? 'multiple' : 'single';
+                }
+            });
             builderIdCounter = state.idCounter || 0;
             builderQuizNameEl.value = state.name || '';
             builderQuizDescEl.value = state.desc || '';
@@ -1599,6 +1803,7 @@
             id: makeBuilderId(),
             questionText: '',
             questionImage: '',
+            questionType: 'single',
             options: [
                 { id: makeBuilderId(), text: '', isCorrect: true, image: '' },
                 { id: makeBuilderId(), text: '', isCorrect: false, image: '' }
@@ -1646,7 +1851,38 @@
     function setBuilderCorrect(qId, optId) {
         const question = builderQuestions.find(q => q.id === qId);
         if (!question) return;
-        question.options.forEach(o => { o.isCorrect = (o.id === optId); });
+
+        if (question.questionType === 'multiple') {
+            // Checkbox behavior: toggle this option, but keep at least one correct answer.
+            const option = question.options.find(o => o.id === optId);
+            if (!option) return;
+            const correctCount = question.options.filter(o => o.isCorrect).length;
+            if (option.isCorrect && correctCount <= 1) return; // keep at least 1 correct
+            option.isCorrect = !option.isCorrect;
+        } else {
+            // Radio behavior: exactly one correct answer.
+            question.options.forEach(o => { o.isCorrect = (o.id === optId); });
+        }
+        renderBuilderQuestions();
+        saveBuilderState();
+    }
+
+    function setBuilderQuestionType(qId, type) {
+        const question = builderQuestions.find(q => q.id === qId);
+        if (!question) return;
+        if (question.questionType === type) return;
+
+        question.questionType = type;
+
+        if (type === 'single') {
+            // Collapse to a single correct answer (keep the first one that was marked correct).
+            const firstCorrect = question.options.find(o => o.isCorrect);
+            question.options.forEach(o => { o.isCorrect = (o === firstCorrect); });
+            if (!question.options.some(o => o.isCorrect) && question.options.length > 0) {
+                question.options[0].isCorrect = true;
+            }
+        }
+
         renderBuilderQuestions();
         saveBuilderState();
     }
@@ -1676,10 +1912,37 @@
             const header = document.createElement('div');
             header.className = 'builder-card-header';
 
+            const headerLeft = document.createElement('div');
+            headerLeft.className = 'builder-card-header-left';
+
             const title = document.createElement('span');
             title.className = 'builder-card-title';
             title.innerText = `Question ${qIndex + 1}`;
-            header.appendChild(title);
+            headerLeft.appendChild(title);
+
+            const qType = question.questionType === 'multiple' ? 'multiple' : 'single';
+
+            const typeToggle = document.createElement('div');
+            typeToggle.className = 'qtype-toggle';
+
+            const singleBtn = document.createElement('button');
+            singleBtn.type = 'button';
+            singleBtn.className = 'qtype-toggle-btn' + (qType === 'single' ? ' active' : '');
+            singleBtn.innerText = 'Single';
+            singleBtn.title = 'Single choice: exactly one correct answer';
+            singleBtn.onclick = () => setBuilderQuestionType(question.id, 'single');
+            typeToggle.appendChild(singleBtn);
+
+            const multiBtn = document.createElement('button');
+            multiBtn.type = 'button';
+            multiBtn.className = 'qtype-toggle-btn' + (qType === 'multiple' ? ' active' : '');
+            multiBtn.innerText = 'Multiple';
+            multiBtn.title = 'Multiple choice: one or more correct answers';
+            multiBtn.onclick = () => setBuilderQuestionType(question.id, 'multiple');
+            typeToggle.appendChild(multiBtn);
+
+            headerLeft.appendChild(typeToggle);
+            header.appendChild(headerLeft);
 
             if (builderQuestions.length > 1) {
                 const removeBtn = document.createElement('button');
@@ -1691,6 +1954,13 @@
             }
 
             card.appendChild(header);
+
+            if (qType === 'multiple') {
+                const hint = document.createElement('div');
+                hint.className = 'qtype-hint';
+                hint.innerText = 'Mark every correct answer. Players must select all of them to get this question right.';
+                card.appendChild(hint);
+            }
 
             const qRow = document.createElement('div');
             qRow.className = 'question-input-row';
@@ -1726,9 +1996,9 @@
                 row.className = 'builder-option-row';
 
                 const correctBtn = document.createElement('button');
-                correctBtn.className = 'correct-toggle-btn' + (option.isCorrect ? ' is-correct' : '');
+                correctBtn.className = 'correct-toggle-btn' + (option.isCorrect ? ' is-correct' : '') + (qType === 'multiple' ? ' is-checkbox' : '');
                 correctBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
-                correctBtn.title = 'Mark as correct answer';
+                correctBtn.title = qType === 'multiple' ? 'Toggle as a correct answer' : 'Mark as the correct answer';
                 correctBtn.onclick = () => setBuilderCorrect(question.id, option.id);
                 row.appendChild(correctBtn);
 
@@ -1833,6 +2103,13 @@
                 cardErrors.push('Mark a correct answer with custom textual context.');
             }
 
+            if (q.questionType === 'multiple') {
+                const correctFilled = filledOptions.filter(o => o.isCorrect);
+                if (filledOptions.length > 1 && correctFilled.length >= filledOptions.length) {
+                    cardErrors.push('At least one answer must be left unmarked as incorrect.');
+                }
+            }
+
             if (cardErrors.length > 0) {
                 isValid = false;
                 const errEl = document.getElementById('card-error-' + q.id);
@@ -1854,6 +2131,7 @@
             questions: builderQuestions.map(q => {
                 const qObj = {
                     question: q.questionText.trim(),
+                    questionType: q.questionType === 'multiple' ? 'multiple' : 'single',
                     options: q.options
                         .filter(o => o.text && o.text.trim())
                         .map(o => {
