@@ -156,6 +156,7 @@
         .header-info {
             padding-bottom: 16px;
             margin-bottom: 24px;
+            border-bottom: 1px solid var(--separator);
         }
 
         .header-top {
@@ -312,6 +313,16 @@
         .option-btn:has(+ .option-btn.incorrect-state)::after,
         .option-btn:has(+ .option-btn.missed-state)::after {
             display: none;
+        }
+
+        .option-content-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            flex: 1;
+            min-width: 0;
+            word-break: break-word;
         }
 
         /* Right-aligned option image - Nagyobb méret, nincs zoom */
@@ -729,11 +740,15 @@
         .text-input:focus, .textarea-input:focus { outline: none; border-color: var(--apple-blue); }
         .textarea-input { resize: vertical; min-height: 50px; }
 
-        .builder-question-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
-        .builder-card { padding: 20px 0; text-align: left; box-sizing: border-box; border-bottom: 1px solid var(--border-color); }
-        .builder-card:last-child { border-bottom: none; }
-        .builder-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; }
-        .builder-card-title { font-size: 12px; font-weight: 700; color: var(--apple-blue); text-transform: uppercase; letter-spacing: 0.6px; }
+        .builder-question-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+        .builder-card {
+            padding: 0; text-align: left; box-sizing: border-box;
+            background-color: transparent; border-radius: 20px;
+            box-shadow: none;
+            border: none;
+            overflow: visible;
+        }
+        .builder-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; padding: 0 14px; }
         .builder-card-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
         /* Question type toggle (Single / Multiple choice) */
@@ -746,7 +761,10 @@
         .qtype-toggle-btn.active { background-color: var(--apple-blue); color: #ffffff; }
         .qtype-toggle-btn:not(.active):hover { background-color: var(--option-hover); color: var(--text-main); }
 
-        .qtype-hint { font-size: 12px; color: var(--text-secondary); margin: -8px 0 12px 2px; line-height: 1.4; }
+        .qtype-hint { font-size: 12px; color: var(--text-secondary); margin: -4px 0 10px 4px; line-height: 1.4; }
+
+        /* Header sits transparently above the white question+answers panel */
+        .builder-card-top { padding: 0 0 14px 0; }
 
         .builder-icon-btn {
             background: transparent; border: none; color: var(--text-secondary); cursor: pointer;
@@ -764,43 +782,92 @@
         .builder-question-input::placeholder { color: var(--text-tertiary); font-weight: 400; }
         .builder-question-input:focus { outline: none; border-color: var(--apple-blue); }
 
-        .builder-options-group { border-radius: 16px; overflow: hidden; background-color: var(--bg-panel); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
-        .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: transparent; position: relative; }
+        .builder-options-group { border-radius: 0; overflow: visible; background-color: transparent; position: relative; }
+        .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 7px 12px; background-color: transparent; position: relative; }
         .builder-option-row:not(:last-child)::after {
             content: '';
             position: absolute;
-            left: 0;
-            right: 0;
+            left: 12px;
+            right: 12px;
             bottom: 0;
             height: 1px;
             background-color: var(--separator);
         }
 
         .correct-toggle-btn {
-            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border-color);
+            flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border-color);
             background-color: var(--bg-panel); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0;
         }
-        .correct-toggle-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        .correct-toggle-btn svg { width: 12px; height: 12px; fill: currentColor; }
         .correct-toggle-btn:hover { border-color: var(--success-green); color: var(--success-green); }
         .correct-toggle-btn.is-correct { background-color: var(--success-green); border-color: var(--success-green); color: #ffffff; }
         /* Multiple-choice rendering: square checkbox instead of round radio */
-        .correct-toggle-btn.is-checkbox { border-radius: 10px; }
+        .correct-toggle-btn.is-checkbox { border-radius: 8px; }
 
-        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 10px 8px; font-size: 15px; font-family: inherit; }
+        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 7px 8px; font-size: 15px; font-family: inherit; }
         .builder-option-input::placeholder { color: var(--text-tertiary); }
-        .builder-option-input:focus { outline: none; background-color: var(--option-hover); }
+        .builder-option-input:focus { outline: none; background-color: transparent; }
 
-        .remove-option-btn { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent; color: var(--text-tertiary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s ease, color 0.2s ease; padding: 0; }
+        /* Filled red circle "remove answer" button, sized to match the correct-toggle circle, sits right next to it */
+        .remove-option-btn {
+            flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: none;
+            background-color: var(--error-red); color: #ffffff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.15s ease; padding: 0;
+        }
         .remove-option-btn svg { width: 12px; height: 12px; fill: currentColor; }
-        .remove-option-btn:hover { background-color: var(--option-hover); color: var(--error-red); }
+        .remove-option-btn:active { transform: scale(0.92); }
+        .remove-option-btn:disabled {
+            background-color: var(--option-hover); color: var(--text-tertiary);
+            cursor: not-allowed;
+        }
+        .remove-option-btn:disabled:active { transform: none; }
 
-        .add-option-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
-        .add-option-btn { background-color: transparent; color: var(--apple-blue); border: none; padding: 6px 0; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 8px; }
-        .add-option-btn .plus-icon { width: 22px; height: 22px; border-radius: 50%; background-color: var(--apple-blue); color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        /* Drag handle: three thin stacked lines, takes the spot the old "x" used to occupy on the right */
+        .drag-handle-btn {
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent;
+            color: var(--text-tertiary); cursor: grab; touch-action: none;
+            display: flex; align-items: center; justify-content: center; padding: 0;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .drag-handle-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .drag-handle-btn:hover { background-color: var(--option-hover); color: var(--text-main); }
+        .drag-handle-btn:active { cursor: grabbing; }
+
+        /* Baseline: every answer row transitions transform smoothly by default. This is what
+           makes sibling rows glide out of the way during a drag — when their `transform`
+           changes (because the dragged row crossed their slot), the browser animates it. */
+        .builder-option-row {
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* The actively dragged row is the one exception: it must track the pointer with zero
+           lag, so its own transition is switched off for the duration of the drag. Siblings
+           keep their transition from the rule above, which is what produces the smooth slide. */
+        .builder-option-row.dragging {
+            z-index: 1000;
+            background-color: var(--bg-panel);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: grabbing;
+            border-radius: 12px;
+            transition: transform 0s, box-shadow 0.2s;
+            will-change: transform;
+        }
+        .builder-option-row.dragging .drag-handle-btn { color: var(--apple-blue); }
+        .builder-option-row.drag-settling {
+            will-change: transform;
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .add-option-row { display: flex; align-items: center; gap: 10px; padding: 7px 12px; }
+        .add-option-btn { background-color: transparent; border: none; padding: 0; text-align: left; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 10px; }
+        .add-option-btn .plus-icon { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background-color: var(--success-green); color: #ffffff; display: flex; align-items: center; justify-content: center; }
         .add-option-btn .plus-icon svg { width: 12px; height: 12px; fill: currentColor; }
+        .add-option-btn .add-option-label { font-size: 15px; font-weight: 400; color: var(--text-tertiary); padding: 7px 8px; }
         .add-option-btn:hover .plus-icon { opacity: 0.85; }
 
-        .builder-card-error { font-size: 12px; color: var(--error-red); font-weight: 500; margin-top: 12px; display: none; line-height: 1.4; }
+        .builder-card-bottom { padding: 10px 14px 0 14px; }
+        .builder-card-error { font-size: 12px; color: var(--error-red); font-weight: 500; margin-top: 4px; display: none; line-height: 1.4; }
 
         .img-upload-btn {
             flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent; color: var(--text-tertiary);
@@ -811,9 +878,63 @@
         .img-upload-btn.has-image { color: var(--apple-blue); }
         .img-upload-btn.has-image::after { content: ''; position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background-color: var(--apple-blue); }
 
-        .question-input-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 14px; }
-        .question-input-row .builder-question-input { margin-bottom: 0; flex: 1; }
-        .question-img-btn-wrap { flex-shrink: 0; padding-top: 12px; }
+        /* Unified question+answers panel, mirroring the Play view's options-container */
+        .builder-qa-panel {
+            background-color: var(--bg-panel);
+            border-radius: 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+
+        .question-number {
+            flex-shrink: 0;
+            width: 24px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            line-height: 1.4;
+            letter-spacing: -0.2px;
+            padding-top: 7px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .question-input-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 12px;
+            position: relative;
+        }
+        .question-input-row::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 2px;
+            background-color: var(--separator);
+        }
+        .question-input-row .builder-question-input {
+            margin-bottom: 0; flex: 1;
+            background-color: #edf5ff;
+            color: var(--apple-blue);
+            font-weight: 700;
+            padding: 7px 8px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            resize: none;
+        }
+        .question-input-row .builder-question-input::placeholder { color: var(--apple-blue); font-weight: 700; opacity: 0.7; }
+        .question-input-row .builder-question-input:focus {
+            background-color: #f3f3f4;
+            color: #5b5b5e;
+            font-weight: 700;
+            border-color: transparent;
+        }
+        .question-input-row .builder-question-input:focus::placeholder { color: #5b5b5e; font-weight: 700; opacity: 0.7; }
+        .question-img-btn-wrap { flex-shrink: 0; padding-top: 3px; }
 
         /* IMAGE MODAL */
         .img-modal-overlay {
@@ -852,40 +973,16 @@
         .img-modal-btn:active { transform: scale(0.97); opacity: 0.8; }
         .img-modal-btn-row { display: flex; gap: 8px; }
 
-        .builder-actions { display: flex; flex-direction: column; gap: 10px; padding-bottom: 80px; }
-        .success-banner { background-color: var(--success-bg); color: var(--success-text); padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 500; margin-top: 16px; display: none; text-align: left; }
-
-        /* UJ: FLOATING ADD QUESTION BUTTON (MATERIAL EFFECT) */
         .add-question-btn {
-            position: fixed;
-            bottom: max(32px, env(safe-area-inset-bottom));
-            right: max(32px, env(safe-area-inset-right));
-            background-color: var(--apple-blue);
-            color: #ffffff;
-            border: none;
-            padding: 14px 22px;
-            border-radius: 999px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.25s ease, opacity 0.25s ease, box-shadow 0.25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            opacity: 0.95;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 100;
+            background-color: var(--option-bg); color: var(--apple-blue); border: 2px dashed var(--border-color);
+            padding: 16px; border-radius: 20px; text-align: center; font-size: 15px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; width: 100%; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .add-question-btn svg { width: 16px; height: 16px; fill: currentColor; }
-        .add-question-btn:hover { 
-            opacity: 1.0; 
-            transform: scale(1.05); 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25); 
-        }
-        .add-question-btn:active {
-            transform: scale(0.96);
-        }
+        .add-question-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        .add-question-btn:hover { background-color: var(--option-hover); border-color: var(--apple-blue); }
+
+        .builder-actions { display: flex; flex-direction: column; gap: 10px; }
+        .success-banner { background-color: var(--success-bg); color: var(--success-text); padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 500; margin-top: 16px; display: none; text-align: left; }
 
         @media (max-width: 600px) {
             body { align-items: flex-start; padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px; }
@@ -893,15 +990,7 @@
             .header-info { padding-bottom: 12px; margin-bottom: 16px; }
             h2 { font-size: 22px; margin-bottom: 16px; }
             .option-btn { padding: 14px; }
-            .builder-card { padding: 16px; }
-            .option-img-wrap { width: 80px; height: 80px; }
-            
-            /* Mobilon kicsit arrébb a szélétől */
-            .add-question-btn {
-                bottom: max(24px, env(safe-area-inset-bottom));
-                right: max(16px, env(safe-area-inset-right));
-                padding: 12px 18px;
-            }
+            .option-img-wrap { width: 80px; height: 80px; } /* Kisebb kijelzőn picit összébb húzzuk, de még mindig nagy */
         }
     </style>
 </head>
@@ -1023,17 +1112,17 @@
         <span class="section-header with-top-spacing">Questions</span>
         <div class="builder-question-list" id="builder-question-list"></div>
 
+        <button class="add-question-btn" onclick="addBuilderQuestion()">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add Question
+        </button>
+
         <div id="builder-error-display" class="error-banner"></div>
         <div id="builder-success-display" class="success-banner"></div>
 
         <div class="builder-actions">
             <button class="next-btn" onclick="downloadBuilderQuiz()">Download as JSON</button>
         </div>
-
-        <button class="add-question-btn" onclick="addBuilderQuestion()">
-            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Add Question
-        </button>
     </div>
 </div>
 
@@ -1879,6 +1968,15 @@
         saveBuilderState();
     }
 
+    function reorderBuilderOptions(qId, fromIndex, toIndex) {
+        const question = builderQuestions.find(q => q.id === qId);
+        if (!question) return;
+        if (fromIndex === toIndex) return;
+        const [moved] = question.options.splice(fromIndex, 1);
+        question.options.splice(toIndex, 0, moved);
+        saveBuilderState();
+    }
+
     function setBuilderCorrect(qId, optId) {
         const question = builderQuestions.find(q => q.id === qId);
         if (!question) return;
@@ -1940,16 +2038,14 @@
             card.className = 'builder-card';
             card.id = 'card-' + question.id;
 
+            const cardTop = document.createElement('div');
+            cardTop.className = 'builder-card-top';
+
             const header = document.createElement('div');
             header.className = 'builder-card-header';
 
             const headerLeft = document.createElement('div');
             headerLeft.className = 'builder-card-header-left';
-
-            const title = document.createElement('span');
-            title.className = 'builder-card-title';
-            title.innerText = `Question ${qIndex + 1}`;
-            headerLeft.appendChild(title);
 
             const qType = question.questionType === 'multiple' ? 'multiple' : 'single';
 
@@ -1984,17 +2080,27 @@
                 header.appendChild(removeBtn);
             }
 
-            card.appendChild(header);
+            cardTop.appendChild(header);
 
             if (qType === 'multiple') {
                 const hint = document.createElement('div');
                 hint.className = 'qtype-hint';
                 hint.innerText = 'Mark every correct answer. Players must select all of them to get this question right.';
-                card.appendChild(hint);
+                cardTop.appendChild(hint);
             }
+
+            card.appendChild(cardTop);
+
+            const qaPanel = document.createElement('div');
+            qaPanel.className = 'builder-qa-panel';
 
             const qRow = document.createElement('div');
             qRow.className = 'question-input-row';
+
+            const qNumEl = document.createElement('span');
+            qNumEl.className = 'question-number';
+            qNumEl.innerText = qIndex + 1;
+            qRow.appendChild(qNumEl);
 
             const qInput = document.createElement('textarea');
             qInput.className = 'builder-question-input editable-input';
@@ -2017,7 +2123,7 @@
             qImgWrap.appendChild(qImgBtn);
             qRow.appendChild(qImgWrap);
 
-            card.appendChild(qRow);
+            qaPanel.appendChild(qRow);
 
             const optionsGroup = document.createElement('div');
             optionsGroup.className = 'builder-options-group';
@@ -2025,6 +2131,16 @@
             question.options.forEach((option) => {
                 const row = document.createElement('div');
                 row.className = 'builder-option-row';
+                row.dataset.optId = option.id;
+
+                const removeOptBtn = document.createElement('button');
+                removeOptBtn.className = 'remove-option-btn';
+                removeOptBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>';
+                const canRemove = question.options.length > 2;
+                removeOptBtn.disabled = !canRemove;
+                removeOptBtn.title = canRemove ? 'Remove answer' : 'At least 2 answers are required';
+                removeOptBtn.onclick = () => removeBuilderOption(question.id, option.id);
+                row.appendChild(removeOptBtn);
 
                 const correctBtn = document.createElement('button');
                 correctBtn.className = 'correct-toggle-btn' + (option.isCorrect ? ' is-correct' : '') + (qType === 'multiple' ? ' is-checkbox' : '');
@@ -2036,7 +2152,7 @@
                 const optInput = document.createElement('input');
                 optInput.type = 'text';
                 optInput.className = 'builder-option-input editable-input';
-                optInput.placeholder = 'Answer text...';
+                optInput.placeholder = 'Answer';
                 optInput.value = option.text;
                 optInput.oninput = (e) => updateBuilderOptionText(question.id, option.id, e.target.value);
                 row.appendChild(optInput);
@@ -2048,14 +2164,11 @@
                 optImgBtn.onclick = () => openImgModal('option', question.id, option.id, option.image || '');
                 row.appendChild(optImgBtn);
 
-                if (question.options.length > 2) {
-                    const removeOptBtn = document.createElement('button');
-                    removeOptBtn.className = 'remove-option-btn';
-                    removeOptBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
-                    removeOptBtn.title = 'Remove answer';
-                    removeOptBtn.onclick = () => removeBuilderOption(question.id, option.id);
-                    row.appendChild(removeOptBtn);
-                }
+                const dragHandle = document.createElement('button');
+                dragHandle.className = 'drag-handle-btn';
+                dragHandle.title = 'Drag to reorder';
+                dragHandle.innerHTML = '<svg viewBox="0 0 24 24"><rect y="4" width="24" height="2.4" rx="1.2"></rect><rect y="10.8" width="24" height="2.4" rx="1.2"></rect><rect y="17.6" width="24" height="2.4" rx="1.2"></rect></svg>';
+                row.appendChild(dragHandle);
 
                 optionsGroup.appendChild(row);
             });
@@ -2074,32 +2187,213 @@
             addOptBtn.appendChild(plusIcon);
 
             const addOptLabel = document.createElement('span');
-            addOptLabel.innerText = 'Add Answer';
+            addOptLabel.className = 'add-option-label';
+            addOptLabel.innerText = 'Add New Answer';
             addOptBtn.appendChild(addOptLabel);
 
             addOptRow.appendChild(addOptBtn);
             optionsGroup.appendChild(addOptRow);
 
-            card.appendChild(optionsGroup);
+            qaPanel.appendChild(optionsGroup);
+            card.appendChild(qaPanel);
+
+            const cardBottom = document.createElement('div');
+            cardBottom.className = 'builder-card-bottom';
 
             const cardError = document.createElement('div');
             cardError.className = 'builder-card-error';
             cardError.id = 'card-error-' + question.id;
-            card.appendChild(cardError);
+            cardBottom.appendChild(cardError);
+
+            card.appendChild(cardBottom);
 
             builderQuestionListEl.appendChild(card);
         });
         
-        // Timeout ensures elements are painted before growing
-        setTimeout(() => {
-            document.querySelectorAll('.builder-question-input').forEach(autoGrow);
-        }, 10);
+        // Synchronous: by this point every card is already attached to the live DOM,
+        // so scrollHeight is measurable immediately — no flash/jump from a delayed resize.
+        document.querySelectorAll('.builder-question-input').forEach(autoGrow);
     }
 
     function autoGrow(el) {
         el.style.height = 'auto';
         el.style.height = (el.scrollHeight) + 'px';
     }
+
+    /* DRAG REORDER FOR BUILDER ANSWER ROWS
+       Design notes (mirrors the proven dragReorder.html reference):
+       - Every row has a CSS baseline `transition: transform 0.3s` (see .builder-option-row).
+         That single rule is what makes sibling rows glide smoothly out of the way whenever
+         the dragged row crosses their slot — we never have to hand-animate them in JS.
+       - The actively dragged row is the one row that must NOT use that transition: it has
+         to track the pointer with zero lag, so `.dragging` overrides it to `transform 0s`.
+       - Only `transform` is touched while dragging (GPU-composited, no layout/paint cost).
+       - pointermove events are coalesced into a single rAF-scheduled update per frame, so
+         fast pointer movement can't queue up more style writes than the browser can paint.
+       - The actual DOM reorder (insertBefore/after) happens once, only after pointerup,
+         only after the snap-back animation finishes. We never touch the DOM mid-drag. */
+    let dragState = null; // { qId, group, rows, draggingRow, rowHeight, startY, originalIndex, currentIndex, minTranslateY, maxTranslateY }
+    let dragRAF = null;
+    let pendingPointerY = null;
+
+    function getOptionRows(group) {
+        return Array.from(group.querySelectorAll(':scope > .builder-option-row'));
+    }
+
+    builderQuestionListEl.addEventListener('pointerdown', (e) => {
+        const handle = e.target.closest('.drag-handle-btn');
+        if (!handle) return;
+
+        const row = handle.closest('.builder-option-row');
+        const group = handle.closest('.builder-options-group');
+        const card = handle.closest('.builder-card');
+        if (!row || !group || !card) return;
+
+        e.preventDefault();
+
+        const rows = getOptionRows(group);
+        const rowHeight = row.offsetHeight;
+        const originalIndex = rows.indexOf(row);
+
+        // Sibling rows keep their CSS baseline transition (untouched) so they glide.
+        // Only the dragged row's own transition is overridden, via the .dragging class.
+        row.classList.remove('drag-settling');
+        row.classList.add('dragging');
+        row.setPointerCapture(e.pointerId);
+
+        // getBoundingClientRect is used instead of offsetTop/offsetHeight: offsetTop is only
+        // reliable when measured against the nearest positioned ancestor, and is silently
+        // wrong (often huge) if that positioning context ever changes. Viewport rects have
+        // no such dependency, so the drag bounds stay correct no matter what wraps this row.
+        const groupRect = group.getBoundingClientRect();
+        const rowRect = row.getBoundingClientRect();
+        const rowOffsetTop = rowRect.top - groupRect.top;
+
+        // The lower bound must stop at the bottom of the LAST answer row, not the bottom of
+        // the whole group — the group also contains the "Add New Answer" row beneath the
+        // answers, and without this the dragged row could be pulled down onto/past it.
+        const lastRow = rows[rows.length - 1];
+        const lastRowRect = lastRow.getBoundingClientRect();
+        const answersBottom = lastRowRect.bottom - groupRect.top;
+
+        dragState = {
+            qId: card.id.replace('card-', ''),
+            group,
+            rows,
+            draggingRow: row,
+            rowHeight,
+            startY: e.pageY,
+            originalIndex,
+            currentIndex: originalIndex,
+            minTranslateY: -rowOffsetTop,
+            maxTranslateY: answersBottom - (rowOffsetTop + rowRect.height)
+        };
+    });
+
+    function applyDragFrame() {
+        dragRAF = null;
+        if (!dragState || pendingPointerY === null) return;
+
+        const { draggingRow, rows, rowHeight, startY, originalIndex, minTranslateY, maxTranslateY } = dragState;
+
+        let deltaY = pendingPointerY - startY;
+        deltaY = Math.max(minTranslateY, Math.min(maxTranslateY, deltaY));
+        draggingRow.style.transform = `translateY(${deltaY}px)`;
+
+        const floatOffset = deltaY / rowHeight;
+        let targetIndex = originalIndex + Math.round(floatOffset);
+        if (targetIndex < 0) targetIndex = 0;
+        if (targetIndex >= rows.length) targetIndex = rows.length - 1;
+
+        if (targetIndex !== dragState.currentIndex) {
+            dragState.currentIndex = targetIndex;
+
+            rows.forEach((r, idx) => {
+                if (idx === originalIndex) return;
+                let shift = 0;
+                if (idx >= targetIndex && idx < originalIndex) {
+                    shift = rowHeight;
+                } else if (idx <= targetIndex && idx > originalIndex) {
+                    shift = -rowHeight;
+                }
+                // Sibling rows use their CSS baseline transition here — this is the line
+                // that produces the smooth, eased slide instead of an instant jump.
+                r.style.transform = shift ? `translateY(${shift}px)` : '';
+            });
+        }
+    }
+
+    builderQuestionListEl.addEventListener('pointermove', (e) => {
+        if (!dragState) return;
+        pendingPointerY = e.pageY;
+        // Coalesce: only one style write per animation frame, no matter how many
+        // pointermove events the browser/OS fires in between.
+        if (dragRAF === null) {
+            dragRAF = requestAnimationFrame(applyDragFrame);
+        }
+    });
+
+    function endBuilderDrag(e) {
+        if (!dragState) return;
+        const { qId, group, rows, draggingRow, rowHeight, originalIndex, currentIndex } = dragState;
+
+        if (dragRAF !== null) {
+            cancelAnimationFrame(dragRAF);
+            dragRAF = null;
+        }
+        pendingPointerY = null;
+
+        try { draggingRow.releasePointerCapture(e.pointerId); } catch (err) {}
+
+        draggingRow.classList.remove('dragging');
+        draggingRow.classList.add('drag-settling'); // brief eased snap into its final slot
+        dragState = null;
+
+        const finalSnapY = (currentIndex - originalIndex) * rowHeight;
+        draggingRow.style.transform = `translateY(${finalSnapY}px)`;
+
+        let settled = false;
+        const finishReorder = () => {
+            if (settled) return;
+            settled = true;
+            draggingRow.removeEventListener('transitionend', finishReorder);
+
+            // Disable transitions right before the DOM swap so the structural change can't
+            // visually animate (would look like a second, conflicting jump).
+            rows.forEach(r => { r.style.transition = 'none'; });
+            draggingRow.classList.remove('drag-settling');
+
+            if (currentIndex !== originalIndex) {
+                const referenceRow = rows[currentIndex];
+                if (currentIndex > originalIndex) {
+                    referenceRow.after(draggingRow);
+                } else {
+                    referenceRow.before(draggingRow);
+                }
+                reorderBuilderOptions(qId, originalIndex, currentIndex);
+            }
+
+            rows.forEach(r => { r.style.transform = ''; });
+
+            // One forced synchronous reflow right at the swap point keeps the browser from
+            // discovering the new layout mid-paint on some other frame (which is what
+            // produces a visible flicker). After this, restoring the CSS baseline transition
+            // (by clearing the inline override) is safe.
+            void group.offsetHeight;
+
+            requestAnimationFrame(() => {
+                rows.forEach(r => { r.style.transition = ''; });
+            });
+        };
+
+        draggingRow.addEventListener('transitionend', finishReorder);
+        // Safety net: if no transitionend fires (e.g. finalSnapY was 0, so the transform
+        // never actually changed and the browser never starts the transition), don't hang.
+        setTimeout(finishReorder, 260);
+    }
+
+    builderQuestionListEl.addEventListener('pointerup', endBuilderDrag);
+    builderQuestionListEl.addEventListener('pointercancel', endBuilderDrag);
 
     function validateBuilderQuiz() {
         let isValid = true;
@@ -2313,7 +2607,7 @@
         imgPreviewPlaceholder.style.display = 'flex';
         imgRemoveBtn.style.display = 'none';
     }
-n
+
     function saveModalImage() {
         const { type, qId, optId } = imgModalContext;
         const question = builderQuestions.find(q => q.id === qId);
