@@ -40,6 +40,13 @@
             --glass-border: rgba(255,255,255,0.18);
             --glass-shadow: rgba(0,0,0,0.12);
             --separator: rgba(60, 60, 67, 0.18);
+
+            --builder-card-bg-dark: rgb(254, 254, 254);
+            --builder-deep-bg: rgb(239, 239, 245);
+            --builder-empty-answer-text: rgb(189, 189, 191);
+            --builder-add-answer-text: rgb(160, 160, 160);
+            --builder-question-separator: rgb(235, 235, 237);
+            --builder-answer-separator: rgb(228, 228, 229);
         }
 
         /* DARK MODE (OS-synced) */
@@ -71,6 +78,13 @@
                 --score-bg: #1a2b3c;
                 --overlay-bg: rgba(0, 0, 0, 0.4);
                 --separator: rgba(84, 84, 88, 0.55);
+
+                --builder-card-bg-dark: rgb(39, 39, 40);
+                --builder-deep-bg: rgb(0, 0, 0);
+                --builder-empty-answer-text: rgb(90, 90, 94);
+                --builder-add-answer-text: rgb(160, 160, 160);
+                --builder-question-separator: rgb(54, 54, 57);
+                --builder-answer-separator: rgb(56, 56, 58);
             }
         }
 
@@ -90,6 +104,12 @@
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none;
             user-select: none;
+        }
+
+        /* Builder (Create New Quiz / Edit Existing Quiz) gets its own deepest-background color,
+           scoped to only apply while the builder view is open, so the Play view is untouched. */
+        body:has(.quiz-container.builder-wide) {
+            background-color: var(--builder-deep-bg);
         }
 
         #question-text, 
@@ -119,7 +139,9 @@
             top: 0px; 
             z-index: 100;
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 24px;
             pointer-events: none; /* Átengedi a kattintást, ha nincs gomb */
         }
@@ -151,6 +173,74 @@
             .glass-exit-btn { background: rgba(30,30,30,0.6); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
         }
         .glass-exit-btn:active { transform: scale(0.96); opacity: 0.85; }
+
+        /* BUILDER MODE SEGMENTED CONTROL (Customize / Select) — material+blur masking style */
+        .builder-mode-control-wrap {
+            display: none; /* toggled to flex only while the builder is open */
+        }
+
+        .builder-seg-control {
+            --seg-padding: 4px;
+            --seg-radius: 18px;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border-radius: var(--seg-radius);
+            padding: var(--seg-padding);
+            display: flex;
+            position: relative;
+            width: 200px;
+            height: 38px;
+            cursor: pointer;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        @media (prefers-color-scheme: dark) {
+            .builder-seg-control { background: rgba(30,30,30,0.6); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        }
+
+        .builder-seg-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .builder-seg-option.seg-static { color: var(--text-main); z-index: 0; }
+
+        .builder-seg-slider {
+            position: absolute;
+            top: var(--seg-padding);
+            left: var(--seg-padding);
+            height: calc(100% - (var(--seg-padding) * 2));
+            width: calc(50% - var(--seg-padding));
+            border-radius: calc(var(--seg-radius) - var(--seg-padding));
+            background-color: var(--apple-blue);
+            box-shadow: 0 3px 1px rgba(0,0,0,0.04), 0 3px 8px rgba(0,0,0,0.12);
+            z-index: 1;
+            cursor: grab;
+            overflow: hidden;
+        }
+        .builder-seg-slider:active { cursor: grabbing; }
+
+        .builder-seg-mask {
+            position: absolute;
+            top: 0; left: 0; height: 100%;
+            display: flex;
+            transform: translateX(0);
+        }
+        .builder-seg-option.seg-mask { color: #ffffff; }
+
+        .builder-seg-slider.animated,
+        .builder-seg-mask.animated {
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
 
 
         .header-info {
@@ -748,7 +838,7 @@
             border: none;
             overflow: visible;
         }
-        .builder-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; padding: 0 14px; }
+        .builder-card-header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; gap: 10px; padding: 0 14px; }
         .builder-card-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
         /* Question type toggle (Single / Multiple choice) */
@@ -791,7 +881,7 @@
             right: 12px;
             bottom: 0;
             height: 1px;
-            background-color: var(--separator);
+            background-color: var(--builder-answer-separator);
         }
 
         .correct-toggle-btn {
@@ -803,9 +893,13 @@
         .correct-toggle-btn.is-correct { background-color: var(--success-green); border-color: var(--success-green); color: #ffffff; }
         /* Multiple-choice rendering: square checkbox instead of round radio */
         .correct-toggle-btn.is-checkbox { border-radius: 8px; }
+        /* Customize mode never reveals which answer is correct — that's Select mode's job */
+        .builder-qa-panel:not(.mode-select) .correct-toggle-btn {
+            display: none;
+        }
 
-        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 7px 8px; font-size: 15px; font-family: inherit; }
-        .builder-option-input::placeholder { color: var(--text-tertiary); }
+        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 7px 8px; font-size: 15px; font-weight: 400; font-family: inherit; }
+        .builder-option-input::placeholder { color: var(--builder-empty-answer-text); font-weight: 400; }
         .builder-option-input:focus { outline: none; background-color: transparent; }
 
         /* Filled red circle "remove answer" button, sized to match the correct-toggle circle, sits right next to it */
@@ -863,7 +957,7 @@
         .add-option-btn { background-color: transparent; border: none; padding: 0; text-align: left; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 10px; }
         .add-option-btn .plus-icon { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background-color: var(--success-green); color: #ffffff; display: flex; align-items: center; justify-content: center; }
         .add-option-btn .plus-icon svg { width: 12px; height: 12px; fill: currentColor; }
-        .add-option-btn .add-option-label { font-size: 15px; font-weight: 400; color: var(--text-tertiary); padding: 7px 8px; }
+        .add-option-btn .add-option-label { font-size: 15px; font-weight: 400; color: var(--builder-add-answer-text); padding: 7px 8px; }
         .add-option-btn:hover .plus-icon { opacity: 0.85; }
 
         .builder-card-bottom { padding: 10px 14px 0 14px; }
@@ -878,9 +972,53 @@
         .img-upload-btn.has-image { color: var(--apple-blue); }
         .img-upload-btn.has-image::after { content: ''; position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background-color: var(--apple-blue); }
 
+        /* SELECT MODE — builder panel behaves like a read-only picker, mirroring the
+           Play view's correct-state styling (green fill) for chosen answers. Editing
+           controls (remove/drag/image) are hidden; only the answer text + a checkmark
+           and the whole row stays clickable to toggle selection. */
+        .builder-qa-panel.mode-select .builder-question-input {
+            pointer-events: none;
+        }
+        .builder-qa-panel.mode-select .question-img-btn-wrap,
+        .builder-qa-panel.mode-select .remove-option-btn,
+        .builder-qa-panel.mode-select .drag-handle-btn,
+        .builder-qa-panel.mode-select .img-upload-btn,
+        .builder-qa-panel.mode-select .add-option-row {
+            display: none !important;
+        }
+        .builder-qa-panel.mode-select .builder-option-row {
+            cursor: pointer;
+            border-radius: 14px;
+            padding: 12px 14px;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .builder-qa-panel.mode-select .builder-option-row:hover {
+            background-color: var(--option-hover);
+        }
+        .builder-qa-panel.mode-select .builder-option-row::after {
+            display: none;
+        }
+        .builder-qa-panel.mode-select .builder-option-input {
+            pointer-events: none;
+            font-weight: 500;
+        }
+        .builder-qa-panel.mode-select .correct-toggle-btn {
+            pointer-events: none;
+        }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct {
+            background-color: var(--success-bg) !important;
+            color: var(--success-text);
+        }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input {
+            color: var(--success-text);
+        }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .correct-toggle-btn {
+            background-color: var(--success-green); border-color: var(--success-green); color: #ffffff;
+        }
+
         /* Unified question+answers panel, mirroring the Play view's options-container */
         .builder-qa-panel {
-            background-color: var(--bg-panel);
+            background-color: var(--builder-card-bg-dark);
             border-radius: 18px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04);
             overflow: hidden;
@@ -902,7 +1040,7 @@
 
         .question-input-row {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 10px;
             padding: 8px 12px;
             position: relative;
@@ -914,26 +1052,72 @@
             right: 0;
             bottom: 0;
             height: 2px;
-            background-color: var(--separator);
+            background-color: var(--builder-question-separator);
         }
+        /* Question field color matrix — 8 states: light/dark mode × focused/unfocused × empty/filled.
+           :placeholder-shown reliably tells us "empty" (placeholder is visible) vs "filled". */
+
+        /* LIGHT MODE — unfocused, empty (placeholder visible) */
         .question-input-row .builder-question-input {
             margin-bottom: 0; flex: 1;
-            background-color: #edf5ff;
-            color: var(--apple-blue);
-            font-weight: 700;
-            padding: 7px 8px;
+            background-color: rgb(234, 245, 254);
+            color: rgb(131, 194, 251);
+            font-size: 17px;
+            font-weight: 500;
+            line-height: 1.4;
+            padding: 10px 8px;
             border-radius: 10px;
             border: 2px solid transparent;
             resize: none;
         }
-        .question-input-row .builder-question-input::placeholder { color: var(--apple-blue); font-weight: 700; opacity: 0.7; }
-        .question-input-row .builder-question-input:focus {
-            background-color: #f3f3f4;
-            color: #5b5b5e;
-            font-weight: 700;
-            border-color: transparent;
+        .question-input-row .builder-question-input::placeholder { color: rgb(131, 194, 251); font-weight: 500; opacity: 1; }
+
+        /* LIGHT MODE — unfocused, filled */
+        .question-input-row .builder-question-input:not(:placeholder-shown):not(:focus) {
+            background-color: rgb(234, 245, 254);
+            color: rgb(9, 124, 249);
         }
-        .question-input-row .builder-question-input:focus::placeholder { color: #5b5b5e; font-weight: 700; opacity: 0.7; }
+
+        /* LIGHT MODE — focused, empty (placeholder visible) */
+        .question-input-row .builder-question-input:focus:placeholder-shown {
+            background-color: rgb(241, 241, 242);
+            color: rgb(134, 134, 135);
+        }
+        .question-input-row .builder-question-input:focus:placeholder-shown::placeholder { color: rgb(134, 134, 135); }
+
+        /* LIGHT MODE — focused, filled */
+        .question-input-row .builder-question-input:focus:not(:placeholder-shown) {
+            background-color: rgb(241, 241, 242);
+            color: rgb(0, 0, 0);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            /* DARK MODE — unfocused, empty (placeholder visible) */
+            .question-input-row .builder-question-input {
+                background-color: rgb(37, 45, 53);
+                color: rgb(24, 78, 125);
+            }
+            .question-input-row .builder-question-input::placeholder { color: rgb(24, 78, 125); font-weight: 500; }
+
+            /* DARK MODE — unfocused, filled */
+            .question-input-row .builder-question-input:not(:placeholder-shown):not(:focus) {
+                background-color: rgb(37, 45, 53);
+                color: rgb(10, 134, 249);
+            }
+
+            /* DARK MODE — focused, empty (placeholder visible) */
+            .question-input-row .builder-question-input:focus:placeholder-shown {
+                background-color: rgb(47, 47, 49);
+                color: rgb(122, 122, 124);
+            }
+            .question-input-row .builder-question-input:focus:placeholder-shown::placeholder { color: rgb(122, 122, 124); }
+
+            /* DARK MODE — focused, filled */
+            .question-input-row .builder-question-input:focus:not(:placeholder-shown) {
+                background-color: rgb(47, 47, 49);
+                color: rgb(254, 254, 254);
+            }
+        }
         .question-img-btn-wrap { flex-shrink: 0; padding-top: 3px; }
 
         /* IMAGE MODAL */
@@ -1007,6 +1191,20 @@
             <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             Back
         </button>
+
+        <div class="builder-mode-control-wrap" id="builder-mode-control-wrap">
+            <div class="builder-seg-control" id="builder-seg-control">
+                <div class="builder-seg-option seg-static">Customize</div>
+                <div class="builder-seg-option seg-static">Select</div>
+
+                <div class="builder-seg-slider animated" id="builder-seg-slider">
+                    <div class="builder-seg-mask animated" id="builder-seg-mask">
+                        <div class="builder-seg-option seg-mask">Customize</div>
+                        <div class="builder-seg-option seg-mask">Select</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="mode-select-view" class="summary-card">
@@ -1223,6 +1421,7 @@
     const stickyActionBar = document.getElementById('sticky-action-bar');
     const exitBtnEl = document.getElementById('exit-btn');
     const builderBackBtnEl = document.getElementById('builder-back-btn');
+    const builderModeControlWrapEl = document.getElementById('builder-mode-control-wrap');
 
     /* Lightbox elements */
     const lightboxOverlay = document.getElementById('lightbox-overlay');
@@ -1241,14 +1440,21 @@
             stickyActionBar.style.display = 'flex';
             exitBtnEl.style.display = 'flex';
             builderBackBtnEl.style.display = 'none';
+            builderModeControlWrapEl.style.display = 'none';
         } else if (which === 'builder-back') {
             stickyActionBar.style.display = 'flex';
             exitBtnEl.style.display = 'none';
             builderBackBtnEl.style.display = 'flex';
+            builderModeControlWrapEl.style.display = 'flex';
+            requestAnimationFrame(() => {
+                updateSegMaskWidth();
+                setBuilderViewMode('customize', true);
+            });
         } else {
             stickyActionBar.style.display = 'none';
             exitBtnEl.style.display = 'none';
             builderBackBtnEl.style.display = 'none';
+            builderModeControlWrapEl.style.display = 'none';
         }
     }
 
@@ -1871,6 +2077,7 @@
     /* QUIZ BUILDER CORE LOGIC */
     let builderQuestions = [];
     let builderIdCounter = 0;
+    let builderViewMode = 'customize'; // 'customize' | 'select'
 
     const builderQuestionListEl = document.getElementById('builder-question-list');
     const builderQuizNameEl = document.getElementById('builder-quiz-name');
@@ -1879,12 +2086,119 @@
     const builderSuccessEl = document.getElementById('builder-success-display');
     const builderExitModalEl = document.getElementById('builder-exit-modal');
 
+    /* Customize / Select segmented control (masking slider, mirrors the reference component) */
+    const builderSegControlEl = document.getElementById('builder-seg-control');
+    const builderSegSliderEl = document.getElementById('builder-seg-slider');
+    const builderSegMaskEl = document.getElementById('builder-seg-mask');
+
+    let segIsDragging = false;
+    let segStartX = 0;
+    let segCurrentTranslate = 0;
+
+    function getSegPaddingValue() {
+        return parseFloat(window.getComputedStyle(builderSegControlEl).paddingLeft) || 0;
+    }
+
+    function getSegSliderRange() {
+        const padding = getSegPaddingValue();
+        return builderSegControlEl.offsetWidth - builderSegSliderEl.offsetWidth - (2 * padding);
+    }
+
+    function updateSegMaskWidth() {
+        const padding = getSegPaddingValue();
+        builderSegMaskEl.style.width = (builderSegControlEl.offsetWidth - (2 * padding)) + 'px';
+    }
+
+    function moveSegSliderAndMask(translateX) {
+        builderSegSliderEl.style.transform = `translateX(${translateX}px)`;
+        builderSegMaskEl.style.transform = `translateX(-${translateX}px)`;
+    }
+
+    function setBuilderViewMode(mode, skipRender) {
+        builderViewMode = mode;
+        builderSegSliderEl.classList.add('animated');
+        builderSegMaskEl.classList.add('animated');
+
+        if (mode === 'customize') {
+            moveSegSliderAndMask(0);
+        } else {
+            moveSegSliderAndMask(getSegSliderRange());
+        }
+
+        if (!skipRender) {
+            renderBuilderQuestions();
+        }
+    }
+
+    function segDragStart(e) {
+        segIsDragging = true;
+        builderSegSliderEl.classList.remove('animated');
+        builderSegMaskEl.classList.remove('animated');
+        segStartX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+        segCurrentTranslate = builderViewMode === 'customize' ? 0 : getSegSliderRange();
+    }
+
+    function segDragMove(e) {
+        if (!segIsDragging) return;
+        const currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+        const diffX = currentX - segStartX;
+        let targetTranslate = segCurrentTranslate + diffX;
+        const maxRange = getSegSliderRange();
+        if (targetTranslate < 0) targetTranslate = 0;
+        if (targetTranslate > maxRange) targetTranslate = maxRange;
+        moveSegSliderAndMask(targetTranslate);
+    }
+
+    function segDragEnd() {
+        if (!segIsDragging) return;
+        segIsDragging = false;
+
+        const maxRange = getSegSliderRange();
+        const matrix = window.getComputedStyle(builderSegSliderEl).transform;
+        let currentX = 0;
+        if (matrix && matrix !== 'none') {
+            currentX = parseFloat(matrix.split(',')[4]);
+        }
+
+        if (currentX > maxRange / 2) {
+            setBuilderViewMode('select');
+        } else {
+            setBuilderViewMode('customize');
+        }
+    }
+
+    function segContainerClick(e) {
+        if (segIsDragging || e.target === builderSegSliderEl || e.target.closest('#builder-seg-slider')) return;
+        const rect = builderSegControlEl.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        if (clickX > rect.width / 2) {
+            setBuilderViewMode('select');
+        } else {
+            setBuilderViewMode('customize');
+        }
+    }
+
+    builderSegSliderEl.addEventListener('mousedown', segDragStart);
+    builderSegSliderEl.addEventListener('touchstart', segDragStart, { passive: true });
+    window.addEventListener('mousemove', segDragMove);
+    window.addEventListener('touchmove', segDragMove, { passive: false });
+    window.addEventListener('mouseup', segDragEnd);
+    window.addEventListener('touchend', segDragEnd);
+    builderSegControlEl.addEventListener('click', segContainerClick);
+    window.addEventListener('resize', () => {
+        if (builderModeControlWrapEl.style.display === 'flex') {
+            updateSegMaskWidth();
+            setBuilderViewMode(builderViewMode, true);
+        }
+    });
+
     function saveBuilderState() {
         const state = {
             questions: builderQuestions,
             name: builderQuizNameEl.value,
             desc: builderQuizDescEl.value,
             idCounter: builderIdCounter
+
         };
         localStorage.setItem('builder_session', JSON.stringify(state));
         localStorage.setItem('app_mode', 'builder');
@@ -1996,6 +2310,42 @@
         saveBuilderState();
     }
 
+    /* SELECT MODE — tapping an answer row mirrors the Play view's picking behavior:
+       - single-answer questions act like a radio (picking a new one replaces the old one),
+         unless a second answer gets tapped, in which case the question is promoted to
+         'multiple' and both stay marked (so the green fill matches what just happened);
+       - multiple-answer questions act like a checkbox (each tap toggles that one answer),
+         but at least one correct answer is always kept marked. */
+    function toggleBuilderSelectAnswer(qId, optId) {
+        const question = builderQuestions.find(q => q.id === qId);
+        if (!question) return;
+        const option = question.options.find(o => o.id === optId);
+        if (!option) return;
+
+        if (question.questionType === 'multiple') {
+            const correctCount = question.options.filter(o => o.isCorrect).length;
+            if (option.isCorrect && correctCount <= 1) return; // keep at least 1 correct
+            option.isCorrect = !option.isCorrect;
+
+            // If toggling brought it back down to a single correct answer, that's fine —
+            // the question stays 'multiple' once promoted, so re-tapping the same single
+            // answer later won't silently demote it back to 'single'.
+        } else {
+            if (option.isCorrect) {
+                // Tapping the already-correct answer in single mode is a no-op (always
+                // keep at least one correct answer selected).
+                return;
+            }
+            // Tapping a second, different answer promotes the question to 'multiple'
+            // and keeps both the previous and the newly tapped answer marked correct.
+            question.questionType = 'multiple';
+            option.isCorrect = true;
+        }
+
+        renderBuilderQuestions();
+        saveBuilderState();
+    }
+
     function setBuilderQuestionType(qId, type) {
         const question = builderQuestions.find(q => q.id === qId);
         if (!question) return;
@@ -2044,55 +2394,34 @@
             const header = document.createElement('div');
             header.className = 'builder-card-header';
 
-            const headerLeft = document.createElement('div');
-            headerLeft.className = 'builder-card-header-left';
-
             const qType = question.questionType === 'multiple' ? 'multiple' : 'single';
 
-            const typeToggle = document.createElement('div');
-            typeToggle.className = 'qtype-toggle';
-
-            const singleBtn = document.createElement('button');
-            singleBtn.type = 'button';
-            singleBtn.className = 'qtype-toggle-btn' + (qType === 'single' ? ' active' : '');
-            singleBtn.innerText = 'Single';
-            singleBtn.title = 'Single choice: exactly one correct answer';
-            singleBtn.onclick = () => setBuilderQuestionType(question.id, 'single');
-            typeToggle.appendChild(singleBtn);
-
-            const multiBtn = document.createElement('button');
-            multiBtn.type = 'button';
-            multiBtn.className = 'qtype-toggle-btn' + (qType === 'multiple' ? ' active' : '');
-            multiBtn.innerText = 'Multiple';
-            multiBtn.title = 'Multiple choice: one or more correct answers';
-            multiBtn.onclick = () => setBuilderQuestionType(question.id, 'multiple');
-            typeToggle.appendChild(multiBtn);
-
-            headerLeft.appendChild(typeToggle);
-            header.appendChild(headerLeft);
-
-            if (builderQuestions.length > 1) {
+            const showDeleteBtn = builderQuestions.length > 1 && builderViewMode === 'customize';
+            if (showDeleteBtn) {
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'builder-icon-btn';
                 removeBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
                 removeBtn.title = 'Delete question';
                 removeBtn.onclick = () => removeBuilderQuestion(question.id);
                 header.appendChild(removeBtn);
+                cardTop.appendChild(header);
             }
 
-            cardTop.appendChild(header);
-
-            if (qType === 'multiple') {
+            if (builderViewMode === 'select') {
                 const hint = document.createElement('div');
                 hint.className = 'qtype-hint';
-                hint.innerText = 'Mark every correct answer. Players must select all of them to get this question right.';
+                hint.innerText = qType === 'multiple'
+                    ? 'Tap every correct answer. Players must select all of them to get this question right.'
+                    : 'Tap the correct answer. Tapping a second one switches this question to multiple-answer mode.';
                 cardTop.appendChild(hint);
             }
 
-            card.appendChild(cardTop);
+            if (cardTop.childNodes.length > 0) {
+                card.appendChild(cardTop);
+            }
 
             const qaPanel = document.createElement('div');
-            qaPanel.className = 'builder-qa-panel';
+            qaPanel.className = 'builder-qa-panel' + (builderViewMode === 'select' ? ' mode-select' : '');
 
             const qRow = document.createElement('div');
             qRow.className = 'question-input-row';
@@ -2107,6 +2436,7 @@
             qInput.placeholder = 'Type the question...';
             qInput.value = question.questionText;
             qInput.rows = 1;
+            qInput.readOnly = (builderViewMode === 'select');
             qInput.oninput = (e) => {
                 updateBuilderQuestionText(question.id, e.target.value);
                 autoGrow(e.target);
@@ -2133,6 +2463,10 @@
                 row.className = 'builder-option-row';
                 row.dataset.optId = option.id;
 
+                if (builderViewMode === 'select' && option.isCorrect) {
+                    row.classList.add('select-is-correct');
+                }
+
                 const removeOptBtn = document.createElement('button');
                 removeOptBtn.className = 'remove-option-btn';
                 removeOptBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>';
@@ -2146,7 +2480,9 @@
                 correctBtn.className = 'correct-toggle-btn' + (option.isCorrect ? ' is-correct' : '') + (qType === 'multiple' ? ' is-checkbox' : '');
                 correctBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
                 correctBtn.title = qType === 'multiple' ? 'Toggle as a correct answer' : 'Mark as the correct answer';
-                correctBtn.onclick = () => setBuilderCorrect(question.id, option.id);
+                if (builderViewMode === 'customize') {
+                    correctBtn.onclick = () => setBuilderCorrect(question.id, option.id);
+                }
                 row.appendChild(correctBtn);
 
                 const optInput = document.createElement('input');
@@ -2154,6 +2490,7 @@
                 optInput.className = 'builder-option-input editable-input';
                 optInput.placeholder = 'Answer';
                 optInput.value = option.text;
+                optInput.readOnly = (builderViewMode === 'select');
                 optInput.oninput = (e) => updateBuilderOptionText(question.id, option.id, e.target.value);
                 row.appendChild(optInput);
 
@@ -2169,6 +2506,12 @@
                 dragHandle.title = 'Drag to reorder';
                 dragHandle.innerHTML = '<svg viewBox="0 0 24 24"><rect y="4" width="24" height="2.4" rx="1.2"></rect><rect y="10.8" width="24" height="2.4" rx="1.2"></rect><rect y="17.6" width="24" height="2.4" rx="1.2"></rect></svg>';
                 row.appendChild(dragHandle);
+
+                if (builderViewMode === 'select') {
+                    row.onclick = () => toggleBuilderSelectAnswer(question.id, option.id);
+                } else {
+                    row.onclick = null;
+                }
 
                 optionsGroup.appendChild(row);
             });
@@ -2628,6 +2971,7 @@
     function resetBuilder() {
         builderQuestions = [];
         builderIdCounter = 0;
+        builderViewMode = 'customize';
         builderQuizNameEl.value = '';
         builderQuizDescEl.value = '';
         builderQuestionListEl.innerHTML = '';
