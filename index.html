@@ -852,16 +852,40 @@
         .img-modal-btn:active { transform: scale(0.97); opacity: 0.8; }
         .img-modal-btn-row { display: flex; gap: 8px; }
 
-        .add-question-btn {
-            background-color: var(--option-bg); color: var(--apple-blue); border: 2px dashed var(--border-color);
-            padding: 16px; border-radius: 20px; text-align: center; font-size: 15px; font-weight: 600; cursor: pointer;
-            transition: all 0.2s ease; width: 100%; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .add-question-btn svg { width: 14px; height: 14px; fill: currentColor; }
-        .add-question-btn:hover { background-color: var(--option-hover); border-color: var(--apple-blue); }
-
-        .builder-actions { display: flex; flex-direction: column; gap: 10px; }
+        .builder-actions { display: flex; flex-direction: column; gap: 10px; padding-bottom: 80px; }
         .success-banner { background-color: var(--success-bg); color: var(--success-text); padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 500; margin-top: 16px; display: none; text-align: left; }
+
+        /* UJ: FLOATING ADD QUESTION BUTTON (MATERIAL EFFECT) */
+        .add-question-btn {
+            position: fixed;
+            bottom: max(32px, env(safe-area-inset-bottom));
+            right: max(32px, env(safe-area-inset-right));
+            background-color: var(--apple-blue);
+            color: #ffffff;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.25s ease, opacity 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            opacity: 0.95;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+        }
+        .add-question-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .add-question-btn:hover { 
+            opacity: 1.0; 
+            transform: scale(1.05); 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25); 
+        }
+        .add-question-btn:active {
+            transform: scale(0.96);
+        }
 
         @media (max-width: 600px) {
             body { align-items: flex-start; padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px; }
@@ -870,7 +894,14 @@
             h2 { font-size: 22px; margin-bottom: 16px; }
             .option-btn { padding: 14px; }
             .builder-card { padding: 16px; }
-            .option-img-wrap { width: 80px; height: 80px; } /* Kisebb kijelzőn picit összébb húzzuk, de még mindig nagy */
+            .option-img-wrap { width: 80px; height: 80px; }
+            
+            /* Mobilon kicsit arrébb a szélétől */
+            .add-question-btn {
+                bottom: max(24px, env(safe-area-inset-bottom));
+                right: max(16px, env(safe-area-inset-right));
+                padding: 12px 18px;
+            }
         }
     </style>
 </head>
@@ -992,17 +1023,17 @@
         <span class="section-header with-top-spacing">Questions</span>
         <div class="builder-question-list" id="builder-question-list"></div>
 
-        <button class="add-question-btn" onclick="addBuilderQuestion()">
-            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Add Question
-        </button>
-
         <div id="builder-error-display" class="error-banner"></div>
         <div id="builder-success-display" class="success-banner"></div>
 
         <div class="builder-actions">
             <button class="next-btn" onclick="downloadBuilderQuiz()">Download as JSON</button>
         </div>
+
+        <button class="add-question-btn" onclick="addBuilderQuestion()">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add Question
+        </button>
     </div>
 </div>
 
@@ -2282,7 +2313,7 @@
         imgPreviewPlaceholder.style.display = 'flex';
         imgRemoveBtn.style.display = 'none';
     }
-
+n
     function saveModalImage() {
         const { type, qId, optId } = imgModalContext;
         const question = builderQuestions.find(q => q.id === qId);
