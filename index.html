@@ -133,13 +133,13 @@
             max-width: 680px;
         }
 
-        /* STICKY ACTION BAR */
+        /* STICKY ACTION BAR - Visszarakva a tartalomba (safe zone), top-left igazítással */
         .sticky-action-bar {
             position: sticky;
             top: 0px; 
             z-index: 100;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start; /* Mindent a bal oldalra (felső sarok felé) igazít */
             align-items: center;
             gap: 12px;
             margin-bottom: 24px;
@@ -153,7 +153,8 @@
         .glass-exit-btn {
             border: none;
             border-radius: 999px;
-            padding: 10px 18px;
+            padding: 0 18px;
+            height: 38px; /* Szinkronban a segmented control magasságával */
             font-size: 14px;
             font-weight: 600;
             color: var(--text-main);
@@ -167,12 +168,62 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            box-sizing: border-box;
         }
         .glass-exit-btn svg { width: 14px; height: 14px; fill: currentColor; }
         @media (prefers-color-scheme: dark) {
             .glass-exit-btn { background: rgba(30,30,30,0.6); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
         }
         .glass-exit-btn:active { transform: scale(0.96); opacity: 0.85; }
+
+        /* GREEN GLASS "Add Question" BUTTON — same shape/material as .glass-exit-btn,
+           tinted green to read as a constructive/add action instead of a destructive/back one. */
+        .glass-add-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 0 18px;
+            height: 38px; /* Same height as glass-exit-btn / segmented control */
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--success-green);
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+        .glass-add-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        @media (prefers-color-scheme: dark) {
+            .glass-add-btn { background: rgba(30,30,30,0.6); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        }
+        .glass-add-btn:active { transform: scale(0.96); opacity: 0.85; }
+
+        /* BOTTOM STICKY ACTION BAR — mirrors .sticky-action-bar but pinned to the bottom-left
+           of .quiz-container, so it sits flush below the content in the same left column as
+           the top bar's "Back" button. Holds the Customize/Select segmented control plus the
+           floating green "Add Question" button while the builder view is open. */
+        .bottom-action-bar {
+            position: sticky;
+            bottom: 0px;
+            z-index: 100;
+            display: none; /* toggled to flex only while the builder is open */
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            margin-top: 24px;
+            pointer-events: none;
+        }
+
+        .bottom-action-bar > * {
+            pointer-events: auto;
+        }
 
         /* BUILDER MODE SEGMENTED CONTROL (Customize / Select) — material+blur masking style */
         .builder-mode-control-wrap {
@@ -181,7 +232,7 @@
 
         .builder-seg-control {
             --seg-padding: 4px;
-            --seg-radius: 18px;
+            --seg-radius: 999px; /* Lekerekítés a gombhoz igazítva */
             background: rgba(255,255,255,0.5);
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -192,7 +243,8 @@
             display: flex;
             position: relative;
             width: 200px;
-            height: 38px;
+            height: 38px; /* Magasság a gombhoz igazítva */
+            box-sizing: border-box;
             cursor: pointer;
             touch-action: none;
             -webkit-user-select: none;
@@ -207,7 +259,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 14px; /* Betűméret a gombhoz igazítva */
             font-weight: 600;
             pointer-events: none;
             white-space: nowrap;
@@ -1191,20 +1243,6 @@
             <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             Back
         </button>
-
-        <div class="builder-mode-control-wrap" id="builder-mode-control-wrap">
-            <div class="builder-seg-control" id="builder-seg-control">
-                <div class="builder-seg-option seg-static">Customize</div>
-                <div class="builder-seg-option seg-static">Select</div>
-
-                <div class="builder-seg-slider animated" id="builder-seg-slider">
-                    <div class="builder-seg-mask animated" id="builder-seg-mask">
-                        <div class="builder-seg-option seg-mask">Customize</div>
-                        <div class="builder-seg-option seg-mask">Select</div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="mode-select-view" class="summary-card">
@@ -1310,16 +1348,32 @@
         <span class="section-header with-top-spacing">Questions</span>
         <div class="builder-question-list" id="builder-question-list"></div>
 
-        <button class="add-question-btn" onclick="addBuilderQuestion()">
-            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Add Question
-        </button>
-
         <div id="builder-error-display" class="error-banner"></div>
         <div id="builder-success-display" class="success-banner"></div>
 
         <div class="builder-actions">
             <button class="next-btn" onclick="downloadBuilderQuiz()">Download as JSON</button>
+        </div>
+
+        <div class="bottom-action-bar" id="bottom-action-bar">
+            <div class="builder-mode-control-wrap" id="builder-mode-control-wrap">
+                <div class="builder-seg-control" id="builder-seg-control">
+                    <div class="builder-seg-option seg-static">Customize</div>
+                    <div class="builder-seg-option seg-static">Select</div>
+
+                    <div class="builder-seg-slider animated" id="builder-seg-slider">
+                        <div class="builder-seg-mask animated" id="builder-seg-mask">
+                            <div class="builder-seg-option seg-mask">Customize</div>
+                            <div class="builder-seg-option seg-mask">Select</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="glass-add-btn" id="floating-add-question-btn" onclick="addBuilderQuestion()">
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add Question
+            </button>
         </div>
     </div>
 </div>
@@ -1421,6 +1475,7 @@
     const stickyActionBar = document.getElementById('sticky-action-bar');
     const exitBtnEl = document.getElementById('exit-btn');
     const builderBackBtnEl = document.getElementById('builder-back-btn');
+    const bottomActionBar = document.getElementById('bottom-action-bar');
     const builderModeControlWrapEl = document.getElementById('builder-mode-control-wrap');
 
     /* Lightbox elements */
@@ -1440,11 +1495,13 @@
             stickyActionBar.style.display = 'flex';
             exitBtnEl.style.display = 'flex';
             builderBackBtnEl.style.display = 'none';
+            bottomActionBar.style.display = 'none';
             builderModeControlWrapEl.style.display = 'none';
         } else if (which === 'builder-back') {
             stickyActionBar.style.display = 'flex';
             exitBtnEl.style.display = 'none';
             builderBackBtnEl.style.display = 'flex';
+            bottomActionBar.style.display = 'flex';
             builderModeControlWrapEl.style.display = 'flex';
             requestAnimationFrame(() => {
                 updateSegMaskWidth();
@@ -1454,6 +1511,7 @@
             stickyActionBar.style.display = 'none';
             exitBtnEl.style.display = 'none';
             builderBackBtnEl.style.display = 'none';
+            bottomActionBar.style.display = 'none';
             builderModeControlWrapEl.style.display = 'none';
         }
     }
