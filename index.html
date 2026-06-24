@@ -118,82 +118,30 @@
             user-select: none;
         }
 
-        /* Drag & security lock: while a drag (or any other animation) is in progress,
-           block all pointer interactions globally so nothing can be accidentally triggered. */
-        body.is-animating {
-            pointer-events: none !important;
-            cursor: not-allowed;
+        body.is-animating { pointer-events: none !important; cursor: not-allowed; }
+        body.is-dragging-active { cursor: grabbing !important; }
+        body:has(.quiz-container.builder-wide) { background-color: var(--builder-deep-bg); }
+
+        #question-text, .option-content-col span, .review-question-text, .review-badge span, .editable-input {
+            -webkit-user-select: text; user-select: text;
         }
 
-        /* During active drag: show a grabbing cursor even over non-draggable areas. */
-        body.is-dragging-active {
-            cursor: grabbing !important;
-        }
+        .quiz-container { padding: 32px; width: 100%; max-width: 600px; box-sizing: border-box; position: relative; }
+        .quiz-container.builder-wide { max-width: 680px; }
 
-        /* Builder (Create New Quiz / Edit Existing Quiz) gets its own deepest-background color,
-           scoped to only apply while the builder view is open, so the Play view is untouched. */
-        body:has(.quiz-container.builder-wide) {
-            background-color: var(--builder-deep-bg);
-        }
-
-        #question-text, 
-        .option-content-col span, 
-        .review-question-text, 
-        .review-badge span,
-        .editable-input {
-            -webkit-user-select: text;
-            user-select: text;
-        }
-
-        .quiz-container {
-            padding: 32px;
-            width: 100%;
-            max-width: 600px;
-            box-sizing: border-box;
-            position: relative; /* Fontos a sticky sávhoz */
-        }
-
-        .quiz-container.builder-wide {
-            max-width: 680px;
-        }
-
-        /* STICKY ACTION BAR - Visszarakva a tartalomba (safe zone), top-left igazítással */
         .sticky-action-bar {
-            position: sticky;
-            top: 0px; 
-            z-index: 100;
-            display: flex;
-            justify-content: flex-start; /* Mindent a bal oldalra (felső sarok felé) igazít */
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            margin-bottom: 24px;
-            pointer-events: none; /* Átengedi a kattintást, ha nincs gomb */
+            position: sticky; top: 0px; z-index: 100; display: flex; justify-content: flex-start;
+            align-items: center; gap: 12px; width: 100%; margin-bottom: 24px; pointer-events: none;
         }
-
-        .sticky-action-bar > * {
-            pointer-events: auto; /* A gomb viszont kattintható marad */
-        }
+        .sticky-action-bar > * { pointer-events: auto; }
 
         .glass-exit-btn {
-            border: none;
-            border-radius: 999px;
-            padding: 0 18px;
-            height: 38px; /* Szinkronban a segmented control magasságával */
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-main);
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-            cursor: pointer;
-            transition: transform 0.15s ease, opacity 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-sizing: border-box;
+            border: none; border-radius: 999px; padding: 0 18px; height: 38px; font-size: 14px;
+            font-weight: 600; color: var(--text-main); background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            cursor: pointer; transition: transform 0.15s ease, opacity 0.2s ease; display: flex;
+            align-items: center; gap: 6px; box-sizing: border-box;
         }
         .glass-exit-btn svg { width: 14px; height: 14px; fill: currentColor; }
         @media (prefers-color-scheme: dark) {
@@ -201,28 +149,12 @@
         }
         .glass-exit-btn:active { transform: scale(0.96); opacity: 0.85; }
 
-        /* GREEN GLASS "Add Question" BUTTON — same shape/material as .glass-exit-btn,
-           tinted green to read as a constructive/add action instead of a destructive/back one. */
         .glass-add-btn {
-            border: none;
-            border-radius: 999px;
-            padding: 0 18px;
-            height: 38px; /* Same height as glass-exit-btn / segmented control */
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--success-green);
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-            cursor: pointer;
-            transition: transform 0.15s ease, opacity 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-sizing: border-box;
-            white-space: nowrap;
+            border: none; border-radius: 999px; padding: 0 18px; height: 38px; font-size: 14px; font-weight: 600;
+            color: var(--success-green); background: rgba(255,255,255,0.5); backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.15s ease, opacity 0.2s ease;
+            display: flex; align-items: center; gap: 6px; box-sizing: border-box; white-space: nowrap;
         }
         .glass-add-btn svg { width: 14px; height: 14px; fill: currentColor; }
         @media (prefers-color-scheme: dark) {
@@ -230,619 +162,150 @@
         }
         .glass-add-btn:active { transform: scale(0.96); opacity: 0.85; }
 
-        /* DOWNLOAD BUTTON — same glass/material shape as the Back button, pinned to the
-           right edge of the same top sticky bar via margin-left:auto. Starts out muted
-           (grey text = "not ready yet") and switches to apple-blue once the quiz in the
-           builder passes validation, giving a quiet visual cue that it's safe to download. */
-        .glass-download-btn {
-            margin-left: auto;
-            color: var(--text-secondary);
-            transition: color 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
-        }
-        .glass-download-btn.is-ready {
-            color: var(--apple-blue);
-        }
+        .glass-download-btn { margin-left: auto; color: var(--text-secondary); transition: color 0.2s ease, transform 0.15s ease, opacity 0.2s ease; }
+        .glass-download-btn.is-ready { color: var(--apple-blue); }
 
-        /* BOTTOM STICKY ACTION BAR — mirrors .sticky-action-bar but pinned to the bottom-left
-           of .quiz-container, so it sits flush below the content in the same left column as
-           the top bar's "Back" button. Holds the Customize/Select segmented control plus the
-           floating green "Add Question" button while the builder view is open. */
         .bottom-action-bar {
-            position: sticky;
-            bottom: 0px;
-            z-index: 100;
-            display: none; /* toggled to flex only while the builder is open */
-            justify-content: flex-start;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            margin-top: 24px;
-            pointer-events: none;
+            position: sticky; bottom: 0px; z-index: 100; display: none; justify-content: flex-start;
+            align-items: center; gap: 12px; width: 100%; margin-top: 24px; pointer-events: none;
         }
+        .bottom-action-bar > * { pointer-events: auto; }
 
-        .bottom-action-bar > * {
-            pointer-events: auto;
-        }
-
-        /* BUILDER MODE SEGMENTED CONTROL (Customize / Select) — material+blur masking style */
-        .builder-mode-control-wrap {
-            display: none; /* toggled to flex only while the builder is open */
-        }
-
+        .builder-mode-control-wrap { display: none; }
         .builder-seg-control {
-            --seg-padding: 4px;
-            --seg-radius: 999px; /* Lekerekítés a gombhoz igazítva */
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-            border-radius: var(--seg-radius);
-            padding: var(--seg-padding);
-            display: flex;
-            position: relative;
-            width: 200px;
-            height: 38px; /* Magasság a gombhoz igazítva */
-            box-sizing: border-box;
-            cursor: pointer;
-            touch-action: none;
-            -webkit-user-select: none;
-            user-select: none;
+            --seg-padding: 4px; --seg-radius: 999px; background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border-radius: var(--seg-radius); padding: var(--seg-padding); display: flex; position: relative;
+            width: 200px; height: 38px; box-sizing: border-box; cursor: pointer; touch-action: none; user-select: none;
         }
         @media (prefers-color-scheme: dark) {
             .builder-seg-control { background: rgba(30,30,30,0.6); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
         }
-
-        .builder-seg-option {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px; /* Betűméret a gombhoz igazítva */
-            font-weight: 600;
-            pointer-events: none;
-            white-space: nowrap;
-        }
+        .builder-seg-option { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; pointer-events: none; white-space: nowrap; }
         .builder-seg-option.seg-static { color: var(--text-main); z-index: 0; }
-
         .builder-seg-slider {
-            position: absolute;
-            top: var(--seg-padding);
-            left: var(--seg-padding);
-            height: calc(100% - (var(--seg-padding) * 2));
-            width: calc(50% - var(--seg-padding));
-            border-radius: calc(var(--seg-radius) - var(--seg-padding));
-            background-color: var(--apple-blue);
-            box-shadow: 0 3px 1px rgba(0,0,0,0.04), 0 3px 8px rgba(0,0,0,0.12);
-            z-index: 1;
-            cursor: grab;
-            overflow: hidden;
+            position: absolute; top: var(--seg-padding); left: var(--seg-padding); height: calc(100% - (var(--seg-padding) * 2));
+            width: calc(50% - var(--seg-padding)); border-radius: calc(var(--seg-radius) - var(--seg-padding));
+            background-color: var(--apple-blue); box-shadow: 0 3px 1px rgba(0,0,0,0.04), 0 3px 8px rgba(0,0,0,0.12); z-index: 1; cursor: grab; overflow: hidden;
         }
         .builder-seg-slider:active { cursor: grabbing; }
-
-        .builder-seg-mask {
-            position: absolute;
-            top: 0; left: 0; height: 100%;
-            display: flex;
-            transform: translateX(0);
-        }
+        .builder-seg-mask { position: absolute; top: 0; left: 0; height: 100%; display: flex; transform: translateX(0); }
         .builder-seg-option.seg-mask { color: #ffffff; }
+        .builder-seg-slider.animated, .builder-seg-mask.animated { transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
-        .builder-seg-slider.animated,
-        .builder-seg-mask.animated {
-            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+        .header-info { padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--separator); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .quiz-name { font-size: 13px; color: var(--apple-blue); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; flex: 1; }
+        .progress { font-size: 13px; color: var(--text-secondary); font-weight: 500; margin: 0; white-space: nowrap; }
+        .quiz-desc { font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.4; }
+        .quiz-desc:not(:empty) { margin-top: 6px; }
+        .quiz-desc:empty { display: none; }
+        h2 { font-size: 26px; font-weight: 700; margin-top: 0; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); letter-spacing: -0.5px; }
 
-
-        .header-info {
-            padding-bottom: 16px;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--separator);
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .quiz-name {
-            font-size: 13px;
-            color: var(--apple-blue);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 0;
-            flex: 1;
-        }
-
-        .progress {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            margin: 0;
-            white-space: nowrap;
-        }
-
-        .quiz-desc {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        .quiz-desc:not(:empty) {
-            margin-top: 6px;
-        }
-
-        .quiz-desc:empty {
-            display: none;
-        }
-
-        h2 {
-            font-size: 26px;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 24px;
-            line-height: 1.3;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
-
-        /* Question Image */
         #play-question-image {
-            max-width: 100%;
-            max-height: 250px;
-            border-radius: 18px;
-            margin-bottom: 24px;
-            object-fit: contain;
-            display: none;
-            background-color: var(--option-bg);
-            border: 1px solid var(--border-color);
-            cursor: zoom-in;
-            transition: opacity 0.2s;
+            max-width: 100%; max-height: 250px; border-radius: 18px; margin-bottom: 24px; object-fit: contain;
+            display: none; background-color: var(--option-bg); border: 1px solid var(--border-color); cursor: zoom-in; transition: opacity 0.2s;
         }
-        #play-question-image:hover {
-            opacity: 0.9;
-        }
+        #play-question-image:hover { opacity: 0.9; }
 
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            margin-bottom: 24px;
-            background-color: var(--bg-panel);
-            border-radius: 18px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-            /* overflow: hidden SZÁNDÉKOSAN NINCS — az levágja az első/utolsó gomb sarkait */
-        }
-
-        /* Számozás a válaszok előtt */
-        .option-number {
-            flex-shrink: 0;
-            width: 22px;
-            text-align: right;
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-tertiary);
-            line-height: 1.4;
-            letter-spacing: -0.2px;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
+        .options-container { display: flex; flex-direction: column; gap: 0; margin-bottom: 24px; background-color: var(--bg-panel); border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .option-number { flex-shrink: 0; width: 22px; text-align: right; font-size: 15px; font-weight: 500; color: var(--text-tertiary); line-height: 1.4; letter-spacing: -0.2px; user-select: none; }
         .option-btn {
-            background-color: transparent;
-            color: var(--text-main);
-            /* 2px transparent border mindig jelen van, hogy layout ne ugorjon */
-            border: 2px solid transparent;
-            padding: 12px 14px;
-            border-radius: 0;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            box-sizing: border-box;
-            position: relative;
-            /* Negatív margin: az aktív gomb 2px border-ja "lefed" 1px-t a szomszédból
-               minden egyes gombnál egységesen alkalmazzuk, így a layout stabil marad */
-            margin: -1px 0;
+            background-color: transparent; color: var(--text-main); border: 2px solid transparent; padding: 12px 14px;
+            border-radius: 0; text-align: left; font-size: 15px; font-weight: 500; cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease; width: 100%; display: flex; flex-direction: row;
+            justify-content: space-between; align-items: center; gap: 12px; box-sizing: border-box; position: relative; margin: -1px 0;
         }
+        .options-container .option-btn:first-child { margin-top: 0; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+        .options-container .option-btn:last-child { margin-bottom: 0; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
+        .option-btn:not(:last-child)::after { content: ''; position: absolute; left: 48px; right: 14px; bottom: 0; height: 1px; background-color: var(--separator); }
+        .option-btn:hover:not(:disabled):not(:last-child)::after, .option-btn:active:not(:disabled):not(:last-child)::after, .option-btn.selected:not(:last-child)::after,
+        .option-btn.correct-state:not(:last-child)::after, .option-btn.incorrect-state:not(:last-child)::after, .option-btn.missed-state:not(:last-child)::after,
+        .option-btn:has(+ .option-btn:hover:not(:disabled))::after, .option-btn:has(+ .option-btn:active:not(:disabled))::after, .option-btn:has(+ .option-btn.selected)::after,
+        .option-btn:has(+ .option-btn.correct-state)::after, .option-btn:has(+ .option-btn.incorrect-state)::after, .option-btn:has(+ .option-btn.missed-state)::after { display: none; }
 
-        /* Az első gomb ne húzódjon fel a container fölé */
-        .options-container .option-btn:first-child {
-            margin-top: 0;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-        }
-        .options-container .option-btn:last-child {
-            margin-bottom: 0;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-        }
+        .option-content-col { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; min-width: 0; word-break: break-word; }
+        .option-img-wrap { flex-shrink: 0; width: 100px; height: 100px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.04); border: 1px solid var(--border-color); padding: 4px; }
+        @media (prefers-color-scheme: dark) { .option-img-wrap { background: rgba(255,255,255,0.06); } }
+        .option-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; pointer-events: none; }
 
-        /* Elválasztó: a szám belső szélétől indul (padding 14 + szám 22 + gap 12 = 48px),
-           jobb oldal tükörszimmetrikusan 14px */
-        .option-btn:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 48px;
-            right: 14px;
-            bottom: 0;
-            height: 1px;
-            background-color: var(--separator);
-        }
-
-        .option-btn:hover:not(:disabled):not(:last-child)::after,
-        .option-btn:active:not(:disabled):not(:last-child)::after,
-        .option-btn.selected:not(:last-child)::after,
-        .option-btn.correct-state:not(:last-child)::after,
-        .option-btn.incorrect-state:not(:last-child)::after,
-        .option-btn.missed-state:not(:last-child)::after,
-        .option-btn:has(+ .option-btn:hover:not(:disabled))::after,
-        .option-btn:has(+ .option-btn:active:not(:disabled))::after,
-        .option-btn:has(+ .option-btn.selected)::after,
-        .option-btn:has(+ .option-btn.correct-state)::after,
-        .option-btn:has(+ .option-btn.incorrect-state)::after,
-        .option-btn:has(+ .option-btn.missed-state)::after {
-            display: none;
-        }
-
-        .option-content-col {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-            flex: 1;
-            min-width: 0;
-            word-break: break-word;
-        }
-
-        /* Right-aligned option image - Nagyobb méret, nincs zoom */
-        .option-img-wrap {
-            flex-shrink: 0;
-            width: 100px;
-            height: 100px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.04);
-            border: 1px solid var(--border-color);
-            padding: 4px;
-        }
-        
-        @media (prefers-color-scheme: dark) {
-            .option-img-wrap { background: rgba(255,255,255,0.06); }
-        }
-
-        .option-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 8px;
-            pointer-events: none;
-        }
-
-        .option-btn:hover:not(:disabled) {
-            background-color: var(--option-hover);
-        }
-
-        .option-btn.selected {
-            border-color: var(--apple-blue);
-            background-color: var(--option-selected-bg);
-            z-index: 2;
-        }
-
+        .option-btn:hover:not(:disabled) { background-color: var(--option-hover); }
+        .option-btn.selected { border-color: var(--apple-blue); background-color: var(--option-selected-bg); z-index: 2; }
         .multi-select-hint { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: -10px 0 14px 2px; display: flex; align-items: center; gap: 6px; }
         .multi-select-hint svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
+        .play-points-badge { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: -18px 0 18px 2px; display: block; }
 
-        /* Points badge — sits below the question text, above the image/options */
-        .play-points-badge {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin: -18px 0 18px 2px;
-            display: block;
-        }
+        .option-btn.missed-state { background-color: transparent !important; color: var(--success-text) !important; border-color: var(--success-green) !important; cursor: default; z-index: 2; }
+        .option-btn.correct-state { background-color: var(--success-bg) !important; color: var(--success-text) !important; border-color: transparent !important; cursor: default; z-index: 1; }
+        .option-btn.correct-state.was-chosen { border-color: var(--apple-blue) !important; z-index: 2; }
+        .option-btn.incorrect-state { background-color: var(--error-bg) !important; color: var(--error-text) !important; border-color: transparent !important; cursor: default; z-index: 1; }
+        .option-btn.incorrect-state.was-chosen { border-color: var(--apple-blue) !important; z-index: 2; }
+        .option-btn.dimmed-state { opacity: 0.4; cursor: default; }
 
-        /* Used in player when an option was a correct answer the user did not pick (multi-select reveal) */
-        .option-btn.missed-state {
-            background-color: transparent !important;
-            color: var(--success-text) !important;
-            border-color: var(--success-green) !important;
-            cursor: default;
-            z-index: 2;
-        }
-
-        .option-btn.correct-state {
-            background-color: var(--success-bg) !important;
-            color: var(--success-text) !important;
-            border-color: transparent !important;
-            cursor: default;
-            z-index: 1;
-        }
-
-        /* User's chosen answer: keep apple-blue border, bg reflects correctness */
-        .option-btn.correct-state.was-chosen {
-            border-color: var(--apple-blue) !important;
-            z-index: 2;
-        }
-
-        .option-btn.incorrect-state {
-            background-color: var(--error-bg) !important;
-            color: var(--error-text) !important;
-            border-color: transparent !important;
-            cursor: default;
-            z-index: 1;
-        }
-
-        .option-btn.incorrect-state.was-chosen {
-            border-color: var(--apple-blue) !important;
-            z-index: 2;
-        }
-
-        .option-btn.dimmed-state {
-            opacity: 0.4;
-            cursor: default;
-        }
-
-        .btn-meta {
-            font-size: 13px;
-            font-weight: 600;
-            opacity: 0.8;
-            white-space: nowrap;
-            color: var(--apple-blue);
-            margin-top: 2px;
-        }
-
+        .btn-meta { font-size: 13px; font-weight: 600; opacity: 0.8; white-space: nowrap; color: var(--apple-blue); margin-top: 2px; }
         .option-btn.correct-state .btn-meta { color: var(--success-text); }
         .option-btn.incorrect-state .btn-meta { color: var(--error-text); }
 
-        .next-btn {
-            width: 100%;
-            background-color: var(--apple-blue);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 18px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
+        .next-btn { width: 100%; background-color: var(--apple-blue); color: white; border: none; padding: 16px; border-radius: 18px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        .next-btn:active { opacity: 0.8; }
+        .next-btn:disabled { background-color: var(--option-hover); color: var(--text-secondary); cursor: not-allowed; }
+        .cancel-text-btn { background: transparent; border: none; color: var(--apple-blue); font-size: 15px; font-weight: 500; margin-top: 16px; cursor: pointer; -webkit-appearance: none; width: 100%; padding: 12px; transition: opacity 0.2s; }
+        .cancel-text-btn:active { opacity: 0.6; }
 
-        .next-btn:active {
-            opacity: 0.8;
-        }
+        .summary-card { text-align: center; }
+        .score-circle { width: 120px; height: 120px; background-color: var(--score-bg); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 700; color: var(--apple-blue); margin: 0 auto 24px; transition: all 0.3s ease; }
 
-        .next-btn:disabled {
-            background-color: var(--option-hover);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-        }
+        .review-area { margin-top: 32px; border-top: 1px solid var(--border-color); text-align: left; }
+        .review-item { padding: 24px 0; border-bottom: 1px solid var(--border-color); }
+        .review-item:last-child { border-bottom: none; }
+        .review-question-text { font-size: 15px; font-weight: 600; color: var(--text-main); margin: 0 0 14px 0; }
+        .review-q-img { max-width: 100%; max-height: 150px; border-radius: 14px; margin-bottom: 12px; object-fit: contain; border: 1px solid var(--border-color); cursor: zoom-in; }
+        .review-choices { display: flex; flex-direction: column; gap: 0; background-color: var(--bg-panel); border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; }
+        .review-badge { font-size: 14px; padding: 12px 16px; border-radius: 0; box-shadow: inset 0 0 0 0 transparent; font-weight: 500; background-color: transparent; color: var(--text-secondary); display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; position: relative; }
+        .review-badge:not(:last-child)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background-color: var(--separator); }
+        .review-badge.correct-review:not(:last-child)::after, .review-badge.incorrect-review:not(:last-child)::after,
+        .review-choices .review-badge:has(+ .review-badge.correct-review)::after, .review-choices .review-badge:has(+ .review-badge.incorrect-review)::after { display: none; }
+        .review-choices .review-badge:first-child { border-top-left-radius: 14px; border-top-right-radius: 14px; }
+        .review-choices .review-badge:last-child { border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; }
+        .review-choices .review-badge.correct-review, .review-choices .review-badge.incorrect-review { z-index: 1; }
+        .review-badge-text-col { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; }
+        .review-badge.correct-review { background-color: var(--success-bg); color: var(--success-text); }
+        .review-badge.correct-review.was-chosen { box-shadow: inset 0 0 0 2px var(--apple-blue); }
+        .review-badge.incorrect-review { background-color: var(--error-bg); color: var(--error-text); }
+        .review-badge.incorrect-review.was-chosen { box-shadow: inset 0 0 0 2px var(--apple-blue); }
 
-        .cancel-text-btn {
-            background: transparent;
-            border: none;
-            color: var(--apple-blue);
-            font-size: 15px;
-            font-weight: 500;
-            margin-top: 16px;
-            cursor: pointer;
-            -webkit-appearance: none;
-            width: 100%;
-            padding: 12px;
-            transition: opacity 0.2s;
+        .error-banner { background-color: var(--error-bg); color: var(--error-red); padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 500; margin-top: 16px; display: none; text-align: left; white-space: pre-line; }
+        .download-error-banner {
+            background-color: #FFF8F3; color: #B64015; border: 1px solid #B64015;
+            padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 500;
+            margin-top: 16px; display: none; text-align: left; white-space: pre-line;
         }
-        
-        .cancel-text-btn:active {
-            opacity: 0.6;
+        @media (prefers-color-scheme: dark) {
+            .download-error-banner { background-color: #240F05; color: #F2591D; border-color: #F2591D; }
         }
-
-        .summary-card {
-            text-align: center;
+        .success-banner {
+            background-color: var(--success-bg); color: var(--success-text);
+            padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 500;
+            margin-top: 16px; display: none; text-align: left; white-space: pre-line;
         }
-
-        .score-circle {
-            width: 120px;
-            height: 120px;
-            background-color: var(--score-bg);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--apple-blue);
-            margin: 0 auto 24px;
-            transition: all 0.3s ease;
-        }
-
-        .review-area {
-            margin-top: 32px;
-            border-top: 1px solid var(--border-color);
-            text-align: left;
-        }
-
-        .review-item {
-            padding: 24px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .review-item:last-child {
-            border-bottom: none;
-        }
-
-        .review-question-text {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin: 0 0 14px 0;
-        }
-
-        .review-q-img {
-            max-width: 100%;
-            max-height: 150px;
-            border-radius: 14px;
-            margin-bottom: 12px;
-            object-fit: contain;
-            border: 1px solid var(--border-color);
-            cursor: zoom-in;
-        }
-
-        .review-choices {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            background-color: var(--bg-panel);
-            border-radius: 16px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-            overflow: hidden;
-        }
-
-        .review-badge {
-            font-size: 14px;
-            padding: 12px 16px;
-            border-radius: 0;
-            box-shadow: inset 0 0 0 0 transparent;
-            font-weight: 500;
-            background-color: transparent;
-            color: var(--text-secondary);
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            position: relative;
-        }
-
-        .review-badge:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 1px;
-            background-color: var(--separator);
-        }
-
-        .review-badge.correct-review:not(:last-child)::after,
-        .review-badge.incorrect-review:not(:last-child)::after,
-        .review-choices .review-badge:has(+ .review-badge.correct-review)::after,
-        .review-choices .review-badge:has(+ .review-badge.incorrect-review)::after {
-            display: none;
-        }
-
-        .review-choices .review-badge:first-child {
-            border-top-left-radius: 14px;
-            border-top-right-radius: 14px;
-        }
-        .review-choices .review-badge:last-child {
-            border-bottom-left-radius: 14px;
-            border-bottom-right-radius: 14px;
-        }
-        .review-choices .review-badge.correct-review,
-        .review-choices .review-badge.incorrect-review {
-            z-index: 1;
-        }
-
-        .review-badge-text-col {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-            flex: 1;
-        }
-
-        .review-badge.correct-review {
-            background-color: var(--success-bg);
-            color: var(--success-text);
-        }
-
-        .review-badge.correct-review.was-chosen {
-            box-shadow: inset 0 0 0 2px var(--apple-blue);
-        }
-
-        .review-badge.incorrect-review {
-            background-color: var(--error-bg);
-            color: var(--error-text);
-        }
-
-        .review-badge.incorrect-review.was-chosen {
-            box-shadow: inset 0 0 0 2px var(--apple-blue);
-        }
-
-        .review-meta {
-            font-size: 12px;
-            font-weight: 600;
-            opacity: 0.8;
-            white-space: nowrap;
-        }
-
-        .error-banner {
-            background-color: var(--error-bg);
-            color: var(--error-red);
-            padding: 12px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 500;
-            margin-top: 16px;
-            display: none;
-            text-align: left;
-            white-space: pre-line;
-        }
-        
         p { color: var(--text-secondary); margin-bottom: 24px; }
 
         /* MODALS */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--overlay-bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s;
-            touch-action: none;
-            will-change: opacity;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg);
+            display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; visibility: hidden;
+            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none; will-change: opacity;
         }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.15s ease-out, visibility 0s linear 0s;
-        }
-
+        .modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
         .apple-alert {
-            background: var(--bg-alert);
-            width: 340px;
-            border-radius: 28px;
-            text-align: left;
+            background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left;
             box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
-            backdrop-filter: blur(50px) saturate(200%);
-            -webkit-backdrop-filter: blur(50px) saturate(200%);
-            border: 1px solid var(--alert-border);
-            box-sizing: border-box;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            will-change: opacity;
+            backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
+            border: 1px solid var(--alert-border); box-sizing: border-box; -webkit-transform: translateZ(0);
+            transform: translateZ(0); will-change: opacity;
         }
-
-        @media (prefers-color-scheme: dark) {
-            .apple-alert { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); }
-        }
-
+        @media (prefers-color-scheme: dark) { .apple-alert { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); } }
         .alert-content { padding: 24px 20px 20px 20px; }
         .alert-title { font-size: 19px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-main); letter-spacing: -0.5px; }
         .alert-message { font-size: 14px; font-weight: 400; margin: 0; color: var(--text-main); line-height: 1.4; }
@@ -851,67 +314,59 @@
         .alert-btn { flex: 1; padding: 12px 10px; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 16px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
         .alert-btn.cancel-btn { background-color: var(--apple-blue); color: #ffffff; }
         .alert-btn.destructive { background-color: rgba(0, 0, 0, 0.05); color: var(--error-red); }
-        @media (prefers-color-scheme: dark) { .alert-btn.destructive { background-color: rgba(255, 255, 255, 0.1); } }
+        .alert-btn.primary { background-color: var(--apple-blue); color: #ffffff; }
+        .alert-btn.secondary { background-color: rgba(0, 0, 0, 0.05); color: var(--text-main); }
+        @media (prefers-color-scheme: dark) { 
+            .alert-btn.destructive { background-color: rgba(255, 255, 255, 0.1); } 
+            .alert-btn.secondary { background-color: rgba(255, 255, 255, 0.1); }
+        }
         .alert-btn:active { transform: scale(0.97); opacity: 0.8; }
+
+        /* PASSWORD MODAL AND iOS TOGGLE CSS */
+        .ios-toggle {
+            position: relative; width: 44px; height: 24px; -webkit-appearance: none; background: rgba(120, 120, 128, 0.16);
+            outline: none; border-radius: 12px; transition: background 0.2s; cursor: pointer; flex-shrink: 0;
+        }
+        @media (prefers-color-scheme: dark) { .ios-toggle { background: rgba(120, 120, 128, 0.32); } }
+        .ios-toggle:checked { background: var(--success-green); }
+        .ios-toggle::after {
+            content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff;
+            border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .ios-toggle:checked::after { transform: translateX(20px); }
+
+        .pwd-wrapper { position: relative; display: flex; align-items: center; margin-top: 14px; }
+        .pwd-wrapper .text-input { margin-bottom: 0; padding-right: 44px; }
+        .pwd-eye-btn {
+            position: absolute; right: 10px; background: none; border: none; color: var(--text-tertiary);
+            cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;
+            transition: color 0.2s;
+        }
+        .pwd-eye-btn:hover { color: var(--apple-blue); }
+        .pwd-eye-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
         /* LIGHTBOX FOR IMAGE ZOOM */
         .lightbox-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 20000;
-            opacity: 0; visibility: hidden;
-            transition: opacity 0.2s ease;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex;
+            justify-content: center; align-items: center; z-index: 20000; opacity: 0; visibility: hidden;
+            transition: opacity 0.2s ease; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
-        .lightbox-overlay.active {
-            opacity: 1; visibility: visible;
-        }
-        .lightbox-img {
-            max-width: 90vw;
-            max-height: 90vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            object-fit: contain;
-            transform: scale(0.95);
-            transition: transform 0.2s ease;
-        }
-        .lightbox-overlay.active .lightbox-img {
-            transform: scale(1);
-        }
+        .lightbox-overlay.active { opacity: 1; visibility: visible; }
+        .lightbox-img { max-width: 90vw; max-height: 90vh; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); object-fit: contain; transform: scale(0.95); transition: transform 0.2s ease; }
+        .lightbox-overlay.active .lightbox-img { transform: scale(1); }
         .lightbox-close {
-            position: absolute;
-            top: max(24px, env(safe-area-inset-top)); 
-            right: max(24px, env(safe-area-inset-right));
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 44px; height: 44px;
-            cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            transition: background 0.2s;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            position: absolute; top: max(24px, env(safe-area-inset-top)); right: max(24px, env(safe-area-inset-right));
+            background: rgba(255,255,255,0.15); color: white; border: none; border-radius: 50%; width: 44px; height: 44px;
+            cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background 0.2s;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
         .lightbox-close svg { width: 20px; height: 20px; fill: currentColor; }
         .lightbox-close:hover { background: rgba(255,255,255,0.3); }
 
         .mode-choice-grid { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
-        .mode-choice-btn {
-            background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; padding: 20px;
-            border-radius: 20px; text-align: left; cursor: pointer; transition: all 0.25s ease;
-            display: flex; align-items: flex-start; gap: 16px;
-        }
+        .mode-choice-btn { background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; padding: 20px; border-radius: 20px; text-align: left; cursor: pointer; transition: all 0.25s ease; display: flex; align-items: flex-start; gap: 16px; }
         .mode-choice-btn:hover { background-color: var(--option-hover); }
-        .mode-icon-container {
-            flex-shrink: 0; width: 40px; height: 40px; border-radius: 14px; background-color: var(--bg-card);
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); color: var(--apple-blue);
-        }
+        .mode-icon-container { flex-shrink: 0; width: 40px; height: 40px; border-radius: 14px; background-color: var(--bg-card); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); color: var(--apple-blue); }
         .mode-icon-container svg { width: 20px; height: 20px; fill: currentColor; }
         .mode-text-container { display: flex; flex-direction: column; gap: 4px; }
         .mode-choice-btn .mode-title { font-size: 16px; font-weight: 600; color: var(--text-main); letter-spacing: -0.2px; }
@@ -921,291 +376,74 @@
         .section-header.with-top-spacing { margin-top: 28px; }
         .field-label { text-align: left; font-size: 13px; font-weight: 600; color: var(--text-main); margin: 0 0 8px 0; display: block; }
 
-        /* QUIZ DETAILS CARD — same card material as question cards */
-        .builder-meta-card {
-            background-color: rgb(254, 254, 254);
-            border-radius: 18px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-            padding: 14px 14px 4px 14px;
-            margin-bottom: 0;
-            box-sizing: border-box;
-            position: relative;
-        }
-        @media (prefers-color-scheme: dark) {
-            .builder-meta-card { background-color: rgb(39, 39, 41); }
-        }
-        .builder-meta-card .builder-meta-separator {
-            height: 2px;
-            background-color: var(--builder-question-separator);
-            margin: 10px -14px;
-        }
+        .builder-meta-card { background-color: rgb(254, 254, 254); border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); padding: 14px 14px 4px 14px; margin-bottom: 0; box-sizing: border-box; position: relative; }
+        @media (prefers-color-scheme: dark) { .builder-meta-card { background-color: rgb(39, 39, 41); } }
+        .builder-meta-card .builder-meta-separator { height: 2px; background-color: var(--builder-question-separator); margin: 10px -14px; }
+        .builder-meta-divider { border: none; border-top: 1px solid var(--separator); margin: 32px 0 32px 0; }
 
-        /* Separator between meta-card and question list — same 1px line as Play mode header-info */
-        .builder-meta-divider {
-            border: none;
-            border-top: 1px solid var(--separator);
-            margin: 32px 0 32px 0;
-        }
-
-        /* TITLE field — mirrors .builder-question-input 8-state color matrix */
         .builder-meta-card .builder-meta-input {
-            margin-bottom: 0;
-            width: 100%;
-            box-sizing: border-box;
-            background-color: rgb(234, 245, 254);
-            color: rgb(131, 194, 251);
-            font-size: 17px;
-            font-weight: 500;
-            line-height: 1.4;
-            padding: 5px 8px;
-            border-radius: 10px;
-            border: 2px solid transparent;
-            font-family: inherit;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-            outline: none;
+            margin-bottom: 0; width: 100%; box-sizing: border-box; background-color: rgb(234, 245, 254); color: rgb(131, 194, 251);
+            font-size: 17px; font-weight: 500; line-height: 1.4; padding: 5px 8px; border-radius: 10px; border: 2px solid transparent;
+            font-family: inherit; text-transform: uppercase; letter-spacing: 0.3px; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; outline: none;
         }
-        .builder-meta-card .builder-meta-input::placeholder {
-            color: rgb(131, 194, 251);
-            font-weight: 500;
-            opacity: 1;
-        }
-        .builder-meta-card .builder-meta-input:not(:placeholder-shown):not(:focus) {
-            background-color: rgb(234, 245, 254);
-            color: rgb(9, 124, 249);
-        }
-        .builder-meta-card .builder-meta-input:focus:placeholder-shown {
-            background-color: rgb(241, 241, 242);
-            color: rgb(134, 134, 135);
-            border-color: transparent;
-        }
-        .builder-meta-card .builder-meta-input:focus:placeholder-shown::placeholder {
-            color: rgb(134, 134, 135);
-        }
-        .builder-meta-card .builder-meta-input:focus:not(:placeholder-shown) {
-            background-color: rgb(241, 241, 242);
-            color: rgb(0, 0, 0);
-            border-color: transparent;
-        }
+        .builder-meta-card .builder-meta-input::placeholder { color: rgb(131, 194, 251); font-weight: 500; opacity: 1; }
+        .builder-meta-card .builder-meta-input:not(:placeholder-shown):not(:focus) { background-color: rgb(234, 245, 254); color: rgb(9, 124, 249); }
+        .builder-meta-card .builder-meta-input:focus:placeholder-shown { background-color: rgb(241, 241, 242); color: rgb(134, 134, 135); border-color: transparent; }
+        .builder-meta-card .builder-meta-input:focus:placeholder-shown::placeholder { color: rgb(134, 134, 135); }
+        .builder-meta-card .builder-meta-input:focus:not(:placeholder-shown) { background-color: rgb(241, 241, 242); color: rgb(0, 0, 0); border-color: transparent; }
         @media (prefers-color-scheme: dark) {
-            .builder-meta-card .builder-meta-input {
-                background-color: rgb(37, 45, 53);
-                color: rgb(24, 78, 125);
-            }
-            .builder-meta-card .builder-meta-input::placeholder {
-                color: rgb(24, 78, 125);
-                font-weight: 500;
-            }
-            .builder-meta-card .builder-meta-input:not(:placeholder-shown):not(:focus) {
-                background-color: rgb(37, 45, 53);
-                color: rgb(10, 134, 249);
-            }
-            .builder-meta-card .builder-meta-input:focus:placeholder-shown {
-                background-color: rgb(47, 47, 49);
-                color: rgb(122, 122, 124);
-            }
-            .builder-meta-card .builder-meta-input:focus:placeholder-shown::placeholder {
-                color: rgb(122, 122, 124);
-            }
-            .builder-meta-card .builder-meta-input:focus:not(:placeholder-shown) {
-                background-color: rgb(47, 47, 49);
-                color: rgb(254, 254, 254);
-            }
+            .builder-meta-card .builder-meta-input { background-color: rgb(37, 45, 53); color: rgb(24, 78, 125); }
+            .builder-meta-card .builder-meta-input::placeholder { color: rgb(24, 78, 125); font-weight: 500; }
+            .builder-meta-card .builder-meta-input:not(:placeholder-shown):not(:focus) { background-color: rgb(37, 45, 53); color: rgb(10, 134, 249); }
+            .builder-meta-card .builder-meta-input:focus:placeholder-shown { background-color: rgb(47, 47, 49); color: rgb(122, 122, 124); }
+            .builder-meta-card .builder-meta-input:focus:placeholder-shown::placeholder { color: rgb(122, 122, 124); }
+            .builder-meta-card .builder-meta-input:focus:not(:placeholder-shown) { background-color: rgb(47, 47, 49); color: rgb(254, 254, 254); }
         }
 
-        /* SUMMARY field — mirrors .builder-option-input color matrix */
-        .builder-meta-card .builder-meta-textarea {
-            margin-bottom: 0;
-            width: 100%;
-            box-sizing: border-box;
-            background-color: transparent;
-            color: var(--text-main);
-            font-size: 15px;
-            font-weight: 400;
-            line-height: 1.4;
-            padding: 7px 8px;
-            border-radius: 10px;
-            border: none;
-            min-height: 36px;
-            resize: none;
-            overflow: hidden;
-            font-family: inherit;
-            outline: none;
-        }
-        .builder-meta-card .builder-meta-textarea::placeholder {
-            color: var(--builder-empty-answer-text);
-            font-weight: 400;
-        }
-        .builder-meta-card .builder-meta-textarea:focus {
-            background-color: transparent;
-            outline: none;
-        }
+        .builder-meta-card .builder-meta-textarea { margin-bottom: 0; width: 100%; box-sizing: border-box; background-color: transparent; color: var(--text-main); font-size: 15px; font-weight: 400; line-height: 1.4; padding: 7px 8px; border-radius: 10px; border: none; min-height: 36px; resize: none; overflow: hidden; font-family: inherit; outline: none; }
+        .builder-meta-card .builder-meta-textarea::placeholder { color: var(--builder-empty-answer-text); font-weight: 400; }
+        .builder-meta-card .builder-meta-textarea:focus { background-color: transparent; outline: none; }
 
-        .text-input, .textarea-input {
-            width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main);
-            border: 2px solid transparent; border-radius: 14px; padding: 14px 16px; font-size: 15px;
-            font-family: inherit; line-height: 1.4; margin-bottom: 20px; transition: border-color 0.2s ease, background-color 0.2s ease;
-        }
+        .text-input, .textarea-input { width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; border-radius: 14px; padding: 14px 16px; font-size: 15px; font-family: inherit; line-height: 1.4; margin-bottom: 20px; transition: border-color 0.2s ease, background-color 0.2s ease; }
         .text-input::placeholder, .textarea-input::placeholder { color: var(--text-tertiary); }
         .text-input:focus, .textarea-input:focus { outline: none; border-color: var(--apple-blue); }
+        .text-input.input-error { background-color: #FCEFEF; box-shadow: inset 0 0 0 1.5px #F1CBCB; }
+        @media (prefers-color-scheme: dark) { .text-input.input-error { background-color: #3E2223; box-shadow: inset 0 0 0 1.5px #663A3C; } }
         .textarea-input { resize: vertical; min-height: 50px; }
 
         .builder-question-list { display: flex; flex-direction: column; gap: 20px; margin-bottom: 20px; }
-        .builder-card {
-            padding: 0; text-align: left; box-sizing: border-box;
-            background-color: transparent; border-radius: 20px;
-            box-shadow: none;
-            border: none;
-            overflow: visible;
-            position: relative;
-        }
-        .builder-card-header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; gap: 10px; padding: 0 14px; }
-        .builder-card-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-
-        /* Question type toggle (Single / Multiple choice) */
-        .qtype-toggle { display: flex; background-color: var(--option-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 2px; gap: 2px; }
-        .qtype-toggle-btn {
-            border: none; background: transparent; color: var(--text-secondary); font-size: 11px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.3px; padding: 6px 10px; border-radius: 10px; cursor: pointer;
-            transition: background-color 0.15s ease, color 0.15s ease;
-        }
-        .qtype-toggle-btn.active { background-color: var(--apple-blue); color: #ffffff; }
-        .qtype-toggle-btn:not(.active):hover { background-color: var(--option-hover); color: var(--text-main); }
-
-        .qtype-hint { font-size: 12px; color: var(--text-secondary); margin: -4px 0 10px 4px; line-height: 1.4; }
-
-        /* Header sits transparently above the white question+answers panel */
+        .builder-card { padding: 0; text-align: left; box-sizing: border-box; background-color: transparent; border-radius: 20px; box-shadow: none; border: none; overflow: visible; position: relative; }
         .builder-card-top { padding: 0 0 14px 0; }
-
-        .builder-icon-btn {
-            background: transparent; border: none; color: var(--text-secondary); cursor: pointer;
-            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; transition: background-color 0.2s ease, color 0.2s ease; padding: 0;
-        }
-        .builder-icon-btn svg { width: 14px; height: 14px; fill: currentColor; }
-        .builder-icon-btn:hover { background-color: var(--option-hover); color: var(--error-red); }
-
-        .builder-question-input {
-            width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main);
-            border: 2px solid transparent; border-radius: 14px; padding: 14px 16px; font-size: 15px; font-weight: 600;
-            font-family: inherit; line-height: 1.4; margin-bottom: 14px; resize: vertical; min-height: 24px; transition: border-color 0.2s ease;
-        }
+        .builder-question-input { width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; border-radius: 14px; padding: 14px 16px; font-size: 15px; font-weight: 600; font-family: inherit; line-height: 1.4; margin-bottom: 14px; resize: vertical; min-height: 24px; transition: border-color 0.2s ease; }
         .builder-question-input::placeholder { color: var(--text-tertiary); font-weight: 400; }
         .builder-question-input:focus { outline: none; border-color: var(--apple-blue); }
 
         .builder-options-group { border-radius: 0; overflow: visible; background-color: transparent; position: relative; }
-        .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; position: relative; }
-        .builder-option-row:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 1px;
-            background-color: var(--builder-answer-separator);
-        }
-
-        .correct-toggle-btn {
-            flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border-color);
-            background-color: var(--bg-panel); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0;
-        }
-        .correct-toggle-btn svg { width: 12px; height: 12px; fill: currentColor; }
-        .correct-toggle-btn:hover { border-color: var(--success-green); color: var(--success-green); }
-        .correct-toggle-btn.is-correct { background-color: var(--success-green); border-color: var(--success-green); color: #ffffff; }
-        /* Multiple-choice rendering: square checkbox instead of round radio */
-        .correct-toggle-btn.is-checkbox { border-radius: 8px; }
-        /* Customize mode never reveals which answer is correct — that's Select mode's job */
-        .builder-qa-panel:not(.mode-select) .correct-toggle-btn {
-            display: none;
-        }
-
+        .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; position: relative; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .builder-option-row:not(:last-child)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background-color: var(--builder-answer-separator); }
         .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 7px 8px; font-size: 15px; font-weight: 400; font-family: inherit; }
         .builder-option-input::placeholder { color: var(--builder-empty-answer-text); font-weight: 400; }
         .builder-option-input:focus { outline: none; background-color: transparent; }
-        /* In Select mode the text input scrolls horizontally for long answers;
-           the scrollbar is hidden on all engines so it stays visually clean. */
-        .builder-qa-panel.mode-select .builder-option-input {
-            overflow-x: auto;
-            white-space: nowrap;
-            scrollbar-width: none;
-        }
-        .builder-qa-panel.mode-select .builder-option-input::-webkit-scrollbar {
-            display: none;
-        }
-        /* Selected row empty placeholder gets a readable green tint on the green bg */
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input::placeholder {
-            color: #7DDE97;
-        }
-        @media (prefers-color-scheme: dark) {
-            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input::placeholder {
-                color: #7DDE97;
-            }
-        }
+        
+        .correct-toggle-btn { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border-color); background-color: var(--bg-panel); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0; }
+        .correct-toggle-btn svg { width: 12px; height: 12px; fill: currentColor; }
+        .correct-toggle-btn:hover { border-color: var(--success-green); color: var(--success-green); }
+        .correct-toggle-btn.is-correct { background-color: var(--success-green); border-color: var(--success-green); color: #ffffff; }
+        .correct-toggle-btn.is-checkbox { border-radius: 8px; }
+        .builder-qa-panel:not(.mode-select) .correct-toggle-btn { display: none; }
 
-        /* Filled red circle "remove answer" button, sized to match the correct-toggle circle, sits right next to it */
-        .remove-option-btn {
-            flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: none;
-            background-color: var(--error-red); color: #ffffff; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.15s ease; padding: 0;
-        }
+        .remove-option-btn { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: none; background-color: var(--error-red); color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.15s ease; padding: 0; }
         .remove-option-btn svg { width: 12px; height: 12px; fill: currentColor; }
         .remove-option-btn:active { transform: scale(0.92); }
-        .remove-option-btn:disabled {
-            background-color: var(--option-hover); color: var(--text-tertiary);
-            cursor: not-allowed;
-        }
-        .remove-option-btn:disabled:active { transform: none; }
+        .remove-option-btn:disabled { background-color: var(--option-hover); color: var(--text-tertiary); cursor: not-allowed; }
 
-        /* Drag handle: three thin stacked lines, takes the spot the old "x" used to occupy on the right */
-        .drag-handle-btn {
-            flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent;
-            color: var(--text-tertiary); cursor: grab; touch-action: none;
-            display: flex; align-items: center; justify-content: center; padding: 0;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
+        .drag-handle-btn { flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent; color: var(--text-tertiary); cursor: grab; touch-action: none; display: flex; align-items: center; justify-content: center; padding: 0; transition: background-color 0.2s ease, color 0.2s ease; }
         .drag-handle-btn svg { width: 16px; height: 16px; fill: currentColor; }
         .drag-handle-btn:active { cursor: grabbing; }
 
-        /* Baseline: every answer row transitions transform smoothly by default. This is what
-           makes sibling rows glide out of the way during a drag — when their `transform`
-           changes (because the dragged row crossed their slot), the browser animates it. */
-        .builder-option-row {
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        /* The actively dragged row is the one exception: it must track the pointer with zero
-           lag, so its own transform transition is suppressed. The iOS-like scale(1.02) lift
-           and stronger shadow give a tactile "picked up" feel (matching the reference design).
-           Bleed margins let it stretch edge-to-edge inside the qa-panel. */
-        .builder-option-row.dragging {
-            z-index: 1000;
-            background-color: var(--builder-card-bg-dark);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-            cursor: grabbing;
-            border-radius: 0;
-            /* Bleed past the qa-panel's 14px left/right padding so the row
-               stretches edge-to-edge, then compensate with extra padding so
-               the row's own content stays in the same visual position. */
-            margin-left: -14px;
-            margin-right: -14px;
-            padding-left: 14px;
-            padding-right: 14px;
-            /* Suppress transform transition so the row tracks the pointer with zero lag.
-               box-shadow transitions smoothly to signal lift. */
-            transition: box-shadow 0.2s ease;
-            will-change: transform;
-            opacity: 0.98;
-        }
+        .builder-option-row.dragging { z-index: 1000; background-color: var(--builder-card-bg-dark); box-shadow: 0 12px 30px rgba(0,0,0,0.12); cursor: grabbing; border-radius: 0; margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; transition: box-shadow 0.2s ease; will-change: transform; opacity: 0.98; }
         .builder-option-row.dragging .drag-handle-btn { color: var(--apple-blue); }
-
-        /* snap-back: after pointerup, the row glides to its final slot with a springy
-           ease before the DOM reorder happens, exactly matching the reference animation. */
-        .builder-option-row.snap-back {
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease !important;
-            will-change: transform;
-        }
+        .builder-option-row.snap-back { transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease !important; will-change: transform; }
 
         .add-option-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
         .add-option-btn { background-color: transparent; border: none; padding: 0; text-align: left; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 10px; }
@@ -1216,596 +454,145 @@
         .add-option-btn .add-option-label { font-size: 15px; font-weight: 400; color: var(--builder-add-answer-text); padding: 7px 8px; }
         .add-option-btn:hover .plus-icon { opacity: 0.85; }
 
-        .builder-card-bottom { padding: 10px 14px 0 14px; }
-        .builder-card-error { font-size: 12px; color: var(--error-red); font-weight: 500; margin-top: 4px; display: none; line-height: 1.4; }
-
-        /* Validation error — only applied when the field is NOT focused.
-           Clicking into a field immediately reverts it to the normal editing look. */
-        .question-input-row .builder-question-input.input-error:not(:focus):placeholder-shown {
-            background-color: #FCEFEF;
-            box-shadow: inset 0 0 0 1.5px #F1CBCB;
-        }
+        .question-input-row .builder-question-input.input-error:not(:focus):placeholder-shown { background-color: #FCEFEF; box-shadow: inset 0 0 0 1.5px #F1CBCB; }
         .question-input-row .builder-question-input.input-error:not(:focus):placeholder-shown::placeholder { color: #7F1C1C !important; opacity: 1; }
-        .builder-option-input.input-error:not(:focus) {
-            background-color: #FCEFEF;
-            border-radius: 10px;
-            box-shadow: inset 0 0 0 1.5px #F1CBCB;
-        }
+        .question-input-wrap:has(.builder-question-input.input-error:not(:focus):placeholder-shown) .img-upload-btn:not(.has-image) { color: #C0392B; }
+        .builder-option-input.input-error:not(:focus) { background-color: #FCEFEF; border-radius: 10px; box-shadow: inset 0 0 0 1.5px #F1CBCB; }
         .builder-option-input.input-error:not(:focus)::placeholder { color: #7F1C1C !important; opacity: 1; }
         @media (prefers-color-scheme: dark) {
-            .question-input-row .builder-question-input.input-error:not(:focus):placeholder-shown {
-                background-color: #3E2223;
-                box-shadow: inset 0 0 0 1.5px #663A3C;
-            }
+            .question-input-row .builder-question-input.input-error:not(:focus):placeholder-shown { background-color: #3E2223; box-shadow: inset 0 0 0 1.5px #663A3C; }
             .question-input-row .builder-question-input.input-error:not(:focus):placeholder-shown::placeholder { color: #FFD4D4 !important; opacity: 1; }
-            .builder-option-input.input-error:not(:focus) {
-                background-color: #3E2223;
-                box-shadow: inset 0 0 0 1.5px #663A3C;
-            }
+            .question-input-wrap:has(.builder-question-input.input-error:not(:focus):placeholder-shown) .img-upload-btn:not(.has-image) { color: #FF6B6B; }
+            .builder-option-input.input-error:not(:focus) { background-color: #3E2223; box-shadow: inset 0 0 0 1.5px #663A3C; }
             .builder-option-input.input-error:not(:focus)::placeholder { color: #FFD4D4 !important; opacity: 1; }
         }
 
-        .img-upload-btn {
-            flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent; color: var(--text-tertiary);
-            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s ease, color 0.2s ease; padding: 0; position: relative;
-        }
+        .img-upload-btn { flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent; color: var(--text-tertiary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s ease, color 0.2s ease; padding: 0; position: relative; }
         .img-upload-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; }
         .img-upload-btn.has-image { color: var(--apple-blue); }
-        /* Hover: apple-blue in all cases (including when image is attached) */
-        .img-upload-btn:hover,
-        .img-upload-btn.has-image:hover { color: var(--apple-blue); }
+        .img-upload-btn:hover, .img-upload-btn.has-image:hover { color: var(--apple-blue); }
 
-        /* SELECT MODE — builder panel behaves like a read-only picker.
-           Custom green palette, full-bleed row highlight with border,
-           image icon only shown when an image is actually attached,
-           a fixed-width spacer keeps column alignment where there's no icon,
-           separators preserved, correct-toggle always a green circle. */
-        .builder-qa-panel.mode-select .builder-question-input {
-            pointer-events: none;
-        }
-        .builder-qa-panel.mode-select .remove-option-btn,
-        .builder-qa-panel:not(.mode-select) .drag-handle-btn,
-        .builder-qa-panel.mode-select .explanation-btn {
-            display: none !important;
-        }
-        /* In Select mode the img-upload-btn with an image is a zoom-in preview button.
-           The .select-img-off variant (no image) overrides cursor/pointer-events via its
-           own class rule below, so this base rule only applies to the has-image case. */
-        .builder-qa-panel.mode-select .img-upload-btn {
-            pointer-events: auto;
-            cursor: zoom-in;
-            color: var(--text-tertiary); /* non-green rows: default muted */
-        }
-        /* "No image" placeholder icon in Select mode — same 28×28 footprint as
-           .img-upload-btn so the text column stays perfectly aligned across all rows.
-           Rendered disabled/muted so it reads as informational, not interactive. */
-        .img-upload-btn.select-img-off {
-            opacity: 1;
-            cursor: default;
-            pointer-events: none;
-            color: var(--text-tertiary); /* non-green rows: default muted */
-        }
-        .builder-qa-panel.mode-select .builder-option-row {
-            cursor: pointer;
-            /* Explicit panel-colour background so the row is never transparent —
-               essential while dragging (the lifted row must look solid, not see-through). */
-            background-color: var(--builder-card-bg-dark);
-            /* Bleed the row's background past the qa-panel's 14px padding so the
-               highlight reaches the card's actual edges (mirrors .builder-option-row.dragging). */
-            margin-left: -14px;
-            margin-right: -14px;
-            padding-left: 14px;
-            padding-right: 14px;
-            /* Keep background/color transitions for tap-highlight feedback, but do NOT
-               include transform here — that would override the .dragging rule's
-               transition:transform 0s and re-introduce pointer-lag during the drag.
-               The baseline .builder-option-row rule already handles sibling sliding. */
-            transition: background-color 0.2s ease, color 0.2s ease;
-            position: relative;
-        }
-        .builder-qa-panel.mode-select .builder-option-row:hover {
-            background-color: var(--builder-card-bg-dark);
-        }
-        /* Separators must also bleed edge-to-edge, matching the expanded row width */
-        .builder-qa-panel.mode-select .builder-option-row:not(:last-child)::after {
-            left: 0;
-            right: 0;
-        }
-        .builder-qa-panel.mode-select .builder-option-input {
-            pointer-events: none;
-        }
-        .builder-qa-panel.mode-select .correct-toggle-btn {
-            pointer-events: none;
-            /* Always a circle, even for multiple-choice (overrides .is-checkbox) */
-            border-radius: 50% !important;
-        }
-        /* Selected row: custom green bg + 2px inset border (same structural trick as Play view's blue border) */
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct {
-            background-color: var(--sel-selected-bg) !important;
-            color: var(--sel-selected-text);
-            box-shadow: inset 0 0 0 2px var(--sel-selected-border);
-        }
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct:hover {
-            background-color: var(--sel-selected-bg) !important; /* no hover change */
-        }
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input {
-            color: var(--sel-selected-text);
-        }
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .correct-toggle-btn {
-            background-color: var(--sel-green);
-            border-color: var(--sel-green);
-            color: #ffffff;
-        }
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn {
-            color: #7DDE97; /* inactive — no image attached */
-        }
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn.has-image {
-            color: #32BF57; /* active — image attached */
-        }
-        /* Drag handle color in Select mode — only on the selected (green) row.
-           Inactive: #7DDE97; Active (hover / grabbing): #32BF57. */
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn {
-            color: #7DDE97;
-        }
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:hover,
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:active {
-            color: #32BF57;
-        }
+        .builder-qa-panel.mode-select .builder-question-input { pointer-events: none; }
+        .builder-qa-panel.mode-select .remove-option-btn, .builder-qa-panel:not(.mode-select) .drag-handle-btn, .builder-qa-panel.mode-select .explanation-btn { display: none !important; }
+        .builder-qa-panel.mode-select .img-upload-btn { pointer-events: auto; cursor: zoom-in; color: var(--text-tertiary); }
+        .img-upload-btn.select-img-off { opacity: 1; cursor: default; pointer-events: none; color: var(--text-tertiary); }
+        .builder-qa-panel.mode-select .builder-option-row { cursor: pointer; background-color: var(--builder-card-bg-dark); margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; transition: background-color 0.2s ease, color 0.2s ease; position: relative; }
+        .builder-qa-panel.mode-select .builder-option-row:hover { background-color: var(--builder-card-bg-dark); }
+        .builder-qa-panel.mode-select .builder-option-row:not(:last-child)::after { left: 0; right: 0; }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct:not(:last-child)::after,
+        .builder-qa-panel.mode-select .builder-option-row:has(+ .builder-option-row.select-is-correct)::after { display: none; }
+        .builder-qa-panel.mode-select .builder-option-input { pointer-events: none; }
+        .builder-qa-panel.mode-select .correct-toggle-btn { pointer-events: none; border-radius: 50% !important; }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct { background-color: var(--sel-selected-bg) !important; color: var(--sel-selected-text); box-shadow: inset 0 0 0 2px var(--sel-selected-border); }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct:hover { background-color: var(--sel-selected-bg) !important; }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input { color: var(--sel-selected-text); }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .correct-toggle-btn { background-color: var(--sel-green); border-color: var(--sel-green); color: #ffffff; }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn { color: #7DDE97; }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn.has-image { color: #32BF57; }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn { color: #7DDE97; }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:hover, .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:active { color: #32BF57; }
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input::placeholder { color: #7DDE97; }
         @media (prefers-color-scheme: dark) {
-            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn {
-                color: #7DDE97;
-            }
-            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn.has-image {
-                color: #32BF57;
-            }
-            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn {
-                color: #7DDE97;
-            }
-            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:hover,
-            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:active {
-                color: #32BF57;
-            }
+            /* Correct (green) rows — unfocused icons are dim #1D7234, focused/has-image icons are bright */
+            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn { color: #1D7234; }
+            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn.has-image { color: #7DDE97; }
+            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn { color: #1D7234; }
+            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:hover, .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:active { color: #32BF57; }
+            .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input::placeholder { color: #1D7234; }
         }
 
-        /* Unified question+answers panel, mirroring the Play view's options-container */
-        .builder-qa-panel {
-            background-color: var(--builder-card-bg-dark);
-            border-radius: 18px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-            overflow: hidden;
-            padding: 14px 14px 0 14px;
-        }
+        .builder-qa-panel { background-color: var(--builder-card-bg-dark); border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; padding: 14px 14px 0 14px; }
+        .builder-qa-panel.has-delete-badge .question-input-row .builder-question-input { width: calc(100% - 34px); padding-right: 42px; }
+        .question-number { flex-shrink: 0; width: 24px; height: 26px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 15px; font-weight: 500; color: var(--text-tertiary); letter-spacing: -0.2px; user-select: none; }
+        .question-input-row { display: flex; align-items: center; gap: 10px; padding: 0 0 8px 0; position: relative; }
+        .question-input-row::after { content: ''; position: absolute; left: -14px; right: -14px; bottom: 0; height: 2px; background-color: var(--builder-question-separator); }
+        .question-input-wrap { position: relative; flex: 1; min-width: 0; }
+        .question-input-wrap .question-img-btn-wrap { position: absolute; top: 50%; right: 38px; transform: translateY(-50%); padding-top: 0; display: flex; align-items: center; gap: 4px; }
+        .builder-qa-panel.mode-select .question-input-wrap .question-img-btn-wrap { right: 0; gap: 10px; }
+        .builder-qa-panel.mode-select .question-input-row .builder-question-input { padding-right: 76px; }
 
-        /* When the card also shows its round delete ("x") badge (top-right corner of the
-           card, overlapping into the panel's top-right inset), the blue question field's
-           own top-right corner needs to stop short of it instead of running underneath —
-           otherwise the field's background visually touches/collides with the badge. This
-           shrinks only the textarea's own right edge (not the whole row), so the image icon
-           — positioned against the row, not the textarea — keeps its fixed spot and stays
-           lined up with the answer rows' icons below regardless of whether a badge is shown.
-           padding-right is reduced in tandem so the text still ends at the same absolute
-           position (wrap_right − 76 px) as in the single-question case: the wrap is already
-           34 px narrower than the content area, so subtracting that same 34 px from the
-           base 76 px padding gives 42 px — keeping the 10 px gap between text and img icon. */
-        .builder-qa-panel.has-delete-badge .question-input-row .builder-question-input {
-            width: calc(100% - 34px);
-            padding-right: 42px;
-        }
-
-        .question-number {
-            flex-shrink: 0;
-            width: 24px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-tertiary);
-            letter-spacing: -0.2px;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .question-input-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 0 8px 0;
-            position: relative;
-        }
-        .question-input-row::after {
-            content: '';
-            position: absolute;
-            /* Bleeds past the row's own bounds by exactly the qa-panel's 14px padding, so the
-               line reaches the panel's actual edge instead of stopping at the row's edge.
-               The panel's own `overflow: hidden` + rounded corners clip it flush and clean. */
-            left: -14px;
-            right: -14px;
-            bottom: 0;
-            height: 2px;
-            background-color: var(--builder-question-separator);
-        }
-
-        /* Wraps the question textarea + its image button together so the image button can
-           sit visually *inside* the blue field, anchored to its top-right corner, while
-           the textarea reserves room on its right (padding-right) so typed text — on every
-           line, not just the first one — stops 14px short of the icon's left edge instead of
-           running underneath it. */
-        .question-input-wrap {
-            position: relative;
-            flex: 1;
-            min-width: 0;
-        }
-
-        /* Image button: pinned inside the blue question field, vertically centered so it
-           always fits regardless of how short the box now is (the box hugs the text tightly,
-           so a fixed top offset would risk the icon overflowing past the bottom edge for
-           single-line questions). Horizontally it's pulled in from the field's right edge by
-           the same 38px an answer row's img-upload-btn sits from ITS row's right edge (28px
-           drag-handle + 10px gap), so the two columns of image-icons line up vertically. For
-           multi-line questions the icon centers on the whole box rather than staying pinned
-           to the first line — a deliberate tradeoff to keep the box itself compact. */
-        .question-input-wrap .question-img-btn-wrap {
-            position: absolute;
-            top: 50%;
-            right: 38px;
-            transform: translateY(-50%);
-            padding-top: 0;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* In Select mode the wrap holds [score-icon] + [img-off], matching [img]+[drag-handle]
-           of answer rows. right:0 = flush with textarea right edge (drag-handle column).
-           gap:10px = same flex-gap the answer row uses between its icons. */
-        .builder-qa-panel.mode-select .question-input-wrap .question-img-btn-wrap {
-            right: 0;
-            gap: 10px;
-        }
-
-        /* In Select mode: score(28) + gap(10) + img-off(28) + text-gap(10) = 76px —
-           same as Customize mode's single-icon padding, no extra space needed. */
-        .builder-qa-panel.mode-select .question-input-row .builder-question-input {
-            padding-right: 76px;
-        }
-
-        /* Question image button in Select mode:
-           - No image (question-row-img-off) → placeholder colour, full opacity
-           - Has image (img-upload-btn) → text colour (vivid blue = question text colour when filled) */
-        .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn:not(.has-image),
-        .builder-qa-panel.mode-select .question-input-wrap .question-row-img-off {
-            color: rgb(131, 194, 251); /* placeholder blue — no image */
-            opacity: 1;
-        }
-        .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn.has-image {
-            color: rgb(9, 124, 249); /* text colour — image attached */
-        }
-        /* Non-green answer row with image → apple-blue */
-        .builder-qa-panel.mode-select .builder-option-row:not(.select-is-correct) .img-upload-btn.has-image {
-            color: var(--apple-blue);
-        }
+        .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn:not(.has-image), .builder-qa-panel.mode-select .question-input-wrap .question-row-img-off { color: rgb(131, 194, 251); opacity: 1; }
+        .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn.has-image { color: rgb(9, 124, 249); }
+        .builder-qa-panel.mode-select .builder-option-row:not(.select-is-correct) .img-upload-btn.has-image { color: var(--apple-blue); }
         @media (prefers-color-scheme: dark) {
-            .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn:not(.has-image),
-            .builder-qa-panel.mode-select .question-input-wrap .question-row-img-off {
-                color: rgb(24, 78, 125);
-                opacity: 1;
-            }
-            .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn.has-image {
-                color: rgb(10, 134, 249);
-            }
-            .builder-qa-panel.mode-select .builder-option-row:not(.select-is-correct) .img-upload-btn.has-image {
-                color: var(--apple-blue);
-            }
+            .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn:not(.has-image), .builder-qa-panel.mode-select .question-input-wrap .question-row-img-off { color: rgb(24, 78, 125); opacity: 1; }
+            .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn.has-image { color: rgb(10, 134, 249); }
+            .builder-qa-panel.mode-select .builder-option-row:not(.select-is-correct) .img-upload-btn.has-image { color: var(--apple-blue); }
         }
 
-        /* Question field color matrix — 8 states: light/dark mode × focused/unfocused × empty/filled.
-           :placeholder-shown reliably tells us "empty" (placeholder is visible) vs "filled".
-           padding-right reserves room for the image button that sits absolutely positioned
-           inside this field's top-right: the icon's left edge sits 38px (icon column) +
-           28px (icon width) = 66px in from the field's right edge, so a 10px text/icon gap
-           on every line — not just the first — needs padding-right: 66 + 10 = 76px (matching
-           the 10px flex-gap an answer row uses between its own text input and its icon).
-           Without this, typed text would run underneath the icon instead of stopping short
-           of it. */
-        .question-input-row .builder-question-input {
-            margin-bottom: 0; width: 100%;
-            background-color: rgb(234, 245, 254);
-            color: rgb(131, 194, 251);
-            font-size: 17px;
-            font-weight: 500;
-            line-height: 1.4;
-            padding: 5px 76px 5px 8px;
-            border-radius: 10px;
-            border: 2px solid transparent;
-            resize: none;
-            overflow: hidden;
-            box-sizing: border-box;
-            display: block;
-        }
+        .question-input-row .builder-question-input { margin-bottom: 0; width: 100%; background-color: rgb(234, 245, 254); color: rgb(131, 194, 251); font-size: 17px; font-weight: 500; line-height: 1.4; padding: 5px 76px 5px 8px; border-radius: 10px; border: 2px solid transparent; resize: none; overflow: hidden; box-sizing: border-box; display: block; }
         .question-input-row .builder-question-input::placeholder { color: rgb(131, 194, 251); font-weight: 500; opacity: 1; }
-
-        /* LIGHT MODE — unfocused, filled */
-        .question-input-row .builder-question-input:not(:placeholder-shown):not(:focus) {
-            background-color: rgb(234, 245, 254);
-            color: rgb(9, 124, 249);
-        }
-
-        /* LIGHT MODE — focused, empty (placeholder visible) */
-        .question-input-row .builder-question-input:focus:placeholder-shown {
-            background-color: rgb(241, 241, 242);
-            color: rgb(134, 134, 135);
-        }
+        .question-input-row .builder-question-input:not(:placeholder-shown):not(:focus) { background-color: rgb(234, 245, 254); color: rgb(9, 124, 249); }
+        .question-input-row .builder-question-input:focus:placeholder-shown { background-color: rgb(241, 241, 242); color: rgb(134, 134, 135); }
         .question-input-row .builder-question-input:focus:placeholder-shown::placeholder { color: rgb(134, 134, 135); }
-
-        /* LIGHT MODE — focused, filled */
-        .question-input-row .builder-question-input:focus:not(:placeholder-shown) {
-            background-color: rgb(241, 241, 242);
-            color: rgb(0, 0, 0);
-        }
+        .question-input-row .builder-question-input:focus:not(:placeholder-shown) { background-color: rgb(241, 241, 242); color: rgb(0, 0, 0); }
 
         @media (prefers-color-scheme: dark) {
-            /* DARK MODE — unfocused, empty (placeholder visible) */
-            .question-input-row .builder-question-input {
-                background-color: rgb(37, 45, 53);
-                color: rgb(24, 78, 125);
-            }
+            .question-input-row .builder-question-input { background-color: rgb(37, 45, 53); color: rgb(24, 78, 125); }
             .question-input-row .builder-question-input::placeholder { color: rgb(24, 78, 125); font-weight: 500; }
-
-            /* DARK MODE — unfocused, filled */
-            .question-input-row .builder-question-input:not(:placeholder-shown):not(:focus) {
-                background-color: rgb(37, 45, 53);
-                color: rgb(10, 134, 249);
-            }
-
-            /* DARK MODE — focused, empty (placeholder visible) */
-            .question-input-row .builder-question-input:focus:placeholder-shown {
-                background-color: rgb(47, 47, 49);
-                color: rgb(122, 122, 124);
-            }
+            .question-input-row .builder-question-input:not(:placeholder-shown):not(:focus) { background-color: rgb(37, 45, 53); color: rgb(10, 134, 249); }
+            .question-input-row .builder-question-input:focus:placeholder-shown { background-color: rgb(47, 47, 49); color: rgb(122, 122, 124); }
             .question-input-row .builder-question-input:focus:placeholder-shown::placeholder { color: rgb(122, 122, 124); }
-
-            /* DARK MODE — focused, filled */
-            .question-input-row .builder-question-input:focus:not(:placeholder-shown) {
-                background-color: rgb(47, 47, 49);
-                color: rgb(254, 254, 254);
-            }
+            .question-input-row .builder-question-input:focus:not(:placeholder-shown) { background-color: rgb(47, 47, 49); color: rgb(254, 254, 254); }
         }
         .question-img-btn-wrap { flex-shrink: 0; }
 
-        /* Question image button color:
-           - No image  → placeholder colour of the textarea in its current state
-           - Has image → text colour of the textarea in its current state       */
-
-        /* ── NO IMAGE: icon follows placeholder colour of the textarea ── */
-        /* unfocused + empty */
-        .question-input-wrap .img-upload-btn:not(.has-image) {
-            color: rgb(131, 194, 251);
-        }
-        /* unfocused + filled — placeholder stays the same muted blue, not the vivid text colour */
-        .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .img-upload-btn:not(.has-image) {
-            color: rgb(131, 194, 251);
-        }
-        /* focused + empty */
-        .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .img-upload-btn:not(.has-image) {
-            color: rgb(134, 134, 135);
-        }
-        /* focused + filled — placeholder colour in this state is the same grey */
-        .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .img-upload-btn:not(.has-image) {
-            color: rgb(134, 134, 135);
-        }
-
-        /* ── HAS IMAGE: icon follows text colour of the textarea ── */
-        /* unfocused + empty — kép van, ezért a szövegszínt mutatja (vivid blue), nem a placeholder-t */
-        .question-input-wrap .img-upload-btn.has-image {
-            color: rgb(9, 124, 249);
-        }
-        /* unfocused + filled — vivid blue text */
-        .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .img-upload-btn.has-image {
-            color: rgb(9, 124, 249);
-        }
-        /* focused + empty — grey text */
-        .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .img-upload-btn.has-image {
-            color: rgb(134, 134, 135);
-        }
-        /* focused + filled — black text */
-        .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .img-upload-btn.has-image {
-            color: rgb(0, 0, 0);
-        }
+        .question-input-wrap .img-upload-btn:not(.has-image) { color: rgb(131, 194, 251); }
+        .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .img-upload-btn:not(.has-image) { color: rgb(131, 194, 251); }
+        .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .img-upload-btn:not(.has-image) { color: rgb(134, 134, 135); }
+        .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .img-upload-btn:not(.has-image) { color: rgb(134, 134, 135); }
+        .question-input-wrap .img-upload-btn.has-image { color: rgb(9, 124, 249); }
+        .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .img-upload-btn.has-image { color: rgb(9, 124, 249); }
+        .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .img-upload-btn.has-image { color: rgb(134, 134, 135); }
+        .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .img-upload-btn.has-image { color: rgb(0, 0, 0); }
 
         @media (prefers-color-scheme: dark) {
-            /* ── NO IMAGE: icon follows placeholder colour ── */
-            .question-input-wrap .img-upload-btn:not(.has-image) {
-                color: rgb(24, 78, 125);
-            }
-            .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .img-upload-btn:not(.has-image) {
-                color: rgb(24, 78, 125);
-            }
-            .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .img-upload-btn:not(.has-image) {
-                color: rgb(122, 122, 124);
-            }
-            .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .img-upload-btn:not(.has-image) {
-                color: rgb(122, 122, 124);
-            }
-
-            /* ── HAS IMAGE: icon follows text colour ── */
-            /* unfocused + empty — kép van, szövegszín (vivid blue) */
-            .question-input-wrap .img-upload-btn.has-image {
-                color: rgb(10, 134, 249);
-            }
-            .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .img-upload-btn.has-image {
-                color: rgb(10, 134, 249);
-            }
-            .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .img-upload-btn.has-image {
-                color: rgb(122, 122, 124);
-            }
-            .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .img-upload-btn.has-image {
-                color: rgb(254, 254, 254);
-            }
+            .question-input-wrap .img-upload-btn:not(.has-image) { color: rgb(24, 78, 125); }
+            .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .img-upload-btn:not(.has-image) { color: rgb(24, 78, 125); }
+            .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .img-upload-btn:not(.has-image) { color: rgb(122, 122, 124); }
+            .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .img-upload-btn:not(.has-image) { color: rgb(122, 122, 124); }
+            .question-input-wrap .img-upload-btn.has-image { color: rgb(10, 134, 249); }
+            .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .img-upload-btn.has-image { color: rgb(10, 134, 249); }
+            .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .img-upload-btn.has-image { color: rgb(122, 122, 124); }
+            .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .img-upload-btn.has-image { color: rgb(254, 254, 254); }
         }
 
-        /* DELETE-QUESTION BADGE — round "x" sitting inside the card, in the same top-right
-           corner the card's own 14px padding defines. Horizontally it lines up with the
-           drag-handle icons below (both sit flush against the panel's 14px right inset);
-           vertically its top edge lines up with the card's 14px top inset, so its position
-           reads as parallel to the card's own inner corner rather than overlapping the edge. */
-        .card-delete-badge-btn {
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            border: none;
-            background-color: var(--option-hover);
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
-            z-index: 5;
-        }
+        .card-delete-badge-btn { position: absolute; top: 14px; right: 14px; width: 26px; height: 26px; border-radius: 50%; border: none; background-color: var(--option-hover); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease; z-index: 5; }
         .card-delete-badge-btn svg { width: 12px; height: 12px; fill: currentColor; }
         .card-delete-badge-btn:hover { background-color: var(--error-red); color: #ffffff; }
         .card-delete-badge-btn:active { transform: scale(0.92); }
         .card-delete-badge-btn:disabled { color: var(--text-tertiary); cursor: not-allowed; }
         .card-delete-badge-btn:disabled:hover { background-color: var(--option-hover); color: var(--text-tertiary); }
-        .card-delete-badge-btn:disabled:active { transform: none; }
 
-        /* ── SELECT MODE — QUESTION ROW ICONS ──────────────────────────────────
-           In Select mode the question row gets the same icon column treatment as
-           answer rows: an image-off icon (dekoratív) + a score pill button.
-           These sit to the right of the image button / image-off placeholder,
-           mirroring the answer row's [img | drag-handle] column pair. */
-
-        /* image-off icon in the question row (Select mode, no image attached) */
-        .question-row-img-off {
-            flex-shrink: 0;
-            width: 28px; height: 28px;
-            border-radius: 10px; border: none; background: transparent;
-            color: var(--text-tertiary);
-            opacity: 0.25;
-            cursor: default; pointer-events: none;
-            display: flex; align-items: center; justify-content: center; padding: 0;
-        }
+        .question-row-img-off { flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent; color: var(--text-tertiary); opacity: 0.25; cursor: default; pointer-events: none; display: flex; align-items: center; justify-content: center; padding: 0; }
         .question-row-img-off svg { width: 16px; height: 16px; fill: none; stroke: currentColor; }
 
-        /* Score icon button — icon-only, same 28×28 footprint as other row icons */
-        .score-pill-btn {
-            flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            width: 28px; height: 28px;
-            padding: 0;
-            border-radius: 10px; border: none;
-            background: transparent;
-            color: var(--apple-blue);
-            cursor: pointer;
-            transition: opacity 0.15s ease;
-            position: static; /* popover is in #score-popover-root, not here */
-        }
+        .score-pill-btn { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border-radius: 10px; border: none; background: transparent; color: var(--apple-blue); cursor: pointer; transition: opacity 0.15s ease; position: static; }
         .score-pill-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
         .score-pill-btn:active { opacity: 0.7; }
 
-        /* Global popover root — sits at the very top of the stacking context,
-           above overflow:hidden panels and every other layer. */
-        #score-popover-root {
-            position: fixed;
-            top: 0; left: 0;
-            width: 0; height: 0;
-            overflow: visible;
-            z-index: 9999;
-            pointer-events: none;
-        }
-        #score-popover-root > .score-popover {
-            pointer-events: auto;
-        }
-
-        /* Vertical capsule popover — positioned via JS using getBoundingClientRect */
-        .score-popover {
-            position: fixed;   /* coords set by JS */
-            z-index: 9999;
-            background: var(--bg-alert);
-            border: 1px solid var(--alert-border);
-            border-radius: 18px;
-            box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            padding: 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0;
-            white-space: nowrap;
-            opacity: 0; visibility: hidden;
-            transform: scale(0.88);
-            transform-origin: center bottom; /* opens upward by default */
-            transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
-            width: 44px;   /* narrow capsule */
-        }
-        .score-popover.open {
-            opacity: 1; visibility: visible;
-            transform: scale(1);
-            transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0s;
-        }
-        /* Flip: transform-origin changes to top so it opens downward */
-        .score-popover.flip-below {
-            transform-origin: center top;
-        }
-        @media (prefers-color-scheme: dark) {
-            .score-popover { box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
-        }
-        /* Vertical stepper inside the capsule — NO separators */
-        .score-stepper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0;
-            width: 100%;
-        }
-        .score-step-btn {
-            width: 36px; height: 30px; border-radius: 14px; border: none;
-            background: transparent; color: var(--apple-blue);
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: background-color 0.12s ease, opacity 0.12s ease;
-            padding: 0; flex-shrink: 0;
-        }
+        #score-popover-root { position: fixed; top: 0; left: 0; width: 0; height: 0; overflow: visible; z-index: 9999; pointer-events: none; }
+        #score-popover-root > .score-popover { pointer-events: auto; }
+        .score-popover { position: fixed; z-index: 9999; background: var(--bg-alert); border: 1px solid var(--alert-border); border-radius: 18px; box-shadow: 0 8px 28px rgba(0,0,0,0.18); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 0; white-space: nowrap; opacity: 0; visibility: hidden; transform: scale(0.88); transform-origin: center bottom; transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s; width: 44px; }
+        .score-popover.open { opacity: 1; visibility: visible; transform: scale(1); transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0s; }
+        .score-popover.flip-below { transform-origin: center top; }
+        @media (prefers-color-scheme: dark) { .score-popover { box-shadow: 0 8px 28px rgba(0,0,0,0.5); } }
+        .score-stepper { display: flex; flex-direction: column; align-items: center; gap: 0; width: 100%; }
+        .score-step-btn { width: 36px; height: 30px; border-radius: 14px; border: none; background: transparent; color: var(--apple-blue); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.12s ease, opacity 0.12s ease; padding: 0; flex-shrink: 0; }
         .score-step-btn svg { width: 16px; height: 16px; pointer-events: none; }
         .score-step-btn:hover { background: var(--option-hover); }
         .score-step-btn:active { opacity: 0.6; }
         .score-step-btn:disabled { opacity: 0.22; cursor: default; }
-        .score-step-btn:disabled:hover { background: transparent; }
-        .score-value-label {
-            width: 36px; text-align: center;
-            font-size: 13px; font-weight: 700; color: var(--text-main);
-            user-select: none;
-            padding: 2px 0;
-            line-height: 1.3;
-        }
-        .img-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); display: flex;
-            justify-content: center; align-items: center; z-index: 10000; opacity: 0; visibility: hidden;
-            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none;
-        }
+        .score-value-label { width: 36px; text-align: center; font-size: 13px; font-weight: 700; color: var(--text-main); user-select: none; padding: 2px 0; line-height: 1.3; }
+
+        .img-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; visibility: hidden; transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none; }
         .img-modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
-        .img-modal-box {
-            background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left;
-            box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
-            backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
-            border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px;
-        }
+        .img-modal-box { background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px; }
         @media (prefers-color-scheme: dark) { .img-modal-box { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); } }
         .img-modal-title { font-size: 17px; font-weight: 600; color: var(--text-main); margin: 0 0 6px 0; letter-spacing: -0.3px; }
         .img-modal-sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px 0; line-height: 1.4; }
 
-        .img-preview-area {
-            width: 100%; height: 140px; border-radius: 18px; border: 2px dashed var(--border-color);
-            display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 14px;
-            background-color: var(--option-bg); cursor: pointer; transition: all 0.2s ease;
-        }
+        .img-preview-area { width: 100%; height: 140px; border-radius: 18px; border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 14px; background-color: var(--option-bg); cursor: pointer; transition: all 0.2s ease; }
         .img-preview-area:hover, .img-preview-area.dragover { border-color: var(--apple-blue); background-color: var(--option-selected-bg); }
         .img-preview-area img { width: 100%; height: 100%; object-fit: contain; }
         .img-preview-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-tertiary); pointer-events: none; }
@@ -1821,151 +608,55 @@
         .img-modal-btn:active { transform: scale(0.97); opacity: 0.8; }
         .img-modal-btn-row { display: flex; gap: 8px; }
 
-        .add-question-btn {
-            background-color: var(--option-bg); color: var(--apple-blue); border: 2px dashed var(--border-color);
-            padding: 16px; border-radius: 20px; text-align: center; font-size: 15px; font-weight: 600; cursor: pointer;
-            transition: all 0.2s ease; width: 100%; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .add-question-btn svg { width: 14px; height: 14px; fill: currentColor; }
-        .add-question-btn:hover { background-color: var(--option-hover); border-color: var(--apple-blue); }
-
-        .builder-actions { display: flex; flex-direction: column; gap: 10px; }
-        .success-banner { background-color: var(--success-bg); color: var(--success-text); padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 500; margin-top: 16px; display: none; text-align: left; }
-
-        /* GIVE EXPLANATION BUTTON — sits where drag handle used to be in Customize mode. */
-        .explanation-btn {
-            flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent;
-            color: var(--text-tertiary); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; padding: 0;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
+        .explanation-btn { flex-shrink: 0; width: 28px; height: 28px; border-radius: 10px; border: none; background: transparent; color: var(--text-tertiary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: background-color 0.2s ease, color 0.2s ease; }
         .explanation-btn svg { width: 18px; height: 18px; }
         .explanation-btn.has-explanation { color: var(--apple-blue); }
         .explanation-btn:hover { color: var(--apple-blue); }
 
-        /* PLAY VIEW — explanation icon on reviewed answer rows, right-aligned with 14px gap */
-        .play-explanation-btn {
-            flex-shrink: 0;
-            width: 28px; height: 28px;
-            border: none; background: transparent;
-            color: inherit;
-            opacity: 0.55;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center; padding: 0;
-            margin-left: 14px;
-            transition: opacity 0.2s ease;
-            border-radius: 8px;
-        }
+        .play-explanation-btn { flex-shrink: 0; width: 28px; height: 28px; border: none; background: transparent; color: inherit; opacity: 0.55; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; margin-left: 14px; transition: opacity 0.2s ease; border-radius: 8px; }
         .play-explanation-btn svg { width: 18px; height: 18px; }
         .play-explanation-btn:hover { opacity: 1; }
         .play-explanation-btn:active { opacity: 0.7; }
 
-        /* EXPLANATION MODAL */
-        .explanation-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--overlay-bg);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 10000; opacity: 0; visibility: hidden;
-            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s;
-            touch-action: none;
-        }
-        .explanation-modal-overlay.active {
-            opacity: 1; visibility: visible;
-            transition: opacity 0.15s ease-out, visibility 0s linear 0s;
-        }
-        .explanation-modal-box {
-            background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left;
-            box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
-            backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
-            border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px;
-        }
-        @media (prefers-color-scheme: dark) {
-            .explanation-modal-box { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); }
-        }
+        .explanation-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; visibility: hidden; transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none; }
+        .explanation-modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
+        .explanation-modal-box { background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px; }
+        @media (prefers-color-scheme: dark) { .explanation-modal-box { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); } }
         .explanation-modal-title { font-size: 17px; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0; letter-spacing: -0.3px; }
-        .explanation-modal-answer-label {
-            font-size: 12px; font-weight: 600; color: var(--text-secondary);
-            text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 14px 0;
-        }
-        .explanation-modal-textarea {
-            width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main);
-            border: 2px solid transparent; border-radius: 14px; padding: 12px 14px; font-size: 15px;
-            font-family: inherit; line-height: 1.5; resize: vertical; min-height: 90px;
-            transition: border-color 0.2s ease; margin-bottom: 14px;
-        }
+        .explanation-modal-answer-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 14px 0; }
+        .explanation-modal-textarea { width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; border-radius: 14px; padding: 12px 14px; font-size: 15px; font-family: inherit; line-height: 1.5; resize: vertical; min-height: 90px; transition: border-color 0.2s ease; margin-bottom: 14px; }
         .explanation-modal-textarea::placeholder { color: var(--text-tertiary); }
         .explanation-modal-textarea:focus { outline: none; border-color: var(--apple-blue); }
-        .explanation-modal-textarea.read-only {
-            pointer-events: none; background-color: var(--option-bg);
-            border-color: transparent; color: var(--text-main); resize: none;
-        }
+        .explanation-modal-textarea.read-only { pointer-events: none; background-color: var(--option-bg); border-color: transparent; color: var(--text-main); resize: none; }
         .explanation-modal-actions { display: flex; gap: 10px; }
-        .explanation-modal-btn {
-            flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 600; cursor: pointer;
-            -webkit-appearance: none; box-sizing: border-box; border-radius: 16px; border: none;
-            transition: transform 0.15s ease, opacity 0.2s ease;
-        }
+        .explanation-modal-btn { flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 600; cursor: pointer; -webkit-appearance: none; box-sizing: border-box; border-radius: 16px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
         .explanation-modal-btn.primary { background-color: var(--apple-blue); color: #ffffff; }
         .explanation-modal-btn.secondary { background-color: rgba(0,0,0,0.05); color: var(--text-main); }
         .explanation-modal-btn.danger { background-color: rgba(0,0,0,0.05); color: var(--error-red); }
-        @media (prefers-color-scheme: dark) {
-            .explanation-modal-btn.secondary, .explanation-modal-btn.danger { background-color: rgba(255,255,255,0.1); }
-        }
+        @media (prefers-color-scheme: dark) { .explanation-modal-btn.secondary, .explanation-modal-btn.danger { background-color: rgba(255,255,255,0.1); } }
         .explanation-modal-btn:active { transform: scale(0.97); opacity: 0.8; }
 
-        /* IMAGE AREA inside explanation modal */
-        .expl-img-area {
-            width: 100%; height: 100px; border-radius: 14px;
-            border: 2px dashed var(--border-color);
-            background-color: var(--option-bg);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; margin-bottom: 14px;
-            cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease;
-            position: relative;
-        }
+        .expl-img-area { width: 100%; height: 100px; border-radius: 14px; border: 2px dashed var(--border-color); background-color: var(--option-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 14px; cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease; position: relative; }
         .expl-img-area:hover { border-color: var(--apple-blue); background-color: var(--option-selected-bg); }
         .expl-img-area.dragover { border-color: var(--apple-blue); background-color: var(--option-selected-bg); }
         .expl-img-area.has-image { border-style: solid; border-color: var(--border-color); cursor: default; }
         .expl-img-area.has-image:hover { background-color: var(--option-bg); border-color: var(--border-color); }
         .expl-img-area.read-only { cursor: default; pointer-events: none; }
-        .expl-img-placeholder {
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            color: var(--text-tertiary); pointer-events: none;
-        }
+        .expl-img-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-tertiary); pointer-events: none; }
         .expl-img-placeholder svg { width: 22px; height: 22px; }
         .expl-img-placeholder span { font-size: 12px; font-weight: 500; }
-        /* Remove-image "x" badge, top-right corner of the image area */
-        .expl-img-remove-btn {
-            position: absolute; top: 6px; right: 6px;
-            width: 22px; height: 22px; border-radius: 50%; border: none;
-            background: rgba(0,0,0,0.45); color: #ffffff;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; padding: 0;
-            transition: background 0.15s ease, transform 0.1s ease;
-            pointer-events: auto;
-        }
+        .expl-img-remove-btn { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.45); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: background 0.15s ease, transform 0.1s ease; pointer-events: auto; }
         .expl-img-remove-btn svg { width: 12px; height: 12px; fill: currentColor; }
         .expl-img-remove-btn:hover { background: rgba(0,0,0,0.7); }
         .expl-img-remove-btn:active { transform: scale(0.9); }
 
         @media (max-width: 600px) {
-            /* Single 14px horizontal gutter on mobile: the body no longer adds its own
-               horizontal padding on top of .quiz-container's — that doubled-up padding
-               (14px + 14px = 28px per side) was eating into usable width on narrow
-               screens. Only the safe-area inset is kept here so the body can't push
-               content under a notch/home-indicator; .quiz-container below supplies the
-               actual 14px visual gutter against the screen edge. */
             body { align-items: flex-start; padding: max(14px, env(safe-area-inset-top)) env(safe-area-inset-right) max(14px, env(safe-area-inset-bottom)) env(safe-area-inset-left); }
             .quiz-container { padding: 14px; }
             .header-info { padding-bottom: 12px; margin-bottom: 16px; }
             h2 { font-size: 22px; margin-bottom: 16px; }
             .option-btn { padding: 14px; }
-            .option-img-wrap { width: 80px; height: 80px; } /* Kisebb kijelzőn picit összébb húzzuk, de még mindig nagy */
-
-            /* Segmented control + Add Question button must sit side-by-side on mobile,
-               never wrap. Both are narrowed slightly (and the button's horizontal padding
-               trimmed) so the pair reliably fits within .quiz-container's mobile width
-               instead of overflowing past the 14px gutter. */
+            .option-img-wrap { width: 80px; height: 80px; } 
             .builder-seg-control { width: 168px; }
             .glass-add-btn { padding: 0 14px; font-size: 13px; }
         }
@@ -1984,7 +675,7 @@
             <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             Back
         </button>
-        <button class="glass-exit-btn glass-download-btn" id="builder-download-btn" onclick="downloadBuilderQuiz()" style="display:none;">
+        <button class="glass-exit-btn glass-download-btn" id="builder-download-btn" onclick="openDownloadModal()" style="display:none;">
             <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
             Download
         </button>
@@ -2094,7 +785,7 @@
 
         <div class="builder-question-list" id="builder-question-list"></div>
 
-        <div id="builder-error-display" class="error-banner"></div>
+        <div id="builder-error-display" class="download-error-banner"></div>
         <div id="builder-success-display" class="success-banner"></div>
 
         <div class="bottom-action-bar" id="bottom-action-bar">
@@ -2146,6 +837,50 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="download-modal">
+    <div class="apple-alert">
+        <div class="alert-content">
+            <h3 class="alert-title">Select a Download Option</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                <span style="font-size: 15px; font-weight: 500;">Protect with Password</span>
+                <input type="checkbox" class="ios-toggle" id="download-protect-toggle" onchange="toggleDownloadPassword()">
+            </div>
+            <div id="download-pwd-container" style="display: none; overflow: hidden;">
+                <div class="pwd-wrapper">
+                    <input type="password" id="download-password-input" class="text-input" placeholder="Set Password">
+                    <button class="pwd-eye-btn" onclick="togglePasswordVisibility('download-password-input', this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-btn secondary" onclick="closeDownloadModal()">Cancel</button>
+            <button class="alert-btn primary" onclick="confirmDownloadModal()">Download</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="password-prompt-modal">
+    <div class="apple-alert">
+        <div class="alert-content">
+            <h3 class="alert-title">Protected Quiz</h3>
+            <p class="alert-message">This quiz is password protected. Enter the password to open it:</p>
+            <div class="pwd-wrapper">
+                <input type="password" id="prompt-password-input" class="text-input" placeholder="Password">
+                <button class="pwd-eye-btn" onclick="togglePasswordVisibility('prompt-password-input', this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                </button>
+            </div>
+            <p id="password-error-msg" style="color: var(--error-red); font-size: 13px; margin: 4px 0 0 4px; display: none;">Incorrect password.</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-btn secondary" onclick="cancelPasswordPrompt()">Cancel</button>
+            <button class="alert-btn primary" onclick="submitPasswordPrompt()">Open</button>
+        </div>
+    </div>
+</div>
+
 <div class="img-modal-overlay" id="img-modal">
     <div class="img-modal-box">
         <p class="img-modal-title" id="img-modal-title">Add Image</p>
@@ -2170,9 +905,6 @@
     </div>
 </div>
 
-<!-- VIEW-ONLY IMAGE MODAL — used in Select mode to preview attached images.
-     Same visual shell as #img-modal but with a single "Close" button and a
-     larger, non-interactive preview area. -->
 <div class="img-modal-overlay" id="img-view-modal" onclick="closeImgViewModal()">
     <div class="img-modal-box" onclick="event.stopPropagation()">
         <p class="img-modal-title">Image Preview</p>
@@ -2185,13 +917,11 @@
     </div>
 </div>
 
-<!-- EXPLANATION MODAL — used in both Builder (edit) and Play view (read-only) -->
 <div class="explanation-modal-overlay" id="explanation-modal" onclick="closeExplanationModal()">
     <div class="explanation-modal-box" onclick="event.stopPropagation()">
         <p class="explanation-modal-title" id="explanation-modal-title">Give Explanation</p>
         <p class="explanation-modal-answer-label" id="explanation-modal-answer-label"></p>
         <textarea class="explanation-modal-textarea" id="explanation-modal-textarea" placeholder="Explain why this answer is correct or incorrect…" rows="4"></textarea>
-        <!-- Image attachment area — shown in edit mode always; in view mode only when image exists -->
         <div class="expl-img-area" id="expl-img-area">
             <div class="expl-img-placeholder" id="expl-img-placeholder">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
@@ -2218,6 +948,209 @@
 </div>
 
 <script>
+    // ==========================================
+    // CRYPTO MODULE (Web Crypto API) - JAVÍTOTT
+    // ==========================================
+
+    async function deriveCryptoKey(password, salt) {
+        const enc = new TextEncoder();
+        const keyMaterial = await window.crypto.subtle.importKey(
+            "raw",
+            enc.encode(password),
+            { name: "PBKDF2" },
+            false,
+            ["deriveBits", "deriveKey"]
+        );
+        return window.crypto.subtle.deriveKey(
+            {
+                name: "PBKDF2",
+                salt: salt,
+                iterations: 100000,
+                hash: "SHA-256"
+            },
+            keyMaterial,
+            { name: "AES-GCM", length: 256 },
+            true,
+            ["encrypt", "decrypt"]
+        );
+    }
+
+    async function encryptSingleItem(item, key) {
+        const enc = new TextEncoder();
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const encodedData = enc.encode(JSON.stringify(item));
+        
+        const encryptedBuffer = await window.crypto.subtle.encrypt(
+            { name: "AES-GCM", iv: iv },
+            key,
+            encodedData
+        );
+
+        const combined = new Uint8Array(iv.length + encryptedBuffer.byteLength);
+        combined.set(iv);
+        combined.set(new Uint8Array(encryptedBuffer), iv.length);
+
+        // JAVÍTÁS: A memóriatúlcsordulás (Call Stack Exceeded) elkerülése
+        // A tömböt 8192 bájtos darabokban dolgozzuk fel.
+        let binary = '';
+        const chunkSize = 8192;
+        for (let i = 0; i < combined.length; i += chunkSize) {
+            const chunk = combined.subarray(i, i + chunkSize);
+            binary += String.fromCharCode.apply(null, chunk);
+        }
+
+        return btoa(binary);
+    }
+
+    async function decryptSingleItem(encryptedB64, key) {
+        const dec = new TextDecoder();
+        
+        // JAVÍTÁS: Memóriabarátabb dekódolás (elkerüli a böngésző kifagyását nagy képeknél)
+        const binaryString = atob(encryptedB64);
+        const len = binaryString.length;
+        const combined = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            combined[i] = binaryString.charCodeAt(i);
+        }
+        
+        const iv = combined.slice(0, 12);
+        const data = combined.slice(12);
+
+        const decryptedBuffer = await window.crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: iv },
+            key,
+            data
+        );
+
+        return JSON.parse(dec.decode(decryptedBuffer));
+    }
+
+    async function exportEncryptedQuizData(questionsArray, quizName, quizDesc, password) {
+        const salt = window.crypto.getRandomValues(new Uint8Array(16));
+        const key = await deriveCryptoKey(password, salt);
+        
+        const encryptedQuestions = [];
+
+        for (const question of questionsArray) {
+            const encryptedStr = await encryptSingleItem(question, key);
+            encryptedQuestions.push(encryptedStr);
+        }
+
+        const outputData = {
+            name: quizName,
+            desc: quizDesc,
+            isEncrypted: true,
+            // Itt maradhat a spread (...), mert a salt csak 16 bájt (sosem lesz nagy)
+            salt: btoa(String.fromCharCode(...salt)),
+            questions: encryptedQuestions
+        };
+
+        return JSON.stringify(outputData, null, 2);
+    }
+
+    async function importEncryptedQuizData(parsedData, password) {
+        if (!parsedData.isEncrypted) {
+            return parsedData.questions;
+        }
+
+        const salt = new Uint8Array(atob(parsedData.salt).split("").map(c => c.charCodeAt(0)));
+        const key = await deriveCryptoKey(password, salt);
+        
+        const decryptedQuestions = [];
+
+        try {
+            for (const encryptedStr of parsedData.questions) {
+                const decryptedQuestion = await decryptSingleItem(encryptedStr, key);
+                decryptedQuestions.push(decryptedQuestion);
+            }
+            return decryptedQuestions;
+        } catch (error) {
+            throw new Error("The file couldn't be opened.");
+        }
+    }
+
+    // ==========================================
+    // UI: PASSWORD VISIBILITY & CUSTOM PROMPT
+    // ==========================================
+    
+    const EYE_OPEN_SVG = `<svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
+    const EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
+
+    function togglePasswordVisibility(inputId, btnEl) {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btnEl.innerHTML = EYE_CLOSED_SVG;
+        } else {
+            input.type = 'password';
+            btnEl.innerHTML = EYE_OPEN_SVG;
+        }
+    }
+
+    let passwordPromptResolve = null;
+
+    function requestPassword(showError = false) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('password-prompt-modal');
+            const input = document.getElementById('prompt-password-input');
+            const errorMsg = document.getElementById('password-error-msg');
+            
+            input.value = '';
+            input.type = 'password';
+            errorMsg.style.display = showError ? 'block' : 'none';
+            input.classList.toggle('input-error', showError);
+            
+            const eyeBtn = modal.querySelector('.pwd-eye-btn');
+            eyeBtn.innerHTML = EYE_OPEN_SVG;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => input.focus(), 100);
+
+            passwordPromptResolve = resolve;
+        });
+    }
+
+    function cancelPasswordPrompt() {
+        document.getElementById('password-prompt-modal').classList.remove('active');
+        document.body.style.overflow = '';
+        if (passwordPromptResolve) {
+            passwordPromptResolve(null);
+            passwordPromptResolve = null;
+        }
+    }
+
+    function submitPasswordPrompt() {
+        const pwd = document.getElementById('prompt-password-input').value;
+        document.getElementById('password-prompt-modal').classList.remove('active');
+        document.body.style.overflow = '';
+        if (passwordPromptResolve) {
+            passwordPromptResolve(pwd);
+            passwordPromptResolve = null;
+        }
+    }
+
+    // Handles the decryption loop using the custom UI
+    async function loadEncryptedData(rawData) {
+        let decryptedData = null;
+        let hasError = false;
+        while (!decryptedData) {
+            const password = await requestPassword(hasError);
+            if (password === null) return null; // Cancelled by user
+            try {
+                decryptedData = await importEncryptedQuizData(rawData, password);
+            } catch (err) {
+                hasError = true;
+            }
+        }
+        return decryptedData;
+    }
+
+
+    // ==========================================
+    // QUIZ LOGIC
+    // ==========================================
+
     let loadedQuizData = [];
     let quizData = []; 
     let selectedMode = 'seq'; 
@@ -2225,7 +1158,7 @@
     let userAnswers = []; 
     let currentQuestionIndex = 0;
     let score = 0;
-    let selectedOptionIndexes = []; // array of selected option indexes (single-choice holds at most 1)
+    let selectedOptionIndexes = []; 
     let isQuestionReviewed = false;
     let quizMetadata = { name: "Quiz", desc: "" };
 
@@ -2261,7 +1194,6 @@
     const bottomActionBar = document.getElementById('bottom-action-bar');
     const builderModeControlWrapEl = document.getElementById('builder-mode-control-wrap');
 
-    /* Lightbox elements */
     const lightboxOverlay = document.getElementById('lightbox-overlay');
     const lightboxImg = document.getElementById('lightbox-img');
 
@@ -2310,7 +1242,6 @@
             saveBuilderState();
             autoGrow(builderQuizDescEl);
         });
-        // Initial auto-grow for restored session values
         requestAnimationFrame(() => autoGrow(builderQuizDescEl));
     });
 
@@ -2347,7 +1278,6 @@
             userAnswers = state.userAnswers || [];
             currentQuestionIndex = state.currentQuestionIndex || 0;
             score = state.score || 0;
-            // Backward compatible with older sessions that stored a single selectedOptionIndex.
             if (Array.isArray(state.selectedOptionIndexes)) {
                 selectedOptionIndexes = state.selectedOptionIndexes;
             } else if (typeof state.selectedOptionIndex === 'number') {
@@ -2426,16 +1356,26 @@
         modeSelectSection.style.display = 'block';
     }
 
-    fileSelector.addEventListener('change', function(event) {
+    // PLAY MODE IMPORT
+    fileSelector.addEventListener('change', async function(event) {
         const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
                 errorDisplayEl.style.display = 'none';
-                const rawData = JSON.parse(e.target.result);
+                let rawData = JSON.parse(e.target.result);
                 
+                if (rawData.isEncrypted) {
+                    const decryptedQuestions = await loadEncryptedData(rawData);
+                    if (!decryptedQuestions) {
+                        fileSelector.value = '';
+                        return; // User cancelled
+                    }
+                    rawData.questions = decryptedQuestions;
+                }
+
                 if (!rawData.questions) {
                     throw new Error("The file structure is valid JSON, but it is missing the required 'questions' property.");
                 }
@@ -2466,11 +1406,6 @@
                         return { text, isCorrect, image, explanation };
                     });
 
-                    // Ha explicit correct=1 jelölés nincs egyiken sem ÉS az options
-                    // egyszerű string-tömbként érkezett (legacy formátum), akkor az
-                    // első opciót jelöljük helyesnek a régi viselkedés megőrzése érdekében.
-                    // Ha az options object-tömbként érkezett (modern formátum), a szerző
-                    // szándékosan hagyhatott 0 helyeset → ne kényszerítsünk semmit.
                     const isLegacyStringArray = q.options.every(opt => typeof opt !== 'object');
                     if (isLegacyStringArray && !mappedOptions.some(opt => opt.isCorrect)) {
                         mappedOptions[0].isCorrect = true;
@@ -2478,11 +1413,6 @@
 
                     mappedOptions = shuffleArray(mappedOptions);
 
-                    // Determine question type: explicit field wins, otherwise infer from
-                    // how many correct answers are marked.
-                    // 0 correct → multiple (special "none of the above" style)
-                    // 1 correct → single
-                    // 2+ correct → multiple
                     const correctCount = mappedOptions.filter(opt => opt.isCorrect).length;
                     let questionType = (q.questionType === 'multiple' || q.questionType === 'single')
                         ? q.questionType
@@ -2516,20 +1446,31 @@
             } catch (err) {
                 errorDisplayEl.innerText = `Cannot Open File\n\n${err.message}`;
                 errorDisplayEl.style.display = 'block';
-                resetToUpload();
+                fileSelector.value = '';
             }
         };
         reader.readAsText(file);
     });
 
-    builderFileSelector.addEventListener('change', function(event) {
+    // BUILDER MODE IMPORT
+    builderFileSelector.addEventListener('change', async function(event) {
         const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
-                const rawData = JSON.parse(e.target.result);
+                let rawData = JSON.parse(e.target.result);
+                
+                if (rawData.isEncrypted) {
+                    const decryptedQuestions = await loadEncryptedData(rawData);
+                    if (!decryptedQuestions) {
+                        builderFileSelector.value = '';
+                        return; // User cancelled
+                    }
+                    rawData.questions = decryptedQuestions;
+                }
+
                 if (!rawData.questions) {
                     throw new Error("Missing structural 'questions' array inside the JSON payload.");
                 }
@@ -2563,15 +1504,11 @@
                     }
 
                     if (mappedOptions.length === 0) {
-                        // Teljesen üres options — helyezzen be két üres sort (Customize módban töltik ki).
                         mappedOptions = [
                             { id: makeBuilderId(), text: '', isCorrect: true, image: '', explanation: '' },
                             { id: makeBuilderId(), text: '', isCorrect: false, image: '', explanation: '' }
                         ];
                     } else {
-                        // Ha az options CSAK string-eket tartalmaz (legacy formátum), az első
-                        // legyen helyes (régi viselkedés). Ha object-tömbként érkezett,
-                        // a szerző szándékosan hagyhatott 0 helyeset — ne változtassunk rajta.
                         const isLegacyStringArray = (q.options || []).every(opt => typeof opt !== 'object');
                         if (isLegacyStringArray && !mappedOptions.some(o => o.isCorrect)) {
                             mappedOptions[0].isCorrect = true;
@@ -2723,13 +1660,9 @@
         }
 
         if (multiSelectHintEl) {
-            // 0 helyes válasz: "Egyik sem helyes" — ne mutassunk multi-select hintet,
-            // de a gombot azonnal engedélyezzük, hiszen a helyes válasz a "semmi sem".
             multiSelectHintEl.style.display = (isMultiple && !hasNoCorrectAnswers) ? 'flex' : 'none';
         }
 
-        // Ha 0 helyes válasz van, a Check gomb már kezdettől aktív
-        // (a helyes megoldás az, hogy a felhasználó semmit sem jelöl be).
         if (hasNoCorrectAnswers) {
             nextButtonEl.disabled = false;
         }
@@ -2739,7 +1672,6 @@
             const button = document.createElement('button');
             button.classList.add('option-btn');
 
-            // Halvány sorszám
             const numEl = document.createElement('span');
             numEl.className = 'option-number';
             numEl.innerText = index + 1;
@@ -2837,10 +1769,6 @@
             }
 
             const buttons = optionsContainerEl.querySelectorAll('.option-btn');
-
-            // Ha 0 helyes válasz van definiálva: minden opció semleges (dimmed),
-            // kivéve amit a felhasználó választott — azok incorrect-state-ek lesznek
-            // (ha valamit választott, az rossznak számít; ha semmit sem, az helyes).
             const hasNoCorrectAnswers = correctIndexes.length === 0;
 
             buttons.forEach((btn, idx) => {
@@ -2851,7 +1779,6 @@
                 const isCorrectOption = correctIndexes.includes(idx);
 
                 if (hasNoCorrectAnswers) {
-                    // "Egyik sem helyes" típus: a választott opciók hibásak, a többi dimmed.
                     if (wasChosen) {
                         btn.classList.add('incorrect-state');
                         btn.classList.add('was-chosen');
@@ -2893,10 +1820,9 @@
         resultsSection.style.display = 'block';
 
         const maxPoints = quizData.reduce((sum, q) => sum + (q.points || 1), 0);
-        const earnedPoints = score; // already weighted in handleMainAction
+        const earnedPoints = score; 
         const percentage = maxPoints > 0 ? Math.round((earnedPoints / maxPoints) * 100) : 0;
 
-        // Circle: show "X / Y pt" when any question has >1 point, otherwise just percentage
         const hasWeightedQuestions = quizData.some(q => (q.points || 1) > 1);
         if (hasWeightedQuestions) {
             scoreCircleEl.innerHTML = `<span style="font-size:18px;line-height:1.1">${earnedPoints}<br><span style="font-size:13px;font-weight:500;opacity:0.7">/ ${maxPoints} pt</span></span>`;
@@ -3025,6 +1951,7 @@
         gameSection.style.display = 'none';
         configSection.style.display = 'none';
         builderSection.style.display = 'none';
+        uploadSection.style.display = 'none'; // JAVÍTÁS: hiba esetén ez elrejti, megszüntetve a vizuális hibát.
         mainContainerEl.classList.remove('builder-wide');
         setTopBar(null);
         modeSelectSection.style.display = 'block';
@@ -3036,11 +1963,10 @@
         scoreCircleEl.style.color = "var(--apple-blue)";
     }
 
-    /* QUIZ BUILDER CORE LOGIC */
     let builderQuestions = [];
     let builderIdCounter = 0;
-    let builderViewMode = 'customize'; // 'customize' | 'select'
-    const validationErrorIds = new Set(); // IDs of questions/options whose placeholder shows an error after a failed Download
+    let builderViewMode = 'customize'; 
+    const validationErrorIds = new Set(); 
 
     const builderQuestionListEl = document.getElementById('builder-question-list');
     const builderQuizNameEl = document.getElementById('builder-quiz-name');
@@ -3049,7 +1975,6 @@
     const builderSuccessEl = document.getElementById('builder-success-display');
     const builderExitModalEl = document.getElementById('builder-exit-modal');
 
-    /* Customize / Select segmented control (masking slider, mirrors the reference component) */
     const builderSegControlEl = document.getElementById('builder-seg-control');
     const builderSegSliderEl = document.getElementById('builder-seg-slider');
     const builderSegMaskEl = document.getElementById('builder-seg-mask');
@@ -3058,19 +1983,9 @@
     let segStartX = 0;
     let segCurrentTranslate = 0;
 
-    function getSegPaddingValue() {
-        return parseFloat(window.getComputedStyle(builderSegControlEl).paddingLeft) || 0;
-    }
-
-    function getSegSliderRange() {
-        const padding = getSegPaddingValue();
-        return builderSegControlEl.offsetWidth - builderSegSliderEl.offsetWidth - (2 * padding);
-    }
-
-    function updateSegMaskWidth() {
-        const padding = getSegPaddingValue();
-        builderSegMaskEl.style.width = (builderSegControlEl.offsetWidth - (2 * padding)) + 'px';
-    }
+    function getSegPaddingValue() { return parseFloat(window.getComputedStyle(builderSegControlEl).paddingLeft) || 0; }
+    function getSegSliderRange() { const padding = getSegPaddingValue(); return builderSegControlEl.offsetWidth - builderSegSliderEl.offsetWidth - (2 * padding); }
+    function updateSegMaskWidth() { const padding = getSegPaddingValue(); builderSegMaskEl.style.width = (builderSegControlEl.offsetWidth - (2 * padding)) + 'px'; }
 
     function moveSegSliderAndMask(translateX) {
         builderSegSliderEl.style.transform = `translateX(${translateX}px)`;
@@ -3179,7 +2094,6 @@
                     const correctCount = (q.options || []).filter(o => o.isCorrect).length;
                     q.questionType = correctCount > 1 ? 'multiple' : 'single';
                 }
-                // Backward compat: ensure points field exists
                 if (typeof q.points !== 'number' || q.points < 1 || q.points > 10) {
                     q.points = 1;
                 }
@@ -3266,35 +2180,24 @@
         if (!question) return;
 
         if (question.questionType === 'multiple') {
-            // Checkbox behavior: egyszerű toggle, nincs minimum korlát.
             const option = question.options.find(o => o.id === optId);
             if (!option) return;
             option.isCorrect = !option.isCorrect;
         } else {
-            // Radio behavior: exactly one correct answer (single típusnál a radio gomb
-            // mindig pontosan egyet jelöl — itt megmarad a régi viselkedés).
             question.options.forEach(o => { o.isCorrect = (o.id === optId); });
         }
         renderBuilderQuestions();
         saveBuilderState();
     }
 
-    /* SELECT MODE — minden válasz egyszerű toggle (be/ki), korlát nélkül.
-       - 0 helyes: érvényes (pl. "egyik sem helyes" kvíz-formátum)
-       - összes helyes: érvényes (pl. "jelöld meg az összeset")
-       - Ha pontosan 1 helyes marad → single; ha 0 vagy 2+ → multiple.
-       Az automatikus single/multiple típusváltást is elvégezzük, hogy a JSON
-       export és a Play view mindig konzisztens maradjon. */
     function toggleBuilderSelectAnswer(qId, optId) {
         const question = builderQuestions.find(q => q.id === qId);
         if (!question) return;
         const option = question.options.find(o => o.id === optId);
         if (!option) return;
 
-        // Egyszerű toggle — nincs minimum- vagy maximum-korlát.
         option.isCorrect = !option.isCorrect;
 
-        // Típus frissítése: pontosan 1 helyes → single, minden más → multiple.
         const correctCount = question.options.filter(o => o.isCorrect).length;
         question.questionType = correctCount === 1 ? 'single' : 'multiple';
 
@@ -3310,13 +2213,10 @@
         question.questionType = type;
 
         if (type === 'single') {
-            // Ha több helyes volt, csak az elsőt tartjuk meg.
-            // Ha 0 helyes volt (szándékos), marad 0 — nem kényszerítünk helyest.
             const firstCorrect = question.options.find(o => o.isCorrect);
             if (firstCorrect) {
                 question.options.forEach(o => { o.isCorrect = (o === firstCorrect); });
             }
-            // Ha firstCorrect undefined (0 helyes), minden option marad false — ez érvényes.
         }
 
         renderBuilderQuestions();
@@ -3337,21 +2237,13 @@
         saveBuilderState();
     }
 
-    /* SVG icons for the image-attach button:
-       - IMG_PLUS_SVG  → no image attached yet  (image + plus badge)
-       - IMG_FILLED_SVG → image already attached (plain image frame) */
     const IMG_PLUS_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/></svg>`;
     const IMG_FILLED_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>`;
-
-    /* Score icon — slash with a plus badge (svgScore.svg), used on the score pill button */
     const SCORE_SVG = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M 19.874016,4.1259843 1.8987627,22.101237" stroke-width="1.79753"/><g transform="matrix(0.55091036,0,0,0.55091036,-1.2036415,1.9223428)"><path d="M 5,12 H 19"/><path d="M 12,5 V 19"/><path d="m 27.074452,31.516214 h 14"/></g></svg>`;
-
-    /* SVG icon for the Give Explanation button — the uploaded questionMarkPlus design */
     const EXPLANATION_SVG = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 13.313045,21.913421 A 10,10 0 0 1 3.0391049,16.438734 10,10 0 0 1 4.9095111,4.9484067 10,10 0 0 1 16.389376,3.0148245 10,10 0 0 1 21.920494,13.258495"/><path d="m 9.09,9 c 1.101078,-3.1860272 5.452131,-2.8087285 6.014852,0.5686778 0.252788,3.4702102 -3.287531,1.9839312 -3.030809,4.7869062"/><path d="M12 17h.01"/><g stroke-width="2" transform="matrix(0.61694281,0,0,0.61694281,11.312989,11.333528)"><path d="M 5,12 H 19"/><path d="M 12,5 V 19"/></g></svg>`;
 
-    /* EXPLANATION MODAL LOGIC */
     let explanationModalContext = { qId: null, optId: null };
-    let explanationModalPendingImage = ''; // base64 or '' — pending until Save
+    let explanationModalPendingImage = ''; 
 
     const explanationModalEl = document.getElementById('explanation-modal');
     const explanationModalTitleEl = document.getElementById('explanation-modal-title');
@@ -3366,7 +2258,6 @@
     const explImgRemoveBtnEl = document.getElementById('expl-img-remove-btn');
     const explImgFileInputEl = document.getElementById('expl-img-file-input');
 
-    /* Helpers to set/clear the image preview inside the explanation modal */
     function setExplImgPreview(src) {
         if (src) {
             explImgPreviewEl.src = src;
@@ -3421,7 +2312,6 @@
         }
     });
 
-    /* Helper: normalise explanation field — can be legacy string or {text, image} object */
     function getExplText(expl) {
         if (!expl) return '';
         if (typeof expl === 'string') return expl;
@@ -3433,7 +2323,7 @@
     }
     function makeExplObj(text, image) {
         if (!text && !image) return '';
-        if (text && !image) return text; // keep backward-compat string for text-only
+        if (text && !image) return text; 
         return { text: text || '', image: image || '' };
     }
 
@@ -3490,7 +2380,6 @@
         explanationModalTextareaEl.value = text;
         explanationModalTextareaEl.readOnly = true;
         explanationModalTextareaEl.classList.add('read-only');
-        // Hide textarea entirely if no text
         explanationModalTextareaEl.style.display = text ? 'block' : 'none';
 
         explImgAreaEl.classList.add('read-only');
@@ -3517,7 +2406,6 @@
     function closeExplanationModal() {
         explanationModalEl.classList.remove('active');
         document.body.style.overflow = '';
-        // Reset display overrides set by view mode
         explanationModalTextareaEl.style.display = '';
         explImgAreaEl.style.display = '';
     }
@@ -3549,15 +2437,11 @@
         saveBuilderState();
     }
 
-    /* ── SCORE POPOVER ────────────────────────────────────────────────────────
-       A lightweight singleton popover anchored to whichever score pill was last
-       clicked. Only one popover is open at a time; clicking outside closes it. */
     let activeScorePopover = null;
 
     const CHEVRON_UP_SVG   = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`;
     const CHEVRON_DOWN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
 
-    // Global root for the popover — lives outside all overflow:hidden containers.
     let scorePopoverRoot = null;
     function getScorePopoverRoot() {
         if (!scorePopoverRoot) {
@@ -3566,6 +2450,29 @@
             document.body.appendChild(scorePopoverRoot);
         }
         return scorePopoverRoot;
+    }
+
+    function applyScorePopoverPosition(popover, pillBtn) {
+        const r = pillBtn.getBoundingClientRect();
+        const popW = popover.offsetWidth  || 44;
+        const popH = popover.offsetHeight || 130;
+        const gap  = 6;
+
+        let left = r.left + r.width / 2 - popW / 2;
+        left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+
+        const spaceAbove = r.top;
+        if (spaceAbove >= popH + gap + 8) {
+            popover.style.top  = (r.top - popH - gap) + 'px';
+            popover.style.left = left + 'px';
+            popover.classList.remove('flip-below');
+            popover.style.transformOrigin = 'center bottom';
+        } else {
+            popover.classList.add('flip-below');
+            popover.style.top  = (r.bottom + gap) + 'px';
+            popover.style.left = left + 'px';
+            popover.style.transformOrigin = 'center top';
+        }
     }
 
     function openScorePopover(pillBtn, qId) {
@@ -3581,7 +2488,6 @@
         const stepper = document.createElement('div');
         stepper.className = 'score-stepper';
 
-        // chevron UP = increase
         const plusBtn = document.createElement('button');
         plusBtn.className = 'score-step-btn';
         plusBtn.innerHTML = CHEVRON_UP_SVG;
@@ -3590,7 +2496,6 @@
         const valueLabel = document.createElement('span');
         valueLabel.className = 'score-value-label';
 
-        // chevron DOWN = decrease
         const minusBtn = document.createElement('button');
         minusBtn.className = 'score-step-btn';
         minusBtn.innerHTML = CHEVRON_DOWN_SVG;
@@ -3624,36 +2529,11 @@
         stepper.appendChild(minusBtn);
         popover.appendChild(stepper);
 
-        // Mount in the global root so overflow:hidden can't clip it.
         getScorePopoverRoot().appendChild(popover);
         activeScorePopover = { popover, pillBtn };
 
-        // Position after first paint so offsetHeight is real.
         requestAnimationFrame(() => {
-            const r = pillBtn.getBoundingClientRect();
-            const popW = popover.offsetWidth  || 44;
-            const popH = popover.offsetHeight || 130;
-            const gap  = 6;
-
-            // Center horizontally on the icon
-            let left = r.left + r.width / 2 - popW / 2;
-            // Keep inside viewport
-            left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
-
-            const spaceAbove = r.top;
-            if (spaceAbove >= popH + gap + 8) {
-                // Open upward — bottom of popover aligns just above the icon
-                popover.style.top  = (r.top - popH - gap) + 'px';
-                popover.style.left = left + 'px';
-                popover.style.transformOrigin = 'center bottom';
-            } else {
-                // Flip: open downward
-                popover.classList.add('flip-below');
-                popover.style.top  = (r.bottom + gap) + 'px';
-                popover.style.left = left + 'px';
-                popover.style.transformOrigin = 'center top';
-            }
-
+            applyScorePopoverPosition(popover, pillBtn);
             popover.classList.add('open');
         });
     }
@@ -3666,13 +2546,24 @@
         activeScorePopover = null;
     }
 
-    // Click outside → close (ignore clicks on the pill button itself and inside the popover)
+    // FIX 1: Close popover on outside click — consume the event with stopPropagation()
+    // so the element underneath (e.g. a delete button) does NOT also fire.
     document.addEventListener('click', (e) => {
         if (!activeScorePopover) return;
         if (!activeScorePopover.pillBtn.contains(e.target) && !activeScorePopover.popover.contains(e.target)) {
+            e.stopPropagation();
             closeScorePopover();
         }
     }, true);
+
+    // Close the score popover whenever the user scrolls or resizes (pill position becomes stale).
+    window.addEventListener('scroll', () => {
+        if (activeScorePopover) closeScorePopover();
+    }, { passive: true, capture: true });
+
+    window.addEventListener('resize', () => {
+        if (activeScorePopover) closeScorePopover();
+    });
 
     function renderBuilderQuestions() {
         builderQuestionListEl.innerHTML = '';
@@ -3704,9 +2595,6 @@
             qNumEl.innerText = qIndex + 1;
             qRow.appendChild(qNumEl);
 
-            // Question textarea + its image button share one positioning wrapper, so the
-            // image button can sit visually *inside* the blue question field (absolutely
-            // positioned to its bottom-right) instead of as a separate flex sibling.
             const qInputWrap = document.createElement('div');
             qInputWrap.className = 'question-input-wrap';
 
@@ -3735,7 +2623,6 @@
                     qImgBtn.style.cursor = 'zoom-in';
                     qImgBtn.onclick = (e) => { e.stopPropagation(); openImgViewModal(question.questionImage); };
                 } else {
-                    // Select módban nincs kép: image-off placeholder ikon
                     qImgBtn.className = 'question-row-img-off';
                     qImgBtn.disabled = true;
                     qImgBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/><line x1="13.5" x2="6" y1="13.5" y2="21"/><line x1="18" x2="21" y1="12" y2="15"/><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"/><path d="M21 15V5a2 2 0 0 0-2-2H9"/></svg>`;
@@ -3745,10 +2632,6 @@
             }
             qImgWrap.appendChild(qImgBtn);
 
-            // Select módban: [score-icon] + [img-off/img], sorrendben a kérdés sorban
-            // Ez tükrözi az answer sorok [img | drag-handle] elrendezését:
-            //   score-icon = img oszlop (bal)
-            //   img-off    = drag-handle oszlop (jobb)
             if (builderViewMode === 'select') {
                 const pts = question.points || 1;
                 const scorePill = document.createElement('button');
@@ -3763,7 +2646,6 @@
                         openScorePopover(scorePill, question.id);
                     }
                 };
-                // Insert score BEFORE img-off so order is [score | img-off]
                 qImgWrap.insertBefore(scorePill, qImgBtn);
             }
 
@@ -3772,10 +2654,6 @@
             qRow.appendChild(qInputWrap);
             qaPanel.appendChild(qRow);
 
-            // Delete-question button sits outside the blue text field and outside the
-            // overflow:hidden qa-panel entirely — absolutely positioned against the
-            // .builder-card itself so it can overlap the card's own top-right corner as a
-            // round badge, matching the reference design.
             if (showDeleteBtn) {
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'card-delete-badge-btn';
@@ -3831,9 +2709,6 @@
                 row.appendChild(optInput);
 
                 if (builderViewMode === 'select') {
-                    // Image column: ha van kép → kattintható preview gomb (IMG_FILLED_SVG),
-                    // ha nincs → image-off ikon (nem kattintható, dekoratív státuszjelző).
-                    // Mindkét esetben ugyanolyan 28×28-as gomb, hogy a szöveg oszlop ne ugorjon.
                     if (option.image) {
                         const optImgBtn = document.createElement('button');
                         optImgBtn.className = 'img-upload-btn has-image';
@@ -3850,7 +2725,6 @@
                         row.appendChild(imgOffBtn);
                     }
 
-                    // Drag handle — a kép oszlop jobb oldalán
                     const dragHandle = document.createElement('button');
                     dragHandle.className = 'drag-handle-btn';
                     dragHandle.title = 'Drag to reorder';
@@ -3864,7 +2738,6 @@
                     optImgBtn.innerHTML = option.image ? IMG_FILLED_SVG : IMG_PLUS_SVG;
                     row.appendChild(optImgBtn);
 
-                    // Give Explanation button — Customize mode only, replaces the old drag handle
                     const explBtn = document.createElement('button');
                     const hasExpl = option.explanation && (getExplText(option.explanation) || getExplImage(option.explanation));
                     explBtn.className = 'explanation-btn' + (hasExpl ? ' has-explanation' : '');
@@ -3876,12 +2749,7 @@
 
                 if (builderViewMode === 'select') {
                     row.onclick = null;
-                    // Use pointerup instead of click so we can suppress the event when
-                    // the interaction was actually a drag (dragHasMoved will be true).
                     row.addEventListener('pointerup', (e) => {
-                        // Only respond to taps, never to drag-release.
-                        // Also ignore if the tap landed on the image-preview button
-                        // (it has its own handler and stopPropagation).
                         if (dragHasMoved) return;
                         if (e.target.closest('.img-upload-btn')) return;
                         toggleBuilderSelectAnswer(question.id, option.id);
@@ -3937,9 +2805,9 @@
             builderQuestionListEl.appendChild(card);
         });
         
-        // Synchronous: by this point every card is already attached to the live DOM,
-        // so scrollHeight is measurable immediately — no flash/jump from a delayed resize.
-        document.querySelectorAll('.builder-question-input').forEach(autoGrow);
+        requestAnimationFrame(() => {
+            document.querySelectorAll('.builder-question-input').forEach(autoGrow);
+        });
     }
 
     function autoGrow(el) {
@@ -3947,45 +2815,14 @@
         el.style.height = (el.scrollHeight) + 'px';
     }
 
-    /* ─────────────────────────────────────────────────────────────────────────
-       iOS-LIKE DRAG REORDER FOR BUILDER ANSWER ROWS
-       Architecture (mirrors the drag_drop.html reference design):
-
-       • pointerdown on a .drag-handle-btn starts the drag. setPointerCapture is
-         placed on the handle itself (not the row), so pointermove/pointerup events
-         are delivered even if the pointer leaves the element — identical to the
-         reference approach.
-
-       • body.is-animating + body.is-dragging-active are set immediately, blocking
-         all other interactions for the full duration (drag + snap-back animation).
-
-       • The dragged row gets .dragging (scale(1.02) lift + stronger shadow via CSS).
-         Sibling rows retain their CSS baseline `transition: transform 0.35s` so they
-         glide fluidly out of the way without any JS hand-holding.
-
-       • On pointerup: .dragging is removed, .snap-back is added, and the row's
-         transform is set to its final visual target. The springy CSS transition on
-         .snap-back plays out, then a setTimeout fires at 300 ms to do the actual DOM
-         reorder, clean up all inline styles, and release the body lock.
-
-       • The .add-option-row is always the last child of .builder-options-group and
-         is intentionally excluded from the draggable set — it can never be dragged
-         onto or past (bounds clamping prevents it).
-
-       • dragHasMoved guards against a spurious pointerup click being interpreted as
-         a "select answer" tap in Select mode. It is true from the first pointermove
-         until 300 ms after pointerup.
-    ───────────────────────────────────────────────────────────────────────── */
-    let dragHasMoved = false; // true while a drag is in progress / settling
+    let dragHasMoved = false; 
 
     function getOptionRows(group) {
-        // Only .builder-option-row children — excludes the static .add-option-row.
         return Array.from(group.querySelectorAll(':scope > .builder-option-row'));
     }
 
     builderQuestionListEl.addEventListener('pointerdown', (e) => {
         const handle = e.target.closest('.drag-handle-btn');
-        // Ignore if no handle, or if an animation/drag lock is already active.
         if (!handle || document.body.classList.contains('is-animating')) return;
 
         const row = handle.closest('.builder-option-row');
@@ -3996,16 +2833,11 @@
         e.preventDefault();
         dragHasMoved = false;
 
-        // Close any open "revealed" state on other rows before dragging starts
-        // (spec requirement 5; the Quiz Studio doesn't use .revealed, but the
-        // guard is here for robustness if that ever changes).
         document.querySelectorAll('.builder-option-row.revealed').forEach(r => r.classList.remove('revealed'));
 
-        // Lift overflow so the scale(1.02) shadow is not clipped by the panel.
         const qaPanel = group.closest('.builder-qa-panel');
         if (qaPanel) qaPanel.style.overflow = 'visible';
 
-        // Global locks — keep active through the full drag + snap-back animation.
         document.body.classList.add('is-animating', 'is-dragging-active');
 
         const rows = getOptionRows(group);
@@ -4015,37 +2847,26 @@
 
         row.classList.add('dragging');
 
-        // Capture pointer on the handle so move/up events arrive even when the
-        // pointer travels outside the element (matches the reference exactly).
         handle.setPointerCapture(e.pointerId);
 
         const startY = e.clientY;
 
-        // Drag bounds: clamp the row so it cannot go above the first answer
-        // row or below the last answer row (the .add-option-row is excluded).
-        // Rects are read AFTER .dragging is applied so bleed-margin layout
-        // shifts are already baked in before we snapshot positions.
         const groupRect   = group.getBoundingClientRect();
         const rowRect     = row.getBoundingClientRect();
         const firstRowTop = rows[0].getBoundingClientRect().top       - groupRect.top;
         const lastRowBot  = rows[rows.length - 1].getBoundingClientRect().bottom - groupRect.top;
         const rowTop      = rowRect.top    - groupRect.top;
         const rowBot      = rowRect.bottom - groupRect.top;
-        // minTranslateY: how far up until this row's top hits the first row's top
-        // maxTranslateY: how far down until this row's bottom hits the last row's bottom
         const minTranslateY = firstRowTop - rowTop;
         const maxTranslateY = lastRowBot  - rowBot;
 
         function onPointerMove(ev) {
             dragHasMoved = true;
-            // Clamp deltaY so the row stays within the answer-rows zone
-            // (cannot go above the first slot or below the last slot).
             const rawDelta = ev.clientY - startY;
             const deltaY = Math.max(minTranslateY, Math.min(maxTranslateY, rawDelta));
 
             row.style.transform = `translateY(${deltaY}px) scale(1.02)`;
 
-            // Compute which slot the row is hovering over.
             const offsetSlots = Math.round(deltaY / rowHeight);
             let targetIndex = initialIndex + offsetSlots;
             targetIndex = Math.max(0, Math.min(rows.length - 1, targetIndex));
@@ -4054,16 +2875,13 @@
                 currentIndex = targetIndex;
             }
 
-            // iOS-like fluid displacement for sibling rows.
             rows.forEach((r, idx) => {
                 if (r === row) return;
                 r.style.transition = 'transform 0.35s cubic-bezier(0.25, 1, 0.5, 1)';
 
                 if (initialIndex < currentIndex && idx > initialIndex && idx <= currentIndex) {
-                    // Dragging down — siblings in range slide up.
                     r.style.transform = `translateY(-${rowHeight}px)`;
                 } else if (initialIndex > currentIndex && idx < initialIndex && idx >= currentIndex) {
-                    // Dragging up — siblings in range slide down.
                     r.style.transform = `translateY(${rowHeight}px)`;
                 } else {
                     r.style.transform = 'translateY(0px)';
@@ -4071,23 +2889,18 @@
             });
         }
 
-        // ── pointerup / pointercancel ────────────────────────────────────────
         function onPointerUp(ev) {
             handle.releasePointerCapture(ev.pointerId);
             handle.removeEventListener('pointermove', onPointerMove);
             handle.removeEventListener('pointerup', onPointerUp);
             handle.removeEventListener('pointercancel', onPointerUp);
 
-            // Switch from .dragging to .snap-back so the springy CSS transition
-            // on .snap-back plays the final glide-to-slot animation.
             row.classList.remove('dragging');
             row.classList.add('snap-back');
 
             const finalVisualOffset = (currentIndex - initialIndex) * rowHeight;
             row.style.transform = `translateY(${finalVisualOffset}px) scale(1)`;
 
-            // After the snap-back animation (~300 ms), commit the DOM reorder and
-            // clean everything up — matching the reference's setTimeout approach.
             setTimeout(() => {
                 row.classList.remove('snap-back');
 
@@ -4101,21 +2914,16 @@
                     reorderBuilderOptions(card.id.replace('card-', ''), initialIndex, currentIndex);
                 }
 
-                // Clear all inline transforms and transitions — clean slate.
                 rows.forEach(r => {
                     r.style.transform = '';
                     r.style.transition = '';
                 });
                 row.style.transform = '';
 
-                // Restore qa-panel clipping.
                 if (qaPanel) qaPanel.style.overflow = '';
 
-                // Release global locks.
                 document.body.classList.remove('is-animating', 'is-dragging-active');
 
-                // Reset drag-move flag after a brief delay so any pointerup event
-                // still in the queue sees dragHasMoved = true and ignores itself.
                 setTimeout(() => { dragHasMoved = false; }, 50);
 
             }, 300);
@@ -4141,13 +2949,10 @@
 
             const filledOptions = q.options.filter(o => o.text && o.text.trim());
 
-            // Legalább 2 kitöltött válasz szükséges.
             if (filledOptions.length < 2) {
                 q.options.forEach(o => { if (!o.text || !o.text.trim()) validationErrorIds.add(o.id); });
                 qHasError = true;
             }
-
-            // 0 helyes és "összes helyes" egyaránt érvényes — nincs további korlát.
 
             if (qHasError) isValid = false;
         });
@@ -4155,20 +2960,14 @@
         return { isValid };
     }
 
-    /* Same pass/fail rules as validateBuilderQuiz(), but read-only: no DOM writes, no
-       per-card error banners. Used purely to decide whether the floating Download button
-       should read as "ready" (apple-blue) or "not ready yet" (grey). Kept in sync with
-       validateBuilderQuiz() above — if those rules change, mirror the change here too. */
     function isBuilderQuizComplete() {
         if (builderQuestions.length === 0) return false;
 
         return builderQuestions.every(q => {
             if (!q.questionText || !q.questionText.trim()) return false;
 
-            const filledOptions = q.options.filter(o => o.text && o.text.trim());
-            if (filledOptions.length < 2) return false;
-
-            // 0 helyes és "összes helyes" egyaránt érvényes — nincs további korlát.
+            if (q.options.length < 2) return false;
+            if (!q.options.every(o => o.text && o.text.trim())) return false;
 
             return true;
         });
@@ -4196,7 +2995,7 @@
                                 correct: !!o.isCorrect
                             };
                             if (o.image) optObj.image = o.image;
-                            if (o.explanation) optObj.explanation = o.explanation; // string or {text,image}
+                            if (o.explanation) optObj.explanation = o.explanation; 
                             return optObj;
                         })
                 };
@@ -4206,7 +3005,11 @@
         };
     }
 
-    function downloadBuilderQuiz() {
+    // ==========================================
+    // DOWNLOAD MODAL LOGIC
+    // ==========================================
+
+    function openDownloadModal() {
         validationErrorIds.clear();
         builderSuccessEl.style.display = 'none';
 
@@ -4219,8 +3022,70 @@
             return;
         }
 
+        const modal = document.getElementById('download-modal');
+        const toggle = document.getElementById('download-protect-toggle');
+        const pwdContainer = document.getElementById('download-pwd-container');
+        const pwdInput = document.getElementById('download-password-input');
+
+        toggle.checked = false;
+        pwdContainer.style.display = 'none';
+        pwdInput.value = '';
+        pwdInput.type = 'password';
+
+        // Reset eye icon
+        const eyeBtn = modal.querySelector('.pwd-eye-btn');
+        eyeBtn.innerHTML = EYE_OPEN_SVG;
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function toggleDownloadPassword() {
+        const toggle = document.getElementById('download-protect-toggle');
+        const container = document.getElementById('download-pwd-container');
+        if (toggle.checked) {
+            container.style.display = 'block';
+            document.getElementById('download-password-input').focus();
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    function closeDownloadModal() {
+        document.getElementById('download-modal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    async function confirmDownloadModal() {
+        const toggle = document.getElementById('download-protect-toggle');
+        const pwdInput = document.getElementById('download-password-input');
+        let password = "";
+
+        if (toggle.checked) {
+            password = pwdInput.value;
+            if (!password) {
+                pwdInput.focus();
+                return;
+            }
+        }
+
+        closeDownloadModal();
+
         const quizObject = buildQuizJsonObject();
-        const jsonString = JSON.stringify(quizObject, null, 2);
+        let jsonString;
+
+        if (toggle.checked) {
+            try {
+                jsonString = await exportEncryptedQuizData(quizObject.questions, quizObject.name, quizObject.desc, password);
+            } catch (e) {
+                builderSuccessEl.style.display = 'none';
+                builderErrorEl.innerText = 'Encryption failed: ' + e.message;
+                builderErrorEl.style.display = 'block';
+                return;
+            }
+        } else {
+            jsonString = JSON.stringify(quizObject, null, 2);
+        }
 
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -4239,6 +3104,7 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
+        builderErrorEl.style.display = 'none';
         builderSuccessEl.innerText = 'Your quiz studio workspace file initialization has finalized and downloaded.';
         builderSuccessEl.style.display = 'block';
     }
@@ -4259,7 +3125,6 @@
         backToModeSelectFromBuilder();
     }
 
-    /* IMAGE MODAL LOGIC WITH DRAG & DROP */
     let imgModalContext = { type: null, qId: null, optId: null };
     let imgModalCurrentBase64 = '';
     let imgModalPendingBase64 = '';
@@ -4331,7 +3196,6 @@
         imgFileInput.value = '';
     }
 
-    /* VIEW-ONLY IMAGE MODAL — Select mode: preview attached image, Close only. */
     const imgViewModalEl = document.getElementById('img-view-modal');
     const imgViewModalImg = document.getElementById('img-view-modal-img');
 
