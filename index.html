@@ -53,6 +53,15 @@
             --sel-selected-bg: #EDF8F0;
             --sel-selected-border: #C2E6CC;
             --sel-selected-text: #18522A;
+
+            --control-bg: rgba(118, 118, 128, 0.12);
+            --selector-bg: rgba(255, 255, 255, 0.85);
+            --icon-inactive: rgb(138, 138, 142);
+            --icon-active: rgb(0, 0, 0);
+            --select-active-color: #34C759;
+            --plus-bg: rgba(52, 199, 89, 0.90);
+            --plus-border: rgba(52, 199, 89, 1);
+            --plus-shadow: rgba(52, 199, 89, 0.35);
         }
 
         /* DARK MODE (OS-synced) */
@@ -97,6 +106,15 @@
                 --sel-selected-bg: #213828;
                 --sel-selected-border: #375C41;
                 --sel-selected-text: #C4F2D0;
+
+                --control-bg: rgba(255, 255, 255, 0.08);
+                --selector-bg: rgba(90, 90, 94, 0.85);
+                --icon-inactive: rgb(142, 142, 147);
+                --icon-active: rgb(255, 255, 255);
+                --select-active-color: #30D158;
+                --plus-bg: rgba(48, 209, 88, 0.90);
+                --plus-border: rgba(48, 209, 88, 1);
+                --plus-shadow: rgba(48, 209, 88, 0.25);
             }
         }
 
@@ -127,7 +145,7 @@
         }
 
         .quiz-container { padding: 32px; width: 100%; max-width: 600px; box-sizing: border-box; position: relative; }
-        .quiz-container.builder-wide { max-width: 680px; }
+        .quiz-container.builder-wide { max-width: 680px; padding-bottom: 120px; }
 
         .sticky-action-bar {
             position: sticky; top: 0px; z-index: 100; display: flex; justify-content: flex-start;
@@ -166,33 +184,41 @@
         .glass-download-btn.is-ready { color: var(--apple-blue); }
 
         .bottom-action-bar {
-            position: sticky; bottom: 0px; z-index: 100; display: none; justify-content: flex-start;
-            align-items: center; gap: 12px; width: 100%; margin-top: 24px; pointer-events: none;
+            position: fixed; bottom: max(32px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 100; display: none;
+            align-items: center; justify-content: center; gap: 12px; width: 100%; max-width: 430px; pointer-events: none; padding-left: 16px; padding-right: 22px; box-sizing: border-box;
         }
         .bottom-action-bar > * { pointer-events: auto; }
 
-        .builder-mode-control-wrap { display: none; }
-        .builder-seg-control {
-            --seg-padding: 4px; --seg-radius: 999px; background: rgba(255,255,255,0.5);
+        .segmented-control {
+            position: relative; flex: 1; height: 47px; padding: 4px; background-color: var(--control-bg);
             backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-            border-radius: var(--seg-radius); padding: var(--seg-padding); display: flex; position: relative;
-            width: 200px; height: 38px; box-sizing: border-box; cursor: pointer; touch-action: none; user-select: none;
+            border-radius: 999px; box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.05); touch-action: pan-y;
+            user-select: none; -webkit-user-select: none;
         }
-        @media (prefers-color-scheme: dark) {
-            .builder-seg-control { background: rgba(30,30,30,0.6); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        .segmented-control input[type="radio"] { display: none; }
+        .labels-container { position: absolute; top: 4px; left: 4px; bottom: 4px; right: 4px; display: flex; z-index: 1; }
+        .segment { flex: 1; display: flex; justify-content: center; align-items: center; gap: 3px; cursor: pointer; color: var(--icon-inactive); }
+        .segment svg { width: 34px; height: 34px; pointer-events: none; }
+        .selector {
+            position: absolute; top: 4px; left: 4px; bottom: 4px; width: calc(50% - 4px); background-color: var(--selector-bg);
+            border-radius: 999px; overflow: hidden; z-index: 2; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0,0,0, 0.04);
         }
-        .builder-seg-option { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; pointer-events: none; white-space: nowrap; }
-        .builder-seg-option.seg-static { color: var(--text-main); z-index: 0; }
-        .builder-seg-slider {
-            position: absolute; top: var(--seg-padding); left: var(--seg-padding); height: calc(100% - (var(--seg-padding) * 2));
-            width: calc(50% - var(--seg-padding)); border-radius: calc(var(--seg-radius) - var(--seg-padding));
-            background-color: var(--apple-blue); box-shadow: 0 3px 1px rgba(0,0,0,0.04), 0 3px 8px rgba(0,0,0,0.12); z-index: 1; cursor: grab; overflow: hidden;
+        .selector-inner { display: flex; width: 200%; height: 100%; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .active-segment { color: var(--icon-active); }
+        .active-segment.select-segment { color: var(--select-active-color); }
+        #btn-select:checked ~ .selector { transform: translateX(100%); }
+        #btn-select:checked ~ .selector .selector-inner { transform: translateX(-50%); }
+        .no-transition { transition: none !important; }
+
+        .add-button {
+            width: 47px; height: 47px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            background-color: var(--plus-bg); backdrop-filter: blur(20px) saturate(250%); -webkit-backdrop-filter: blur(20px) saturate(250%);
+            border: 1px solid var(--plus-border); box-shadow: 0 4px 14px var(--plus-shadow); cursor: pointer; padding: 0;
+            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.2s;
         }
-        .builder-seg-slider:active { cursor: grabbing; }
-        .builder-seg-mask { position: absolute; top: 0; left: 0; height: 100%; display: flex; transform: translateX(0); }
-        .builder-seg-option.seg-mask { color: #ffffff; }
-        .builder-seg-slider.animated, .builder-seg-mask.animated { transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .add-button:active { transform: scale(0.92); filter: brightness(0.9); box-shadow: 0 2px 6px var(--plus-shadow); }
+        .add-button svg { width: 24px; height: 24px; stroke: #ffffff; stroke-width: 2.5; }
 
         .header-info { padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--separator); }
         .header-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -363,14 +389,21 @@
         .lightbox-close svg { width: 20px; height: 20px; fill: currentColor; }
         .lightbox-close:hover { background: rgba(255,255,255,0.3); }
 
-        .mode-choice-grid { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
-        .mode-choice-btn { background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; padding: 20px; border-radius: 20px; text-align: left; cursor: pointer; transition: all 0.25s ease; display: flex; align-items: flex-start; gap: 16px; }
-        .mode-choice-btn:hover { background-color: var(--option-hover); }
-        .mode-icon-container { flex-shrink: 0; width: 40px; height: 40px; border-radius: 14px; background-color: var(--bg-card); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); color: var(--apple-blue); }
-        .mode-icon-container svg { width: 20px; height: 20px; fill: currentColor; }
+        .mode-choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 8px; }
+        .card-canvas-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; border-radius: inherit; }
+        .mode-choice-btn { position: relative; overflow: hidden; background-color: var(--option-bg); color: #fff; border: none; padding: 18px; border-radius: 22px; text-align: left; cursor: pointer; transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; aspect-ratio: 1 / 1; box-sizing: border-box; box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+        .mode-choice-btn > .mode-bottom-content { position: relative; z-index: 1; pointer-events: none; display: flex; align-items: flex-start; gap: 12px; width: 100%; margin-top: auto; }
+        .mode-choice-btn:active { transform: scale(0.94); filter: brightness(0.9); }
+        .mode-choice-btn.btn-play { background: linear-gradient(135deg, #FF7B47, #FF4527); }
+        .mode-choice-btn.btn-check { background: linear-gradient(135deg, #DF6EE8, #A644FF); }
+        .mode-choice-btn.btn-create { background: linear-gradient(135deg, #8A8BFF, #5C5BE5); }
+        .mode-choice-btn.btn-edit { background: linear-gradient(135deg, #4DB3FF, #1E88E5); }
+        
+        .mode-icon-container { flex-shrink: 0; color: #fff; display: flex; align-items: center; justify-content: center; padding-top: 2px; }
+        .mode-icon-container svg { width: 34px; height: 34px; fill: currentColor; }
         .mode-text-container { display: flex; flex-direction: column; gap: 4px; }
-        .mode-choice-btn .mode-title { font-size: 16px; font-weight: 600; color: var(--text-main); letter-spacing: -0.2px; }
-        .mode-choice-btn .mode-sub { font-size: 13px; color: var(--text-secondary); font-weight: 400; line-height: 1.4; }
+        .mode-choice-btn .mode-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+        .mode-choice-btn .mode-sub { font-size: 13px; color: rgba(255, 255, 255, 0.9); font-weight: 500; line-height: 1.25; }
 
         .section-header { text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; margin: 0 0 8px 2px; display: block; }
         .section-header.with-top-spacing { margin-top: 28px; }
@@ -478,7 +511,7 @@
         .img-upload-btn.select-img-off { opacity: 1; cursor: default; pointer-events: none; color: var(--text-tertiary); }
         .builder-qa-panel.mode-select .builder-option-row { cursor: pointer; background-color: var(--builder-card-bg-dark); margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; transition: background-color 0.2s ease, color 0.2s ease; position: relative; }
         .builder-qa-panel.mode-select .builder-option-row:hover { background-color: var(--builder-card-bg-dark); }
-        .builder-qa-panel.mode-select .builder-option-row:not(:last-child)::after { left: 0; right: 0; }
+        .builder-qa-panel.mode-select .builder-option-row:not(:last-child)::after { left: 14px; right: 14px; }
         .builder-qa-panel.mode-select .builder-option-row.select-is-correct:not(:last-child)::after,
         .builder-qa-panel.mode-select .builder-option-row:has(+ .builder-option-row.select-is-correct)::after { display: none; }
         .builder-qa-panel.mode-select .builder-option-input { pointer-events: none; }
@@ -669,6 +702,103 @@
             50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
             100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
         }
+
+        /* ANIMÁCIÓK - ADD NEW ANSWER / DELETE ANSWER */
+        body.is-animating { pointer-events: none !important; cursor: not-allowed; }
+        
+        .builder-option-row {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+        
+        .row-bg {
+            position: absolute;
+            inset: 0;
+            background-color: var(--builder-card-bg-dark);
+            z-index: 1;
+            border-radius: inherit;
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct .row-bg {
+            background-color: var(--sel-selected-bg) !important;
+            box-shadow: inset 0 0 0 2px var(--sel-selected-border);
+        }
+        
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct:has(+ .builder-option-row.select-is-correct) .row-bg {
+            box-shadow: inset 0 2px 0 0 var(--sel-selected-border), inset 2px 0 0 0 var(--sel-selected-border), inset -2px 0 0 0 var(--sel-selected-border);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct + .builder-option-row.select-is-correct .row-bg {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        
+        .builder-option-row.dragging .row-bg {
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+        
+        .builder-option-row::after {
+            z-index: 3 !important;
+        }
+
+        .builder-option-row > *:not(.delete-btn):not(.row-bg) {
+            position: relative;
+            z-index: 2;
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.35s ease;
+        }
+        
+        .builder-option-row.revealed > *:not(.delete-btn) {
+            transform: translateX(-85px);
+        }
+        
+        .delete-btn {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #EE4F4D;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 0;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .builder-option-row.revealed .delete-btn {
+            pointer-events: auto;
+        }
+        
+        .delete-btn:active {
+            transform: translateY(-50%) scale(0.92);
+            filter: brightness(0.9);
+        }
+        
+        .builder-option-row.deleting > *:not(.delete-btn) {
+            transform: translateX(-160px);
+            opacity: 0;
+        }
+        
+        .builder-option-row.deleting .delete-btn {
+            opacity: 0;
+            transform: translateY(-50%) scale(0.8);
+            transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        .builder-option-row.deleting {
+            transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, padding 0.4s ease, margin 0.4s ease;
+            overflow: hidden;
+            border: none !important;
+        }
+        .builder-option-row.deleting::after {
+            display: none !important;
+        }
     </style>
 
 <script>
@@ -701,71 +831,61 @@ var EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" he
         <h2>Quiz Studio</h2>
         <p>Select an option to start your workspace session.</p>
         <div class="mode-choice-grid">
-            <button class="mode-choice-btn" onclick="goToPlayUpload()">
-                <div class="mode-icon-container">
-                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                </div>
-                <div class="mode-text-container">
-                    <span class="mode-title">Play a Quiz</span>
-                    <span class="mode-sub">Load an existing JSON quiz file and start answering.</span>
-                </div>
-            </button>
-            <button class="mode-choice-btn" onclick="goToBuilderFresh()">
-                <div class="mode-icon-container">
-                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                </div>
-                <div class="mode-text-container">
-                    <span class="mode-title">Create New Quiz</span>
-                    <span class="mode-sub">Build a brand new quiz session with your own questions.</span>
+            <button class="mode-choice-btn btn-play" onclick="goToPlayUpload()">
+                <canvas class="card-canvas-bg" data-svg-path="M8 5v14l11-7z"></canvas>
+                <div class="mode-bottom-content">
+                    <div class="mode-icon-container">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <div class="mode-text-container">
+                        <span class="mode-title">Play Quiz</span>
+                        <span class="mode-sub">Select a quiz and start answering.</span>
+                    </div>
                 </div>
             </button>
-            <button class="mode-choice-btn" onclick="triggerBuilderUpload()">
-                <div class="mode-icon-container">
-                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                </div>
-                <div class="mode-text-container">
-                    <span class="mode-title">Edit Existing Quiz</span>
-                    <span class="mode-sub">Upload an existing JSON file to update or tweak questions.</span>
+            <button class="mode-choice-btn btn-check" onclick="document.getElementById('results-file-selector').click()">
+                <canvas class="card-canvas-bg" data-svg-path="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></canvas>
+                <div class="mode-bottom-content">
+                    <div class="mode-icon-container">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    </div>
+                    <div class="mode-text-container">
+                        <span class="mode-title">Check Answers</span>
+                        <span class="mode-sub">Evaluate a student's submitted results file.</span>
+                    </div>
                 </div>
             </button>
-            <button class="mode-choice-btn" onclick="document.getElementById('results-file-selector').click()">
-                <div class="mode-icon-container">
-                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+            <button class="mode-choice-btn btn-create" onclick="goToBuilderFresh()">
+                <canvas class="card-canvas-bg" data-svg-path="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></canvas>
+                <div class="mode-bottom-content">
+                    <div class="mode-icon-container">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    </div>
+                    <div class="mode-text-container">
+                        <span class="mode-title">Create Quiz</span>
+                        <span class="mode-sub">Build a quiz with your own questions.</span>
+                    </div>
                 </div>
-                <div class="mode-text-container">
-                    <span class="mode-title">Check Answers</span>
-                    <span class="mode-sub">Evaluate a student's submitted results file.</span>
+            </button>
+            <button class="mode-choice-btn btn-edit" onclick="triggerBuilderUpload()">
+                <canvas class="card-canvas-bg" data-svg-path="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></canvas>
+                <div class="mode-bottom-content">
+                    <div class="mode-icon-container">
+                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                    </div>
+                    <div class="mode-text-container">
+                        <span class="mode-title">Edit Quiz</span>
+                        <span class="mode-sub">Update or tweak questions.</span>
+                    </div>
                 </div>
             </button>
         </div>
+        <div id="error-display" class="error-banner" style="margin-top: 16px; display: none;"></div>
     </div>
     
     <input type="file" id="results-file-selector" accept=".quiz" style="display:none;">
-
-    <div id="upload-view" class="summary-card" style="display: none;">
-        <h2>Quiz Studio</h2>
-        <p>Choose a quiz file to begin your study session.</p>
-        <input type="file" id="file-selector" accept=".quiz" style="display:none;">
-        <button class="next-btn" onclick="document.getElementById('file-selector').click()">Choose Quiz</button>
-        <button class="cancel-text-btn" onclick="backToModeSelect()">Back</button>
-        <div id="error-display" class="error-banner"></div>
-    </div>
-
+    <input type="file" id="file-selector" accept=".quiz" style="display:none;">
     <input type="file" id="builder-file-selector" accept=".quiz" style="display:none;">
-
-    <div id="config-view" class="summary-card" style="display: none;">
-        <h2 id="config-quiz-name">Loading...</h2>
-        <p id="config-quiz-desc"></p>
-        
-        <p style="text-align: left; margin-bottom: 12px; font-weight: 600; color: var(--text-main);">Question Order</p>
-        <div class="options-container">
-            <button class="option-btn selected" id="btn-seq" onclick="selectMode('seq')">Sequential (Original)</button>
-            <button class="option-btn" id="btn-rnd" onclick="selectMode('rnd')">Randomized</button>
-        </div>
-        
-        <button class="next-btn" onclick="startQuiz()">Start Quiz</button>
-        <button class="cancel-text-btn" onclick="resetToUpload()">Cancel</button>
-    </div>
 
     <div id="quiz-game" style="display: none;">
         <div class="header-info">
@@ -827,23 +947,65 @@ var EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" he
         <div id="builder-success-display" class="success-banner"></div>
 
         <div class="bottom-action-bar" id="bottom-action-bar">
-            <div class="builder-mode-control-wrap" id="builder-mode-control-wrap">
-                <div class="builder-seg-control" id="builder-seg-control">
-                    <div class="builder-seg-option seg-static">Customize</div>
-                    <div class="builder-seg-option seg-static">Select</div>
+            <div class="segmented-control" id="control-container">
+                <input type="radio" name="mode" id="btn-customize" checked>
+                <input type="radio" name="mode" id="btn-select">
 
-                    <div class="builder-seg-slider animated" id="builder-seg-slider">
-                        <div class="builder-seg-mask animated" id="builder-seg-mask">
-                            <div class="builder-seg-option seg-mask">Customize</div>
-                            <div class="builder-seg-option seg-mask">Select</div>
-                        </div>
+                <div class="labels-container">
+                    <label for="btn-customize" class="segment">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <g transform="translate(0.13, 2.55) scale(0.9)">
+                                <path d="m 2,16 4.039,-9.69 a 0.5,0.5 0 0 1 0.923,0 L 11,16" stroke-width="2" />
+                                <path d="M 3.304,13 H 9.696" stroke-width="2" />
+                            </g>
+                            <g transform="translate(8.84, 5.27) scale(0.595)">
+                                <path d="M 17,22 H 16 A 4,4 0 0 1 12,18 V 6 a 4,4 0 0 1 4,-4 h 1" stroke-width="1.2" />
+                                <path d="m 7,22 h 1 a 4,4 0 0 0 4,-4" stroke-width="1.2" />
+                                <path d="m 7,2 h 1 a 4,4 0 0 1 4,4" stroke-width="1.2" />
+                            </g>
+                        </svg>
+                    </label>
+                    <label for="btn-select" class="segment select-segment">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="6" width="22" height="12" rx="2" stroke-width="1.5" />
+                            <polyline points="3.5,11.5 6,14 11,9" stroke-width="1.5" />
+                            <line x1="13.5" y1="9.5" x2="20.5" y2="9.5" stroke-width="1.5" />
+                            <line x1="13.5" y1="12" x2="20.5" y2="12" stroke-width="1.5" />
+                            <line x1="13.5" y1="14.5" x2="20.5" y2="14.5" stroke-width="1.5" />
+                        </svg>
+                    </label>
+                </div>
+
+                <div class="selector" id="selector">
+                    <div class="selector-inner" id="selector-inner">
+                        <label for="btn-customize" class="segment active-segment">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <g transform="translate(0.13, 2.55) scale(0.9)">
+                                    <path d="m 2,16 4.039,-9.69 a 0.5,0.5 0 0 1 0.923,0 L 11,16" stroke-width="2" />
+                                    <path d="M 3.304,13 H 9.696" stroke-width="2" />
+                                </g>
+                                <g transform="translate(8.84, 5.27) scale(0.595)">
+                                    <path d="M 17,22 H 16 A 4,4 0 0 1 12,18 V 6 a 4,4 0 0 1 4,-4 h 1" stroke-width="1.2" />
+                                    <path d="m 7,22 h 1 a 4,4 0 0 0 4,-4" stroke-width="1.2" />
+                                    <path d="m 7,2 h 1 a 4,4 0 0 1 4,4" stroke-width="1.2" />
+                                </g>
+                            </svg>
+                        </label>
+                        <label for="btn-select" class="segment active-segment select-segment">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="6" width="22" height="12" rx="2" stroke-width="1.5" />
+                                <polyline points="3.5,11.5 6,14 11,9" stroke-width="1.5" />
+                                <line x1="13.5" y1="9.5" x2="20.5" y2="9.5" stroke-width="1.5" />
+                                <line x1="13.5" y1="12" x2="20.5" y2="12" stroke-width="1.5" />
+                                <line x1="13.5" y1="14.5" x2="20.5" y2="14.5" stroke-width="1.5" />
+                            </svg>
+                        </label>
                     </div>
                 </div>
             </div>
 
-            <button class="glass-add-btn" id="floating-add-question-btn" onclick="addBuilderQuestion()">
-                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                Add Question
+            <button class="add-button" id="floating-add-question-btn" aria-label="Add item" onclick="addBuilderQuestion()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
         </div>
     </div>
@@ -916,47 +1078,86 @@ var EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" he
     </div>
 </div>
 
-<div class="modal-overlay" id="password-prompt-modal">
-    <div class="apple-alert">
-        <div class="alert-content">
-            <h3 class="alert-title">Protected Quiz</h3>
-            <p class="alert-message">This quiz is password protected. Enter the password to open it:</p>
-            <div class="pwd-wrapper">
-                <input type="password" id="prompt-password-input" class="text-input" placeholder="Password">
-                <button class="pwd-eye-btn" onclick="togglePasswordVisibility('prompt-password-input', this)">
-                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                </button>
+<div class="modal-overlay" id="play-setup-modal">
+    <div class="apple-alert" id="play-setup-box" style="transition: height 0.3s ease; overflow: hidden; position: relative; max-width: 340px; margin: 0 auto;">
+        
+        <div id="step-password" style="display: none;">
+            <div class="alert-content">
+                <h3 class="alert-title">Protected Quiz</h3>
+                <p class="alert-message">This quiz is password protected. Enter the password to open it:</p>
+                <div class="pwd-wrapper">
+                    <input type="password" id="prompt-password-input" class="text-input" placeholder="Password">
+                    <button class="pwd-eye-btn" onclick="togglePasswordVisibility('prompt-password-input', this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </button>
+                </div>
+                <p id="password-error-msg" style="color: var(--error-red); font-size: 13px; margin: 4px 0 0 4px; display: none;">Incorrect password.</p>
             </div>
-            <p id="password-error-msg" style="color: var(--error-red); font-size: 13px; margin: 4px 0 0 4px; display: none;">Incorrect password.</p>
+            <div class="alert-buttons">
+                <button class="alert-btn secondary" onclick="cancelPasswordPrompt()">Cancel</button>
+                <button class="alert-btn primary" onclick="submitPasswordPrompt()">Open</button>
+            </div>
         </div>
-        <div class="alert-buttons">
-            <button class="alert-btn secondary" onclick="cancelPasswordPrompt()">Cancel</button>
-            <button class="alert-btn primary" onclick="submitPasswordPrompt()">Open</button>
-        </div>
-    </div>
-</div>
 
-<div class="modal-overlay" id="student-info-modal">
-    <div class="apple-alert">
-        <div class="alert-content">
-            <h3 class="alert-title">Student Identification</h3>
-            <p class="alert-message" id="student-info-message">Please enter your name to continue.</p>
-            <div style="margin-top: 16px;">
-                <input type="text" id="student-name-input" class="text-input" placeholder="Your Name">
+        <div id="step-config" style="display: none;">
+            <div class="alert-content">
+                <h3 class="alert-title" id="config-quiz-name-modal" style="margin-bottom: 4px;">Quiz Title</h3>
+                <p class="alert-message" id="config-quiz-desc-modal" style="margin-bottom: 16px;">Description</p>
+                
+                <p style="text-align: left; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 14px;">Question Order</p>
+                <div class="options-container" style="margin-bottom: 12px;">
+                    <button class="option-btn selected" id="btn-seq" onclick="selectMode('seq')">
+                        <div style="padding-left: 26px;">Sequential</div>
+                    </button>
+                    <button class="option-btn" id="btn-rnd" onclick="selectMode('rnd')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg id="rnd-chevron" viewBox="0 0 24 24" style="width: 18px; height: 18px; transition: transform 0.3s ease; fill: currentColor;"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                            <span>Randomized</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div id="rnd-options-wrapper" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin-bottom 0.3s ease; margin-bottom: 0;">
+                    <div id="rnd-options-container" style="background: var(--bg-panel); border-radius: 12px; padding: 12px; text-align: left;">
+                        <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; cursor: pointer;">
+                            <span style="font-size: 14px; font-weight: 500; color: var(--text-main);">Randomize Questions</span>
+                            <input type="checkbox" id="toggle-rnd-questions" class="ios-toggle" checked onchange="handleRndToggle(this, 'questions')">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                            <span style="font-size: 14px; font-weight: 500; color: var(--text-main);">Randomize Answers</span>
+                            <input type="checkbox" id="toggle-rnd-answers" class="ios-toggle" checked onchange="handleRndToggle(this, 'answers')">
+                        </label>
+                    </div>
+                </div>
             </div>
-            <p id="student-error-msg" style="color: var(--error-red); font-size: 13px; margin: 4px 0 0 4px; display: none;">Name is required for this exam.</p>
+            <div class="alert-buttons">
+                <button class="alert-btn secondary" onclick="cancelConfig()">Cancel</button>
+                <button class="alert-btn primary" onclick="startQuiz()">Start Quiz</button>
+            </div>
         </div>
-        <div class="alert-buttons">
-            <button class="alert-btn secondary" onclick="cancelStudentInfo()">Cancel</button>
-            <button class="alert-btn primary" onclick="submitStudentInfo()">Continue</button>
+
+        <div id="step-student" style="display: none;">
+            <div class="alert-content">
+                <h3 class="alert-title">Student Identification</h3>
+                <p class="alert-message" id="student-info-message">Please enter your name to continue.</p>
+                <div style="margin-top: 16px;">
+                    <input type="text" id="student-name-input" class="text-input" placeholder="Your Name">
+                </div>
+                <p id="student-error-msg" style="color: var(--error-red); font-size: 13px; margin: 4px 0 0 4px; display: none;">Name is required for this exam.</p>
+            </div>
+            <div class="alert-buttons">
+                <button class="alert-btn secondary" onclick="cancelStudentInfo()">Cancel</button>
+                <button class="alert-btn primary" onclick="submitStudentInfo()">Continue</button>
+            </div>
         </div>
+
     </div>
 </div>
 
 <div class="img-modal-overlay" id="img-modal">
     <div class="img-modal-box">
         <p class="img-modal-title" id="img-modal-title">Add Image</p>
-        <p class="img-modal-sub">Drag & drop or tap the area below to select an image. It will be saved as Base64 inside the JSON.</p>
+        <p class="img-modal-sub">Drag & drop or tap the area below to select an image. It will be compressed and packed into the quiz file.</p>
         <div class="img-preview-area" id="img-preview-area" onclick="document.getElementById('img-file-input').click()">
             <div class="img-preview-placeholder" id="img-preview-placeholder">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1578,11 +1779,51 @@ function unpackQuizFile(buffer) {
         }
     }
 
+    function showPlaySetupStep(stepId) {
+        const overlay = document.getElementById('play-setup-modal');
+        const box = document.getElementById('play-setup-box');
+        const steps = ['step-password', 'step-student', 'step-config'];
+        
+        if (!overlay.classList.contains('active')) {
+            steps.forEach(id => document.getElementById(id).style.display = (id === stepId) ? 'block' : 'none');
+            box.style.height = 'auto'; 
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            return;
+        }
+        
+        const currentHeight = box.getBoundingClientRect().height;
+        box.style.height = currentHeight + 'px';
+        box.offsetHeight; // force reflow
+        
+        steps.forEach(id => {
+            document.getElementById(id).style.display = (id === stepId) ? 'block' : 'none';
+        });
+        
+        box.style.height = 'auto';
+        const newHeight = box.getBoundingClientRect().height;
+        
+        box.style.height = currentHeight + 'px';
+        box.offsetHeight; // force reflow
+        box.style.height = newHeight + 'px';
+        
+        setTimeout(() => {
+            if (box.style.height === newHeight + 'px') {
+                box.style.height = 'auto';
+            }
+        }, 300);
+    }
+
+    function closePlaySetupModal() {
+        const overlay = document.getElementById('play-setup-modal');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
     let passwordPromptResolve = null;
 
     function requestPassword(showError = false) {
         return new Promise((resolve) => {
-            const modal = document.getElementById('password-prompt-modal');
             const input = document.getElementById('prompt-password-input');
             const errorMsg = document.getElementById('password-error-msg');
             
@@ -1591,11 +1832,10 @@ function unpackQuizFile(buffer) {
             errorMsg.style.display = showError ? 'block' : 'none';
             input.classList.toggle('input-error', showError);
             
-            const eyeBtn = modal.querySelector('.pwd-eye-btn');
+            const eyeBtn = document.querySelector('.pwd-eye-btn');
             eyeBtn.innerHTML = EYE_OPEN_SVG;
 
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            showPlaySetupStep('step-password');
             setTimeout(() => input.focus(), 100);
 
             passwordPromptResolve = resolve;
@@ -1603,8 +1843,7 @@ function unpackQuizFile(buffer) {
     }
 
     function cancelPasswordPrompt() {
-        document.getElementById('password-prompt-modal').classList.remove('active');
-        document.body.style.overflow = '';
+        closePlaySetupModal();
         if (passwordPromptResolve) {
             passwordPromptResolve(null);
             passwordPromptResolve = null;
@@ -1613,8 +1852,6 @@ function unpackQuizFile(buffer) {
 
     function submitPasswordPrompt() {
         const pwd = document.getElementById('prompt-password-input').value;
-        document.getElementById('password-prompt-modal').classList.remove('active');
-        document.body.style.overflow = '';
         if (passwordPromptResolve) {
             passwordPromptResolve(pwd);
             passwordPromptResolve = null;
@@ -1627,7 +1864,6 @@ function unpackQuizFile(buffer) {
     function requestStudentName(isExam = false) {
         return new Promise((resolve) => {
             studentInfoIsExam = isExam;
-            const modal = document.getElementById('student-info-modal');
             const input = document.getElementById('student-name-input');
             const msg = document.getElementById('student-info-message');
             const errorMsg = document.getElementById('student-error-msg');
@@ -1644,8 +1880,7 @@ function unpackQuizFile(buffer) {
                 input.placeholder = "Your Name (Optional)";
             }
 
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            showPlaySetupStep('step-student');
             setTimeout(() => input.focus(), 100);
 
             studentInfoResolve = resolve;
@@ -1653,8 +1888,7 @@ function unpackQuizFile(buffer) {
     }
 
     function cancelStudentInfo() {
-        document.getElementById('student-info-modal').classList.remove('active');
-        document.body.style.overflow = '';
+        closePlaySetupModal();
         if (studentInfoResolve) {
             studentInfoResolve(null);
             studentInfoResolve = null;
@@ -1673,8 +1907,6 @@ function unpackQuizFile(buffer) {
             return;
         }
         
-        document.getElementById('student-info-modal').classList.remove('active');
-        document.body.style.overflow = '';
         if (studentInfoResolve) {
             studentInfoResolve(name);
             studentInfoResolve = null;
@@ -1732,8 +1964,6 @@ let sessionAssets = null;
     const nextButtonEl = document.getElementById('next-button');
     
     const modeSelectSection = document.getElementById('mode-select-view');
-    const uploadSection = document.getElementById('upload-view');
-    const configSection = document.getElementById('config-view');
     const gameSection = document.getElementById('quiz-game');
     const resultsSection = document.getElementById('quiz-results');
     const teacherResultsSection = document.getElementById('teacher-results-view');
@@ -1756,7 +1986,11 @@ let sessionAssets = null;
     const builderBackBtnEl = document.getElementById('builder-back-btn');
     const builderDownloadBtnEl = document.getElementById('builder-download-btn');
     const bottomActionBar = document.getElementById('bottom-action-bar');
-    const builderModeControlWrapEl = document.getElementById('builder-mode-control-wrap');
+    const controlContainer = document.getElementById('control-container');
+    const radioCustomize = document.getElementById('btn-customize');
+    const radioSelect = document.getElementById('btn-select');
+    const segSelector = document.getElementById('selector');
+    const segSelectorInner = document.getElementById('selector-inner');
 
     const lightboxOverlay = document.getElementById('lightbox-overlay');
     const lightboxImg = document.getElementById('lightbox-img');
@@ -1849,16 +2083,13 @@ let sessionAssets = null;
             builderBackBtnEl.style.display = 'none';
             builderDownloadBtnEl.style.display = 'none';
             bottomActionBar.style.display = 'none';
-            builderModeControlWrapEl.style.display = 'none';
         } else if (which === 'builder-back') {
             stickyActionBar.style.display = 'flex';
             exitBtnEl.style.display = 'none';
             builderBackBtnEl.style.display = 'flex';
             builderDownloadBtnEl.style.display = 'flex';
             bottomActionBar.style.display = 'flex';
-            builderModeControlWrapEl.style.display = 'flex';
             requestAnimationFrame(() => {
-                updateSegMaskWidth();
                 setBuilderViewMode('customize', true);
             });
             updateDownloadButtonState();
@@ -1868,7 +2099,6 @@ let sessionAssets = null;
             builderBackBtnEl.style.display = 'none';
             builderDownloadBtnEl.style.display = 'none';
             bottomActionBar.style.display = 'none';
-            builderModeControlWrapEl.style.display = 'none';
         }
     }
 
@@ -1934,8 +2164,6 @@ let sessionAssets = null;
                 displayDescEl.innerText = quizMetadata.desc;
                 
                 modeSelectSection.style.display = 'none';
-                uploadSection.style.display = 'none';
-                configSection.style.display = 'none';
                 builderSection.style.display = 'none';
                 gameSection.style.display = 'block';
                 setTopBar('exit');
@@ -1966,10 +2194,7 @@ let sessionAssets = null;
     playQuestionImgEl.onclick = () => openLightbox(playQuestionImgEl.src);
 
     function goToPlayUpload() {
-        modeSelectSection.style.display = 'none';
-        mainContainerEl.classList.remove('builder-wide');
-        setTopBar(null);
-        uploadSection.style.display = 'block';
+        document.getElementById('file-selector').click();
     }
 
     function goToBuilderFresh(isRestore = false) {
@@ -1988,13 +2213,9 @@ let sessionAssets = null;
         builderFileSelector.click();
     }
 
-    function backToModeSelect() {
-        uploadSection.style.display = 'none';
-        mainContainerEl.classList.remove('builder-wide');
-        setTopBar(null);
-        errorDisplayEl.style.display = 'none';
+    function cancelConfig() {
+        closePlaySetupModal();
         fileSelector.value = '';
-        modeSelectSection.style.display = 'block';
     }
 
     // CHECK ANSWERS UPLOAD
@@ -2143,7 +2364,7 @@ let sessionAssets = null;
                         mappedOptions[0].isCorrect = true;
                     }
 
-                    mappedOptions = shuffleArray(mappedOptions);
+                    // mappedOptions = shuffleArray(mappedOptions);
 
                     let questionType = qData.questionType;
                     if (!isLegacyEncrypted && !questionType) {
@@ -2158,7 +2379,7 @@ let sessionAssets = null;
                         .filter(i => i !== -1);
 
                     const optionsData = mappedOptions.map(opt => ({
-                        text: opt.text, image: opt.image, explanation: opt.explanation, originalIndex: opt.originalIndex
+                        text: opt.text, image: opt.image, explanation: opt.explanation, originalIndex: opt.originalIndex, isCorrect: opt.isCorrect
                     }));
 
                     return {
@@ -2173,16 +2394,14 @@ let sessionAssets = null;
                     };
                 });
                 
-                document.getElementById('config-quiz-name').innerText = quizMetadata.name;
-                document.getElementById('config-quiz-desc').innerText = quizMetadata.desc;
-                
-                uploadSection.style.display = 'none';
+                document.getElementById('config-quiz-name-modal').innerText = quizMetadata.name;
+                document.getElementById('config-quiz-desc-modal').innerText = quizMetadata.desc;
                 
                 if (isExam) {
                     selectMode('seq');
                     startQuiz();
                 } else {
-                    configSection.style.display = 'block';
+                    showPlaySetupStep('step-config');
                     selectMode('seq');
                 }
                 
@@ -2195,7 +2414,7 @@ let sessionAssets = null;
         reader.readAsArrayBuffer(file);
     });
 
-    function loadQuestionsIntoBuilder(rawData) {
+    async function loadQuestionsIntoBuilder(rawData) {
         resetBuilder();
 
         builderQuizNameEl.value = rawData.meta?.name || rawData.name || "Loaded Quiz File";
@@ -2203,7 +2422,25 @@ let sessionAssets = null;
 
         const questionsArray = Array.isArray(rawData.questions) ? rawData.questions : [rawData.questions];
 
-        builderQuestions = questionsArray.map((q) => {
+        const resolvedQuestions = [];
+        for (const q of questionsArray) {
+            let qImage = q.questionImage || "";
+            if (qImage && typeof qImage === 'object') {
+                qImage = await resolveAssetToBase64(qImage);
+            }
+            
+            if (q.options) {
+                for (let o of q.options) {
+                    if (o.image && typeof o.image === 'object') {
+                        o.image = await resolveAssetToBase64(o.image);
+                    }
+                }
+            }
+            
+            resolvedQuestions.push({ ...q, questionImage: qImage });
+        }
+
+        builderQuestions = resolvedQuestions.map((q) => {
             let mappedOptions = [];
             if (q.options && Array.isArray(q.options)) {
                 mappedOptions = q.options.map((opt, oIdx) => {
@@ -2252,13 +2489,10 @@ let sessionAssets = null;
             };
         });
 
-        modeSelectSection.style.display = 'none';
-        uploadSection.style.display = 'none';
-        configSection.style.display = 'none';
         gameSection.style.display = 'none';
         resultsSection.style.display = 'none';
         mainContainerEl.classList.add('builder-wide');
-        setTopBar('builder');
+        setTopBar('builder-back');
         builderSection.style.display = 'block';
         
         renderBuilderQuestions();
@@ -2328,23 +2562,72 @@ let sessionAssets = null;
         reader.readAsArrayBuffer(file);
     });
 
+    function handleRndToggle(el, type) {
+        const qToggle = document.getElementById('toggle-rnd-questions');
+        const aToggle = document.getElementById('toggle-rnd-answers');
+        if (!qToggle.checked && !aToggle.checked) {
+            if (type === 'questions') {
+                aToggle.checked = true;
+            } else {
+                qToggle.checked = true;
+            }
+        }
+    }
+
+    let rndExpanded = false;
+
     function selectMode(mode) {
-        selectedMode = mode;
-        document.getElementById('btn-seq').classList.toggle('selected', mode === 'seq');
-        document.getElementById('btn-rnd').classList.toggle('selected', mode === 'rnd');
+        if (mode === 'rnd') {
+            if (selectedMode === 'rnd') {
+                rndExpanded = !rndExpanded;
+            } else {
+                selectedMode = 'rnd';
+                rndExpanded = true;
+            }
+        } else {
+            selectedMode = 'seq';
+            rndExpanded = false;
+        }
+
+        document.getElementById('btn-seq').classList.toggle('selected', selectedMode === 'seq');
+        document.getElementById('btn-rnd').classList.toggle('selected', selectedMode === 'rnd');
+        
+        const rndWrapper = document.getElementById('rnd-options-wrapper');
+        const rndChevron = document.getElementById('rnd-chevron');
+        if (rndExpanded) {
+            rndWrapper.style.maxHeight = '150px';
+            rndWrapper.style.marginBottom = '12px';
+            rndChevron.style.transform = 'rotate(90deg)';
+        } else {
+            rndWrapper.style.maxHeight = '0';
+            rndWrapper.style.marginBottom = '0';
+            rndChevron.style.transform = 'rotate(0deg)';
+        }
     }
 
     function startQuiz() {
+        quizData = JSON.parse(JSON.stringify(loadedQuizData));
+
         if (selectedMode === 'rnd') {
-            quizData = shuffleArray([...loadedQuizData]);
-        } else {
-            quizData = [...loadedQuizData];
+            const qToggle = document.getElementById('toggle-rnd-questions');
+            const aToggle = document.getElementById('toggle-rnd-answers');
+            
+            if (aToggle.checked) {
+                quizData.forEach(q => {
+                    q.options = shuffleArray(q.options);
+                    q.correctIndexes = q.options.map((opt, i) => opt.isCorrect ? i : -1).filter(i => i !== -1);
+                });
+            }
+            if (qToggle.checked) {
+                quizData = shuffleArray(quizData);
+            }
         }
 
         displayNameEl.innerText = quizMetadata.name;
         displayDescEl.innerText = quizMetadata.desc;
 
-        configSection.style.display = 'none';
+        closePlaySetupModal();
+        modeSelectSection.style.display = 'none';
         mainContainerEl.classList.remove('builder-wide');
         gameSection.style.display = 'block';
         setTopBar('exit');
@@ -2763,7 +3046,7 @@ let sessionAssets = null;
                 currentQuestionIndex++;
                 await loadQuestion();
             } else {
-                showResults();
+                await showResults();
             }
         } else {
             // Practice / Open Mode
@@ -2828,13 +3111,13 @@ let sessionAssets = null;
                     currentQuestionIndex++;
                     await loadQuestion();
                 } else {
-                    showResults();
+                    await showResults();
                 }
             }
         }
     }
 
-    function showResults() {
+    async function showResults() {
         clearStorage();
         gameSection.style.display = 'none';
         setTopBar(null);
@@ -2878,14 +3161,117 @@ let sessionAssets = null;
             scoreCircleEl.style.color = "var(--error-red)";
         }
 
-        const correctCount = userAnswers.filter((chosen, qIdx) => {
-            const data = quizData[qIdx];
-            const correctIndexes = [...(data.correctIndexes || [])].sort((a, b) => a - b);
-            const chosenSorted = [...(Array.isArray(chosen) ? chosen : [chosen])].sort((a, b) => a - b);
-            return chosenSorted.length === correctIndexes.length &&
-                chosenSorted.every((v, i) => v === correctIndexes[i]);
-        }).length;
+        reviewListEl.innerHTML = '';
+        let correctCount = 0;
 
+        for (let qIdx = 0; qIdx < quizData.length; qIdx++) {
+            const rawData = quizData[qIdx];
+            let data = rawData;
+            
+            if (rawData.encryptedBlock && sessionCryptoKey) {
+                try {
+                    data = await decryptSingleItem(rawData.encryptedBlock, sessionCryptoKey);
+                } catch(e) {
+                    continue;
+                }
+            }
+            
+            const chosen = Array.isArray(userAnswers[qIdx]) ? userAnswers[qIdx] : (userAnswers[qIdx] != null ? [userAnswers[qIdx]] : []);
+            const correctIndexes = [];
+            if (data.options) {
+                data.options.forEach((opt, idx) => {
+                    if (opt.isCorrect || opt.correct) correctIndexes.push(idx);
+                });
+            }
+            
+            const chosenSorted = [...chosen].sort((a, b) => a - b);
+            const correctSorted = [...correctIndexes].sort((a, b) => a - b);
+            if (chosenSorted.length === correctSorted.length && chosenSorted.every((v, i) => v === correctSorted[i])) {
+                correctCount++;
+            }
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'review-item';
+
+            let qImgUrl = "";
+            if (data.questionImage) {
+                try {
+                    qImgUrl = await resolveAssetToBlobUrl(data.questionImage);
+                } catch(e) {}
+                if (qImgUrl) {
+                    const qImg = document.createElement('img');
+                    qImg.src = qImgUrl;
+                    qImg.className = 'review-q-img';
+                    qImg.onclick = () => openLightbox(qImgUrl);
+                    itemDiv.appendChild(qImg);
+                }
+            }
+
+            const qText = document.createElement('p');
+            qText.className = 'review-question-text';
+            qText.innerText = `${qIdx + 1}. ${data.question || data.questionText || ""}`;
+            itemDiv.appendChild(qText);
+
+            const choicesDiv = document.createElement('div');
+            choicesDiv.className = 'review-choices';
+
+            if (data.options) {
+                for (let oIdx = 0; oIdx < data.options.length; oIdx++) {
+                    const option = data.options[oIdx];
+                    const badge = document.createElement('div');
+                    badge.className = 'review-badge';
+
+                    const textCol = document.createElement('div');
+                    textCol.className = 'review-badge-text-col';
+
+                    const textSpan = document.createElement('span');
+                    textSpan.innerText = option.text || option.option || "";
+                    textCol.appendChild(textSpan);
+
+                    const wasChosen = chosen.includes(oIdx);
+                    const isCorrectOption = correctIndexes.includes(oIdx);
+
+                    badge.appendChild(textCol);
+
+                    if (option.image) {
+                        let optImgUrl = "";
+                        try {
+                            optImgUrl = await resolveAssetToBlobUrl(option.image);
+                        } catch(e) {}
+                        
+                        if (optImgUrl) {
+                            const imgWrap = document.createElement('div');
+                            imgWrap.className = 'option-img-wrap';
+                            imgWrap.style.width = '70px';
+                            imgWrap.style.height = '70px';
+                            
+                            const optImg = document.createElement('img');
+                            optImg.src = optImgUrl;
+                            optImg.className = 'option-img';
+                            
+                            imgWrap.appendChild(optImg);
+                            badge.appendChild(imgWrap);
+                        }
+                    }
+
+                    if (isCorrectOption) {
+                        badge.classList.add('correct-review');
+                    } else if (wasChosen && !isCorrectOption) {
+                        badge.classList.add('incorrect-review');
+                    }
+
+                    if (wasChosen) {
+                        badge.classList.add('was-chosen');
+                    }
+
+                    choicesDiv.appendChild(badge);
+                }
+            }
+
+            itemDiv.appendChild(choicesDiv);
+            reviewListEl.appendChild(itemDiv);
+        }
+        
         if (hasWeightedQuestions) {
             document.getElementById('detailed-results').innerText =
                 `${earnedPoints} of ${maxPoints} points earned across ${quizData.length} question${quizData.length !== 1 ? 's' : ''} (${percentage}%).`;
@@ -2893,78 +3279,9 @@ let sessionAssets = null;
             document.getElementById('detailed-results').innerText =
                 `You answered ${correctCount} of ${quizData.length} question${quizData.length !== 1 ? 's' : ''} correctly.`;
         }
-
-        reviewListEl.innerHTML = '';
-        quizData.forEach((data, qIdx) => {
-            const chosenIndexes = Array.isArray(userAnswers[qIdx]) ? userAnswers[qIdx] : (userAnswers[qIdx] != null ? [userAnswers[qIdx]] : []);
-            const correctIndexes = data.correctIndexes || [];
-
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'review-item';
-
-            if (data.questionImage) {
-                const qImg = document.createElement('img');
-                qImg.src = data.questionImage;
-                qImg.className = 'review-q-img';
-                qImg.onclick = () => openLightbox(data.questionImage);
-                itemDiv.appendChild(qImg);
-            }
-
-            const qText = document.createElement('p');
-            qText.className = 'review-question-text';
-            qText.innerText = `${qIdx + 1}. ${data.question}`;
-            itemDiv.appendChild(qText);
-
-            const choicesDiv = document.createElement('div');
-            choicesDiv.className = 'review-choices';
-
-            data.options.forEach((option, oIdx) => {
-                const badge = document.createElement('div');
-                badge.className = 'review-badge';
-
-                const textCol = document.createElement('div');
-                textCol.className = 'review-badge-text-col';
-
-                const textSpan = document.createElement('span');
-                textSpan.innerText = option.text;
-                textCol.appendChild(textSpan);
-
-                const wasChosen = chosenIndexes.includes(oIdx);
-                const isCorrectOption = correctIndexes.includes(oIdx);
-
-                badge.appendChild(textCol);
-
-                if (option.image) {
-                    const imgWrap = document.createElement('div');
-                    imgWrap.className = 'option-img-wrap';
-                    imgWrap.style.width = '70px';
-                    imgWrap.style.height = '70px';
-                    
-                    const optImg = document.createElement('img');
-                    optImg.src = option.image;
-                    optImg.className = 'option-img';
-                    
-                    imgWrap.appendChild(optImg);
-                    badge.appendChild(imgWrap);
-                }
-
-                if (isCorrectOption) {
-                    badge.classList.add('correct-review');
-                } else if (wasChosen && !isCorrectOption) {
-                    badge.classList.add('incorrect-review');
-                }
-
-                if (wasChosen) {
-                    badge.classList.add('was-chosen');
-                }
-
-                choicesDiv.appendChild(badge);
-            });
-
-            itemDiv.appendChild(choicesDiv);
-            reviewListEl.appendChild(itemDiv);
-        });
     }
+
+
 
     function openExitModal() {
         exitModalEl.classList.add('active');
@@ -2988,9 +3305,7 @@ let sessionAssets = null;
         resultsSection.style.display = 'none';
         if (teacherResultsSection) teacherResultsSection.style.display = 'none';
         gameSection.style.display = 'none';
-        configSection.style.display = 'none';
         builderSection.style.display = 'none';
-        uploadSection.style.display = 'none'; // JAVÍTÁS: hiba esetén ez elrejti, megszüntetve a vizuális hibát.
         mainContainerEl.classList.remove('builder-wide');
         setTopBar(null);
         modeSelectSection.style.display = 'block';
@@ -3014,99 +3329,102 @@ let sessionAssets = null;
     const builderSuccessEl = document.getElementById('builder-success-display');
     const builderExitModalEl = document.getElementById('builder-exit-modal');
 
-    const builderSegControlEl = document.getElementById('builder-seg-control');
-    const builderSegSliderEl = document.getElementById('builder-seg-slider');
-    const builderSegMaskEl = document.getElementById('builder-seg-mask');
-
-    let segIsDragging = false;
-    let segStartX = 0;
-    let segCurrentTranslate = 0;
-
-    function getSegPaddingValue() { return parseFloat(window.getComputedStyle(builderSegControlEl).paddingLeft) || 0; }
-    function getSegSliderRange() { const padding = getSegPaddingValue(); return builderSegControlEl.offsetWidth - builderSegSliderEl.offsetWidth - (2 * padding); }
-    function updateSegMaskWidth() { const padding = getSegPaddingValue(); builderSegMaskEl.style.width = (builderSegControlEl.offsetWidth - (2 * padding)) + 'px'; }
-
-    function moveSegSliderAndMask(translateX) {
-        builderSegSliderEl.style.transform = `translateX(${translateX}px)`;
-        builderSegMaskEl.style.transform = `translateX(-${translateX}px)`;
-    }
-
     function setBuilderViewMode(mode, skipRender) {
         builderViewMode = mode;
-        builderSegSliderEl.classList.add('animated');
-        builderSegMaskEl.classList.add('animated');
-
         if (mode === 'customize') {
-            moveSegSliderAndMask(0);
+            radioCustomize.checked = true;
         } else {
-            moveSegSliderAndMask(getSegSliderRange());
+            radioSelect.checked = true;
         }
-
         if (!skipRender) {
             renderBuilderQuestions();
         }
     }
 
-    function segDragStart(e) {
+    let segIsDragging = false;
+    let segHasMoved = false;
+    let segStartX = 0;
+    let segMaxMove = 0;
+    let segStartTranslate = 0;
+
+    controlContainer.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
         segIsDragging = true;
-        builderSegSliderEl.classList.remove('animated');
-        builderSegMaskEl.classList.remove('animated');
-        segStartX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
-        segCurrentTranslate = builderViewMode === 'customize' ? 0 : getSegSliderRange();
-    }
+        segHasMoved = false;
+        segStartX = e.clientX;
+        
+        segMaxMove = segSelector.offsetWidth; 
+        segStartTranslate = radioSelect.checked ? segMaxMove : 0;
+        controlContainer.setPointerCapture(e.pointerId);
+    });
 
-    function segDragMove(e) {
+    controlContainer.addEventListener('pointermove', (e) => {
         if (!segIsDragging) return;
-        const currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
-        const diffX = currentX - segStartX;
-        let targetTranslate = segCurrentTranslate + diffX;
-        const maxRange = getSegSliderRange();
-        if (targetTranslate < 0) targetTranslate = 0;
-        if (targetTranslate > maxRange) targetTranslate = maxRange;
-        moveSegSliderAndMask(targetTranslate);
-    }
+        let deltaX = e.clientX - segStartX;
+        
+        if (Math.abs(deltaX) > 4) {
+            if (!segHasMoved) {
+                segHasMoved = true;
+                segSelector.classList.add('no-transition');
+                segSelectorInner.classList.add('no-transition');
+            }
+            
+            let currentX = segStartTranslate + deltaX;
+            currentX = Math.max(0, Math.min(currentX, segMaxMove));
+            
+            segSelector.style.transform = `translateX(${currentX}px)`;
+            segSelectorInner.style.transform = `translateX(${-currentX}px)`;
+        }
+    });
 
-    function segDragEnd() {
+    function resetSegDrag() {
         if (!segIsDragging) return;
         segIsDragging = false;
-
-        const maxRange = getSegSliderRange();
-        const matrix = window.getComputedStyle(builderSegSliderEl).transform;
-        let currentX = 0;
-        if (matrix && matrix !== 'none') {
-            currentX = parseFloat(matrix.split(',')[4]);
-        }
-
-        if (currentX > maxRange / 2) {
-            setBuilderViewMode('select');
-        } else {
-            setBuilderViewMode('customize');
-        }
+        
+        segSelector.classList.remove('no-transition');
+        segSelectorInner.classList.remove('no-transition');
+        
+        segSelector.style.transform = '';
+        segSelectorInner.style.transform = '';
     }
 
-    function segContainerClick(e) {
-        if (segIsDragging || e.target === builderSegSliderEl || e.target.closest('#builder-seg-slider')) return;
-        const rect = builderSegControlEl.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        if (clickX > rect.width / 2) {
-            setBuilderViewMode('select');
-        } else {
-            setBuilderViewMode('customize');
-        }
-    }
+    controlContainer.addEventListener('pointerup', (e) => {
+        controlContainer.releasePointerCapture(e.pointerId);
 
-    builderSegSliderEl.addEventListener('mousedown', segDragStart);
-    builderSegSliderEl.addEventListener('touchstart', segDragStart, { passive: true });
-    window.addEventListener('mousemove', segDragMove);
-    window.addEventListener('touchmove', segDragMove, { passive: false });
-    window.addEventListener('mouseup', segDragEnd);
-    window.addEventListener('touchend', segDragEnd);
-    builderSegControlEl.addEventListener('click', segContainerClick);
+        if (segHasMoved) {
+            let deltaX = e.clientX - segStartX;
+            let currentX = segStartTranslate + deltaX;
+            
+            if (currentX > segMaxMove / 2) {
+                setBuilderViewMode('select');
+            } else {
+                setBuilderViewMode('customize');
+            }
+        } else {
+            const rect = controlContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            
+            if (clickX < rect.width / 2) {
+                setBuilderViewMode('customize');
+            } else {
+                setBuilderViewMode('select');
+            }
+        }
+        resetSegDrag();
+    });
+
+    controlContainer.addEventListener('pointercancel', (e) => {
+        controlContainer.releasePointerCapture(e.pointerId);
+        resetSegDrag();
+    });
+    
+    document.addEventListener('pointerdown', (e) => {
+        if (!e.target.closest('.remove-option-btn') && !e.target.closest('.delete-btn')) {
+            document.querySelectorAll('.builder-option-row.revealed').forEach(r => r.classList.remove('revealed'));
+        }
+    });
+
     window.addEventListener('resize', () => {
-        if (builderModeControlWrapEl.style.display === 'flex') {
-            updateSegMaskWidth();
-            setBuilderViewMode(builderViewMode, true);
-        }
     });
 
     function saveBuilderState() {
@@ -3190,7 +3508,7 @@ let sessionAssets = null;
         saveBuilderState();
     }
 
-    function removeBuilderOption(qId, optId) {
+    function removeBuilderOption(qId, optId, skipRender = false) {
         const question = builderQuestions.find(q => q.id === qId);
         if (!question) return;
         if (question.options.length <= 2) return;
@@ -3201,7 +3519,7 @@ let sessionAssets = null;
         if (wasCorrect && !question.options.some(o => o.isCorrect)) {
             question.options[0].isCorrect = true;
         }
-        renderBuilderQuestions();
+        if (!skipRender) renderBuilderQuestions();
         saveBuilderState();
     }
 
@@ -3610,12 +3928,22 @@ let sessionAssets = null;
     });
 
     function renderBuilderQuestions() {
+        const currentScrollY = window.scrollY;
+        const taHeights = new Map();
+        document.querySelectorAll('.builder-question-input').forEach(ta => {
+            const card = ta.closest('.builder-card');
+            if (card && card.dataset.qId) {
+                taHeights.set(card.dataset.qId, ta.style.height);
+            }
+        });
+
         builderQuestionListEl.innerHTML = '';
 
         builderQuestions.forEach((question, qIndex) => {
             const card = document.createElement('div');
             card.className = 'builder-card';
             card.id = 'card-' + question.id;
+            card.dataset.qId = question.id;
 
             const cardTop = document.createElement('div');
             cardTop.className = 'builder-card-top';
@@ -3649,6 +3977,9 @@ let sessionAssets = null;
             qInput.rows = 1;
             qInput.readOnly = (builderViewMode === 'select');
             qInput.classList.toggle('input-error', validationErrorIds.has(question.id));
+            if (taHeights.has(question.id)) {
+                qInput.style.height = taHeights.get(question.id);
+            }
             qInput.oninput = (e) => {
                 updateBuilderQuestionText(question.id, e.target.value);
                 if (e.target.value.trim()) { validationErrorIds.delete(question.id); e.target.classList.remove('input-error'); }
@@ -3717,6 +4048,10 @@ let sessionAssets = null;
                 row.className = 'builder-option-row';
                 row.dataset.optId = option.id;
 
+                const rowBg = document.createElement('div');
+                rowBg.className = 'row-bg';
+                row.appendChild(rowBg);
+
                 if (builderViewMode === 'select' && option.isCorrect) {
                     row.classList.add('select-is-correct');
                 }
@@ -3727,7 +4062,15 @@ let sessionAssets = null;
                 const canRemove = question.options.length > 2;
                 removeOptBtn.disabled = !canRemove;
                 removeOptBtn.title = canRemove ? 'Remove answer' : 'At least 2 answers are required';
-                removeOptBtn.onclick = () => removeBuilderOption(question.id, option.id);
+                removeOptBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (!canRemove) return;
+                    const currentRow = removeOptBtn.closest('.builder-option-row');
+                    document.querySelectorAll('.builder-option-row.revealed').forEach(r => {
+                        if (r !== currentRow) r.classList.remove('revealed');
+                    });
+                    currentRow.classList.toggle('revealed');
+                };
                 row.appendChild(removeOptBtn);
 
                 const correctBtn = document.createElement('button');
@@ -3802,6 +4145,46 @@ let sessionAssets = null;
                     row.onclick = null;
                 }
 
+                const deleteConfirmBtn = document.createElement('div');
+                deleteConfirmBtn.className = 'delete-btn';
+                deleteConfirmBtn.innerText = 'Delete';
+                deleteConfirmBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    const currentRow = deleteConfirmBtn.closest('.builder-option-row');
+                    
+                    document.body.classList.add('is-animating');
+                    currentRow.classList.add('deleting');
+                    
+                    currentRow.style.height = currentRow.offsetHeight + 'px';
+                    void currentRow.offsetHeight;
+                    
+                    currentRow.style.height = '0px';
+                    currentRow.style.opacity = '0';
+                    currentRow.style.paddingTop = '0';
+                    currentRow.style.paddingBottom = '0';
+                    currentRow.style.marginTop = '0';
+                    currentRow.style.marginBottom = '0';
+                    
+                    setTimeout(() => {
+                        currentRow.remove();
+                        removeBuilderOption(question.id, option.id, true);
+                        
+                        const card = document.getElementById('card-' + question.id);
+                        if (card) {
+                            const remainingRows = card.querySelectorAll('.builder-option-row');
+                            if (remainingRows.length <= 2) {
+                                card.querySelectorAll('.remove-option-btn').forEach(btn => {
+                                    btn.disabled = true;
+                                    btn.title = 'At least 2 answers are required';
+                                });
+                            }
+                        }
+                        
+                        document.body.classList.remove('is-animating');
+                    }, 400);
+                };
+                row.appendChild(deleteConfirmBtn);
+
                 optionsGroup.appendChild(row);
             });
 
@@ -3827,7 +4210,54 @@ let sessionAssets = null;
                 addOptBtn.appendChild(selectLabel);
             } else {
                 addOptBtn.title = 'Add another answer';
-                addOptBtn.onclick = () => addBuilderOption(question.id);
+                addOptBtn.onclick = (e) => {
+                    const card = e.target.closest('.builder-card');
+                    if (!card) return addBuilderOption(question.id);
+                    
+                    const oldHeight = card.offsetHeight;
+                    document.body.classList.add('is-animating');
+                    
+                    addBuilderOption(question.id);
+                    
+                    const newCard = document.getElementById('card-' + question.id);
+                    if (newCard) {
+                        const newHeight = newCard.offsetHeight;
+                        newCard.style.height = oldHeight + 'px';
+                        newCard.style.overflow = 'hidden';
+                        newCard.style.transition = 'none';
+                        
+                        void newCard.offsetHeight;
+                        
+                        newCard.style.transition = 'height 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+                        newCard.style.height = newHeight + 'px';
+                        
+                        const optionRows = newCard.querySelectorAll('.builder-option-row');
+                        const newRow = optionRows[optionRows.length - 1];
+                        if (newRow) {
+                            newRow.style.opacity = '0';
+                            newRow.style.transform = 'translateY(-10px)';
+                            newRow.style.transition = 'opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+                            
+                            void newRow.offsetHeight;
+                            
+                            newRow.style.opacity = '1';
+                            newRow.style.transform = 'translateY(0)';
+                        }
+                        
+                        setTimeout(() => {
+                            newCard.style.height = '';
+                            newCard.style.overflow = '';
+                            newCard.style.transition = '';
+                            if (newRow) {
+                                newRow.style.transition = '';
+                                newRow.style.transform = '';
+                            }
+                            document.body.classList.remove('is-animating');
+                        }, 300);
+                    } else {
+                        document.body.classList.remove('is-animating');
+                    }
+                };
 
                 const plusIcon = document.createElement('span');
                 plusIcon.className = 'plus-icon';
@@ -3850,8 +4280,14 @@ let sessionAssets = null;
         });
         
         requestAnimationFrame(() => {
-            document.querySelectorAll('.builder-question-input').forEach(autoGrow);
+            document.querySelectorAll('.builder-question-input').forEach(ta => {
+                if (!taHeights.has(ta.closest('.builder-card')?.dataset.qId)) {
+                    autoGrow(ta);
+                }
+            });
         });
+        
+        window.scrollTo(0, currentScrollY);
     }
 
     function autoGrow(el) {
@@ -4461,9 +4897,9 @@ let sessionAssets = null;
         modeSelectSection.style.display = 'block';
     }
 
-    function showTeacherResultsScreen(resultsObj, masterQuestions, origData) {
+    async function showTeacherResultsScreen(resultsObj, masterQuestions, origData) {
         modeSelectSection.style.display = 'none';
-        uploadSection.style.display = 'none';
+
         teacherResultsSection.style.display = 'block';
         
         document.getElementById('teacher-result-title').innerText = `${resultsObj.studentName}'s Results`;
@@ -4476,7 +4912,8 @@ let sessionAssets = null;
         let earnedPoints = 0;
         let maxPoints = 0;
         
-        masterQuestions.forEach((q, qIdx) => {
+        for (let qIdx = 0; qIdx < masterQuestions.length; qIdx++) {
+            const q = masterQuestions[qIdx];
             const studentAnswers = Array.isArray(resultsObj.answers[qIdx]) ? resultsObj.answers[qIdx] : (resultsObj.answers[qIdx] != null ? [resultsObj.answers[qIdx]] : []);
             const timeSpentMs = resultsObj.timings && resultsObj.timings[qIdx] ? resultsObj.timings[qIdx] : 0;
             const timeSpentStr = timeSpentMs > 0 ? ` (Time: ${(timeSpentMs / 1000).toFixed(1)}s)` : '';
@@ -4502,41 +4939,75 @@ let sessionAssets = null;
             
             const qText = document.createElement('p');
             qText.className = 'review-question-text';
-            qText.innerHTML = `<strong>${qIdx + 1}.</strong> ${q.question} <span style="font-size:12px;opacity:0.7">${timeSpentStr}</span>`;
+            qText.innerHTML = `<strong>${qIdx + 1}.</strong> ${q.question || q.questionText || ""} <span style="font-size:12px;opacity:0.7">${timeSpentStr}</span>`;
             itemDiv.appendChild(qText);
             
-            const optsList = document.createElement('ul');
-            optsList.className = 'review-options-list';
+            const choicesDiv = document.createElement('div');
+            choicesDiv.className = 'review-choices';
             
             if (q.options) {
-                q.options.forEach((opt, oIdx) => {
-                    const li = document.createElement('li');
-                    li.className = 'review-option-item';
-                    
-                    const isStudentSelected = studentAnswers.includes(oIdx);
-                    const isActuallyCorrect = correctIndexes.includes(oIdx);
-                    
-                    let icon = '';
-                    if (isStudentSelected && isActuallyCorrect) {
-                        li.classList.add('review-correct');
-                        icon = '✓ ';
-                    } else if (isStudentSelected && !isActuallyCorrect) {
-                        li.classList.add('review-incorrect');
-                        icon = '✗ ';
-                    } else if (!isStudentSelected && isActuallyCorrect) {
-                        li.classList.add('review-missed');
-                        icon = '✓ (Missed) ';
+                for (let oIdx = 0; oIdx < q.options.length; oIdx++) {
+                    const opt = q.options[oIdx];
+                    const badge = document.createElement('div');
+                    badge.className = 'review-badge';
+
+                    const textCol = document.createElement('div');
+                    textCol.className = 'review-badge-text-col';
+
+                    const textSpan = document.createElement('span');
+                    textSpan.innerText = opt.option || opt.text || "";
+                    textCol.appendChild(textSpan);
+
+                    const wasChosen = studentAnswers.includes(oIdx);
+                    const isCorrectOption = correctIndexes.includes(oIdx);
+
+                    badge.appendChild(textCol);
+
+                    if (opt.image) {
+                        let optImgUrl = "";
+                        try {
+                            if (typeof opt.image === 'string' && opt.image.startsWith('data:')) {
+                                optImgUrl = opt.image;
+                            } else {
+                                // If teacher needs to decrypt images, they aren't loaded in sessionAssets yet in Check Answers flow.
+                                // Fallback to raw if available or skip. 
+                                // (Since it's check answers and assets are not loaded in memory yet, it might not render if encrypted, but that's a larger refactor).
+                                optImgUrl = opt.image; 
+                            }
+                        } catch(e) {}
+                        
+                        if (optImgUrl) {
+                            const imgWrap = document.createElement('div');
+                            imgWrap.className = 'option-img-wrap';
+                            imgWrap.style.width = '70px';
+                            imgWrap.style.height = '70px';
+                            
+                            const optImg = document.createElement('img');
+                            optImg.src = optImgUrl;
+                            optImg.className = 'option-img';
+                            
+                            imgWrap.appendChild(optImg);
+                            badge.appendChild(imgWrap);
+                        }
                     }
-                    
-                    const textContent = typeof opt === 'object' ? opt.option : opt;
-                    li.innerText = icon + textContent;
-                    optsList.appendChild(li);
-                });
+
+                    if (isCorrectOption) {
+                        badge.classList.add('correct-review');
+                    } else if (wasChosen && !isCorrectOption) {
+                        badge.classList.add('incorrect-review');
+                    }
+
+                    if (wasChosen) {
+                        badge.classList.add('was-chosen');
+                    }
+
+                    choicesDiv.appendChild(badge);
+                }
             }
             
-            itemDiv.appendChild(optsList);
+            itemDiv.appendChild(choicesDiv);
             reviewListEl.appendChild(itemDiv);
-        });
+        }
         
         let percentage = Math.round((earnedPoints / maxPoints) * 100);
         if (isNaN(percentage)) percentage = 0;
@@ -4560,6 +5031,161 @@ let sessionAssets = null;
         document.getElementById('teacher-detailed-results').innerText =
             `${earnedPoints} of ${maxPoints} points earned across ${masterQuestions.length} question${masterQuestions.length !== 1 ? 's' : ''}.`;
     }
+
+    class ParticleCardAnimation {
+        constructor(canvas) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d', { alpha: true });
+            this.svgPathData = canvas.getAttribute('data-svg-path');
+            this.particles = [];
+            this.targetPoints = [];
+            this.mouse = { x: -1000, y: -1000 };
+            this.numParticles = 500;
+            this.repelRadius = 70;
+            this.width = 0;
+            this.height = 0;
+
+            this.canvas.parentElement.addEventListener('mousemove', (e) => {
+                const rect = this.canvas.getBoundingClientRect();
+                this.mouse.x = e.clientX - rect.left;
+                this.mouse.y = e.clientY - rect.top;
+            });
+            this.canvas.parentElement.addEventListener('mouseleave', () => {
+                this.mouse.x = -1000;
+                this.mouse.y = -1000;
+            });
+
+            this.resizeObserver = new ResizeObserver(() => {
+                if (this.canvas.parentElement.offsetWidth > 0) {
+                    this.resize();
+                }
+            });
+            this.resizeObserver.observe(this.canvas.parentElement);
+
+            this.animate = this.animate.bind(this);
+            requestAnimationFrame(this.animate);
+        }
+
+        resize() {
+            const rect = this.canvas.parentElement.getBoundingClientRect();
+            this.width = rect.width;
+            this.height = rect.height;
+            const dpr = window.devicePixelRatio || 1;
+            this.canvas.width = this.width * dpr;
+            this.canvas.height = this.height * dpr;
+            this.ctx.scale(dpr, dpr);
+            
+            this.sampleSVGPoints();
+            if (this.particles.length === 0) {
+                this.createParticles();
+            }
+        }
+
+        sampleSVGPoints() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', this.svgPathData);
+            svg.appendChild(path);
+            svg.style.position = 'absolute';
+            svg.style.width = '0';
+            svg.style.height = '0';
+            svg.style.visibility = 'hidden';
+            document.body.appendChild(svg);
+            
+            const length = path.getTotalLength();
+            
+            const textReservedHeight = 75; // Estimated height of bottom text row
+            const availableHeight = Math.max(10, this.height - textReservedHeight);
+            
+            // Fit inside the available top space
+            const iconSize = Math.min(this.width * 0.60, availableHeight * 0.85);
+            const scale = iconSize / 24;
+            
+            // Center horizontally, and vertically within the available top space
+            const offsetX = (this.width - 24 * scale) / 2;
+            const offsetY = (availableHeight - 24 * scale) / 2 + 5;
+            
+            this.targetPoints = [];
+            const step = length / this.numParticles;
+            for (let i = 0; i < this.numParticles; i++) {
+                const point = path.getPointAtLength(i * step);
+                this.targetPoints.push({
+                    x: point.x * scale + offsetX,
+                    y: point.y * scale + offsetY
+                });
+            }
+            document.body.removeChild(svg);
+        }
+
+        createParticles() {
+            this.particles = [];
+            for (let i = 0; i < this.numParticles; i++) {
+                this.particles.push({
+                    x: Math.random() * this.width,
+                    y: Math.random() * this.height,
+                    vx: 0,
+                    vy: 0,
+                    targetIndex: i,
+                    wanderOffset: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        animate() {
+            if (this.particles.length === 0) {
+                requestAnimationFrame(this.animate);
+                return;
+            }
+
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+
+            const time = Date.now() * 0.001;
+
+            for (let i = 0; i < this.numParticles; i++) {
+                const p = this.particles[i];
+                const t = this.targetPoints[p.targetIndex];
+                if (!t) continue;
+
+                const wanderX = Math.sin(time * 1.5 + p.wanderOffset) * 3;
+                const wanderY = Math.cos(time * 1.5 + p.wanderOffset) * 3;
+                
+                const dx = (t.x + wanderX) - p.x;
+                const dy = (t.y + wanderY) - p.y;
+                
+                p.vx += dx * 0.025;
+                p.vy += dy * 0.025;
+
+                const mdx = this.mouse.x - p.x;
+                const mdy = this.mouse.y - p.y;
+                const dist = Math.sqrt(mdx * mdx + mdy * mdy);
+                
+                if (dist < this.repelRadius) {
+                    const force = (this.repelRadius - dist) / this.repelRadius;
+                    p.vx -= (mdx / dist) * force * 4.5;
+                    p.vy -= (mdy / dist) * force * 4.5;
+                }
+
+                p.vx *= 0.82;
+                p.vy *= 0.82;
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                this.ctx.beginPath();
+                this.ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+
+            requestAnimationFrame(this.animate);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.card-canvas-bg').forEach(canvas => {
+            new ParticleCardAnimation(canvas);
+        });
+    });
 </script>
 
 </body>
