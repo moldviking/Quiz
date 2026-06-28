@@ -5045,15 +5045,29 @@ let sessionAssets = null;
             this.width = 0;
             this.height = 0;
 
-            this.canvas.parentElement.addEventListener('mousemove', (e) => {
+            const updateMousePos = (clientX, clientY) => {
                 const rect = this.canvas.getBoundingClientRect();
-                this.mouse.x = e.clientX - rect.left;
-                this.mouse.y = e.clientY - rect.top;
-            });
-            this.canvas.parentElement.addEventListener('mouseleave', () => {
+                this.mouse.x = clientX - rect.left;
+                this.mouse.y = clientY - rect.top;
+            };
+            
+            const resetMousePos = () => {
                 this.mouse.x = -1000;
                 this.mouse.y = -1000;
-            });
+            };
+
+            this.canvas.parentElement.addEventListener('mousemove', (e) => updateMousePos(e.clientX, e.clientY));
+            this.canvas.parentElement.addEventListener('mouseleave', resetMousePos);
+
+            // Touch support
+            this.canvas.parentElement.addEventListener('touchstart', (e) => {
+                if (e.touches.length > 0) updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            this.canvas.parentElement.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            this.canvas.parentElement.addEventListener('touchend', resetMousePos);
+            this.canvas.parentElement.addEventListener('touchcancel', resetMousePos);
 
             this.resizeObserver = new ResizeObserver(() => {
                 if (this.canvas.parentElement.offsetWidth > 0) {
