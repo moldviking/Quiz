@@ -229,6 +229,12 @@
         .quiz-desc:not(:empty) { margin-top: 6px; }
         .quiz-desc:empty { display: none; }
         h2 { font-size: 26px; font-weight: 700; margin-top: 0; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); letter-spacing: -0.5px; }
+        #mode-select-view h2 { font-size: 34px; margin-bottom: 12px; letter-spacing: -0.8px; }
+
+        @media (max-width: 500px) {
+            .quiz-container { margin-top: 0; margin-bottom: auto; padding-top: 40px; }
+            .mode-choice-btn { aspect-ratio: auto; min-height: 220px; }
+        }
 
         #play-question-image {
             max-width: 100%; max-height: 250px; border-radius: 18px; margin-bottom: 24px; object-fit: contain;
@@ -2372,7 +2378,7 @@ let sessionAssets = null;
             }
 
                 if (!rawData.questions) {
-                    throw new Error("The file structure is valid JSON, but it is missing the required 'questions' property.");
+                    throw new Error("Invalid .quiz format: missing structural 'questions' array.");
                 }
 
                 const mode = rawData.meta?.mode || "open";
@@ -2567,31 +2573,6 @@ let sessionAssets = null;
         saveBuilderState();
     }
 
-    async function tryEditQuizFromPlay() {
-        if (!loadedRawData) return;
-
-        let rawDataToLoad = JSON.parse(JSON.stringify(loadedRawData));
-
-        if (rawDataToLoad.isDualEncrypted) {
-            let decryptedQuestions = null;
-            let hasError = false;
-            while (!decryptedQuestions) {
-                const pwd = await requestPassword(hasError);
-                if (!pwd) return; 
-                try {
-                    const profile = rawDataToLoad.builderProfile;
-                    const salt = new Uint8Array(atob(profile.salt).split("").map(c => c.charCodeAt(0)));
-                    const key = await deriveCryptoKey(pwd, salt);
-                    decryptedQuestions = await decryptSingleItem(profile.encryptedPayload, key);
-                } catch (e) {
-                    hasError = true;
-                }
-            }
-            rawDataToLoad.questions = decryptedQuestions;
-        }
-
-        loadQuestionsIntoBuilder(rawDataToLoad);
-    }
 
     // BUILDER MODE IMPORT
     builderFileSelector.addEventListener("change", async function(event) {
@@ -2616,7 +2597,7 @@ let sessionAssets = null;
             }
 
                 if (!rawData.questions) {
-                    throw new Error("Missing structural 'questions' array inside the JSON payload.");
+                    throw new Error("Invalid .quiz format: missing structural 'questions' array.");
                 }
 
                 await loadQuestionsIntoBuilder(rawData);
@@ -5183,7 +5164,8 @@ let sessionAssets = null;
             
             const length = path.getTotalLength();
             
-            const textReservedHeight = 75; // Estimated height of bottom text row
+            const bottomContent = this.canvas.parentElement.querySelector('.mode-bottom-content');
+            const textReservedHeight = bottomContent ? bottomContent.offsetHeight + 16 : 85;
             const availableHeight = Math.max(10, this.height - textReservedHeight);
             
             // Fit inside the available top space
