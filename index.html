@@ -396,18 +396,18 @@
         .mode-choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 8px; }
         .card-canvas-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; border-radius: inherit; }
         .mode-choice-btn { position: relative; overflow: hidden; background-color: var(--option-bg); color: #fff; border: none; padding: 18px; border-radius: 22px; text-align: left; cursor: pointer; transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; aspect-ratio: 1 / 1; min-height: 165px; box-sizing: border-box; box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
-        .mode-choice-btn > .mode-bottom-content { position: relative; z-index: 1; pointer-events: none; display: flex; align-items: flex-start; gap: 12px; width: 100%; margin-top: auto; }
+        .mode-choice-btn > .mode-bottom-content { position: relative; z-index: 1; pointer-events: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 100%; margin-top: auto; }
         .mode-choice-btn:active { transform: scale(0.94); filter: brightness(0.9); }
         .mode-choice-btn.btn-play { background: linear-gradient(135deg, #FF7B47, #FF4527); }
         .mode-choice-btn.btn-check { background: linear-gradient(135deg, #DF6EE8, #A644FF); }
         .mode-choice-btn.btn-create { background: linear-gradient(135deg, #8A8BFF, #5C5BE5); }
         .mode-choice-btn.btn-edit { background: linear-gradient(135deg, #4DB3FF, #1E88E5); }
         
-        .mode-icon-container { flex-shrink: 0; color: #fff; display: flex; align-items: center; justify-content: center; padding-top: 2px; }
-        .mode-icon-container svg { width: 34px; height: 34px; fill: currentColor; }
-        .mode-text-container { display: flex; flex-direction: column; gap: 4px; }
-        .mode-choice-btn .mode-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
-        .mode-choice-btn .mode-sub { font-size: 13px; color: rgba(255, 255, 255, 0.9); font-weight: 500; line-height: 1.25; }
+        .mode-choice-header { display: flex; align-items: center; gap: 8px; }
+        .mode-icon-container { flex-shrink: 0; color: #fff; display: flex; align-items: center; justify-content: center; }
+        .mode-icon-container svg { width: 28px; height: 28px; fill: currentColor; }
+        .mode-choice-btn .mode-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; line-height: 1; }
+        .mode-choice-btn .mode-sub { font-size: 13px; color: rgba(255, 255, 255, 0.9); font-weight: 500; line-height: 1.25; width: 100%; }
 
         .section-header { text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; margin: 0 0 8px 2px; display: block; }
         .section-header.with-top-spacing { margin-top: 28px; }
@@ -908,49 +908,49 @@ var EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" he
             <button class="mode-choice-btn btn-play" onclick="goToPlayUpload()">
                 <canvas class="card-canvas-bg" data-svg-path="M8 5v14l11-7z"></canvas>
                 <div class="mode-bottom-content">
-                    <div class="mode-icon-container">
-                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    </div>
-                    <div class="mode-text-container">
+                    <div class="mode-choice-header">
+                        <div class="mode-icon-container">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
                         <span class="mode-title">Play Quiz</span>
-                        <span class="mode-sub">Select a quiz and start answering.</span>
                     </div>
+                    <span class="mode-sub">Select a quiz and start answering.</span>
                 </div>
             </button>
             <button class="mode-choice-btn btn-check" onclick="document.getElementById('results-file-selector').click()">
                 <canvas class="card-canvas-bg" data-svg-path="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></canvas>
                 <div class="mode-bottom-content">
-                    <div class="mode-icon-container">
-                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                    </div>
-                    <div class="mode-text-container">
+                    <div class="mode-choice-header">
+                        <div class="mode-icon-container">
+                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                        </div>
                         <span class="mode-title">Check Answers</span>
-                        <span class="mode-sub">Evaluate a student's submitted results file.</span>
                     </div>
+                    <span class="mode-sub">Evaluate a student's submitted results file.</span>
                 </div>
             </button>
             <button class="mode-choice-btn btn-create" onclick="goToBuilderFresh()">
                 <canvas class="card-canvas-bg" data-svg-path="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></canvas>
                 <div class="mode-bottom-content">
-                    <div class="mode-icon-container">
-                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                    </div>
-                    <div class="mode-text-container">
+                    <div class="mode-choice-header">
+                        <div class="mode-icon-container">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </div>
                         <span class="mode-title">Create Quiz</span>
-                        <span class="mode-sub">Build a quiz with your own questions.</span>
                     </div>
+                    <span class="mode-sub">Build a quiz with your own questions.</span>
                 </div>
             </button>
             <button class="mode-choice-btn btn-edit" onclick="triggerBuilderUpload()">
                 <canvas class="card-canvas-bg" data-svg-path="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></canvas>
                 <div class="mode-bottom-content">
-                    <div class="mode-icon-container">
-                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                    </div>
-                    <div class="mode-text-container">
+                    <div class="mode-choice-header">
+                        <div class="mode-icon-container">
+                            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </div>
                         <span class="mode-title">Edit Quiz</span>
-                        <span class="mode-sub">Update or tweak questions.</span>
                     </div>
+                    <span class="mode-sub">Update or tweak questions.</span>
                 </div>
             </button>
         </div>
