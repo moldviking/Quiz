@@ -54,6 +54,11 @@
             --sel-selected-border: #C2E6CC;
             --sel-selected-text: #18522A;
 
+            /* SELECT MODE custom false palette */
+            --sel-false-bg: #FCE8E6;
+            --sel-false-border: #F6C2BE;
+            --sel-false-text: #B31412;
+
             --control-bg: rgba(118, 118, 128, 0.12);
             --selector-bg: rgba(255, 255, 255, 0.85);
             --icon-inactive: rgb(138, 138, 142);
@@ -106,6 +111,11 @@
                 --sel-selected-bg: #213828;
                 --sel-selected-border: #375C41;
                 --sel-selected-text: #C4F2D0;
+
+                /* SELECT MODE custom false palette — dark */
+                --sel-false-bg: #3B1614;
+                --sel-false-border: #6D2925;
+                --sel-false-text: #FF8985;
 
                 --control-bg: rgba(255, 255, 255, 0.08);
                 --selector-bg: rgba(90, 90, 94, 0.85);
@@ -335,6 +345,32 @@
         p { color: var(--text-secondary); margin-bottom: 24px; }
 
         /* MODALS */
+        .img-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; visibility: hidden; transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none; }
+        .img-modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
+        .img-modal-content { position: relative; max-width: 90vw; max-height: 90vh; border-radius: 16px; overflow: hidden; background: var(--bg-panel); box-shadow: 0 12px 48px rgba(0,0,0,0.3); transform: scale(0.96) translateY(10px); opacity: 0; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        .img-modal-overlay.active .img-modal-content { transform: scale(1) translateY(0); opacity: 1; }
+        .img-modal-image { display: block; max-width: 100%; max-height: 90vh; object-fit: contain; }
+
+        .tf-popover { position: fixed; z-index: 9999; pointer-events: auto; background: var(--bg-alert); border: 1px solid var(--alert-border); border-radius: 999px; box-shadow: 0 8px 28px rgba(0,0,0,0.18); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0; visibility: hidden; transform: scale(0.88); transition: opacity 0.15s ease, transform 0.15s ease, top 0.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0.15s; width: 32px; box-sizing: border-box; }
+        .tf-popover.open { opacity: 1; visibility: visible; transform: scale(1); transition: opacity 0.15s ease, transform 0.15s ease, top 0.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0s; }
+        @media (prefers-color-scheme: dark) { .tf-popover { box-shadow: 0 8px 28px rgba(0,0,0,0.5); } }
+        .tf-btn { width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease, opacity 0.1s ease; padding: 0; flex-shrink: 0; background: transparent; }
+        .tf-btn:active { transform: scale(0.9); opacity: 0.8; }
+        .tf-btn svg { width: 24px; height: 24px; pointer-events: none; }
+        .tf-btn.tf-true { background: transparent; color: white; }
+        .tf-btn.tf-none { background: transparent; color: var(--text-secondary); }
+        .tf-btn.tf-false { background: transparent; color: white; }
+        @media (prefers-color-scheme: dark) { .tf-btn.tf-none { background: transparent; color: var(--text-secondary); } }
+        .correct-toggle-btn.tf-state-true { background-color: transparent; border: none; color: #ffffff; padding: 0; }
+        .correct-toggle-btn.tf-state-false { background-color: transparent; border: none; color: #ffffff; padding: 0; }
+        .correct-toggle-btn.tf-state-none { background-color: transparent; border: none; color: var(--text-secondary); padding: 0; }
+        @media (prefers-color-scheme: dark) { .correct-toggle-btn.tf-state-none { background-color: transparent; } }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true .correct-toggle-btn { background-color: transparent; border: none; color: #ffffff; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false .correct-toggle-btn { background-color: transparent; border: none; color: #ffffff; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-none .correct-toggle-btn { background-color: transparent; border: none; color: var(--text-secondary); }
+        @media (prefers-color-scheme: dark) { .builder-qa-panel.mode-select .builder-option-row.tf-state-none .correct-toggle-btn { background-color: transparent; } }
+        .correct-toggle-btn[class*="tf-state-"] svg { width: 24px; height: 24px; }
+
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg);
             display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; visibility: hidden;
@@ -701,13 +737,13 @@
 
         .builder-options-group { border-radius: 0; overflow: visible; background-color: transparent; position: relative; }
         .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; position: relative; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .builder-option-row:not(:last-child)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background-color: var(--builder-answer-separator); }
+        .builder-option-row:not(:last-child)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background-color: var(--builder-answer-separator); transition: opacity 0.2s ease; }
         .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 7px 8px; font-size: 15px; font-weight: 400; font-family: inherit; }
         .builder-option-input::placeholder { color: var(--builder-empty-answer-text); font-weight: 400; }
         .builder-option-input:focus { outline: none; background-color: transparent; }
         
-        .correct-toggle-btn { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border-color); background-color: var(--bg-panel); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0; }
-        .correct-toggle-btn svg { width: 12px; height: 12px; fill: currentColor; }
+        .correct-toggle-btn { flex-shrink: 0; box-sizing: border-box; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border-color); background-color: var(--bg-panel); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0; }
+        .correct-toggle-btn:not([class*="tf-state-"]) svg { width: 16px; height: 16px; fill: none; stroke: currentColor; }
         .correct-toggle-btn:hover { border-color: var(--success-green); color: var(--success-green); }
         .correct-toggle-btn.is-correct { background-color: var(--success-green); border-color: var(--success-green); color: #ffffff; }
         .correct-toggle-btn.is-checkbox { border-radius: 8px; }
@@ -819,8 +855,13 @@
         .builder-qa-panel.mode-select .builder-option-row { cursor: pointer; background-color: var(--builder-card-bg-dark); margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; transition: background-color 0.2s ease, color 0.2s ease; position: relative; }
         .builder-qa-panel.mode-select .builder-option-row:hover { background-color: var(--builder-card-bg-dark); }
         .builder-qa-panel.mode-select .builder-option-row:not(:last-child)::after { left: 14px; right: 14px; }
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct:not(:last-child)::after,
-        .builder-qa-panel.mode-select .builder-option-row:has(+ .builder-option-row.select-is-correct)::after { display: none; }
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.select-is-correct:not(:last-child)::after,
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-true:not(:last-child)::after,
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-false:not(:last-child)::after,
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row:has(+ .builder-option-row.select-is-correct)::after,
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row:has(+ .builder-option-row.tf-state-true)::after,
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row:has(+ .builder-option-row.tf-state-false)::after { opacity: 0; }
+        body.is-dragging-active .builder-qa-panel.mode-select .builder-option-row.visual-hide-separator::after { opacity: 0; }
         .builder-qa-panel.mode-select .builder-option-input { pointer-events: none; }
         .builder-qa-panel.mode-select .correct-toggle-btn { pointer-events: none; border-radius: 50% !important; }
         .builder-qa-panel.mode-select .builder-option-row.select-is-correct { background-color: var(--sel-selected-bg) !important; color: var(--sel-selected-text); box-shadow: inset 0 0 0 2px var(--sel-selected-border); }
@@ -833,6 +874,24 @@
         .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn { color: #7DDE97; }
         .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:hover, .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:active { color: #32BF57; }
         .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input::placeholder { color: #7DDE97; }
+
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true { background-color: var(--sel-selected-bg) !important; color: var(--sel-selected-text); box-shadow: inset 0 0 0 2px var(--sel-selected-border); }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true:hover { background-color: var(--sel-selected-bg) !important; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true .builder-option-input { color: var(--sel-selected-text); }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true .img-upload-btn { color: #7DDE97; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true .img-upload-btn.has-image { color: #32BF57; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true .drag-handle-btn { color: #7DDE97; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true .drag-handle-btn:hover, .builder-qa-panel.mode-select .builder-option-row.tf-state-true .drag-handle-btn:active { color: #32BF57; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true .builder-option-input::placeholder { color: #7DDE97; }
+
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false { background-color: var(--sel-false-bg) !important; color: var(--sel-false-text); box-shadow: inset 0 0 0 2px var(--sel-false-border); }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false:hover { background-color: var(--sel-false-bg) !important; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false .builder-option-input { color: var(--sel-false-text); }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false .img-upload-btn { color: #F5928F; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false .img-upload-btn.has-image { color: #E54844; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false .drag-handle-btn { color: #F5928F; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false .drag-handle-btn:hover, .builder-qa-panel.mode-select .builder-option-row.tf-state-false .drag-handle-btn:active { color: #E54844; }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false .builder-option-input::placeholder { color: #F5928F; }
         @media (prefers-color-scheme: dark) {
             /* Correct (green) rows — unfocused icons are dim #1D7234, focused/has-image icons are bright */
             .builder-qa-panel.mode-select .builder-option-row.select-is-correct .img-upload-btn { color: #1D7234; }
@@ -840,6 +899,18 @@
             .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn { color: #1D7234; }
             .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:hover, .builder-qa-panel.mode-select .builder-option-row.select-is-correct .drag-handle-btn:active { color: #32BF57; }
             .builder-qa-panel.mode-select .builder-option-row.select-is-correct .builder-option-input::placeholder { color: #1D7234; }
+
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-true .img-upload-btn { color: #1D7234; }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-true .img-upload-btn.has-image { color: #7DDE97; }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-true .drag-handle-btn { color: #1D7234; }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-true .drag-handle-btn:hover, .builder-qa-panel.mode-select .builder-option-row.tf-state-true .drag-handle-btn:active { color: #32BF57; }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-true .builder-option-input::placeholder { color: #1D7234; }
+
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-false .img-upload-btn { color: #8B1C1A; }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-false .img-upload-btn.has-image { color: #F5928F; }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-false .drag-handle-btn { color: #8B1C1A; }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-false .drag-handle-btn:hover, .builder-qa-panel.mode-select .builder-option-row.tf-state-false .drag-handle-btn:active { color: #E54844; }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-false .builder-option-input::placeholder { color: #8B1C1A; }
         }
 
         .builder-qa-panel { background-color: var(--builder-card-bg-dark); border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; padding: 14px 14px 0 14px; }
@@ -871,11 +942,11 @@
 
         .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn:not(.has-image), .builder-qa-panel.mode-select .question-input-wrap .question-row-img-off { color: rgb(131, 194, 251); opacity: 1; }
         .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn.has-image { color: rgb(9, 124, 249); }
-        .builder-qa-panel.mode-select .builder-option-row:not(.select-is-correct) .img-upload-btn.has-image { color: var(--apple-blue); }
+        .builder-qa-panel.mode-select .builder-option-row:not(.select-is-correct):not(.tf-state-true):not(.tf-state-false) .img-upload-btn.has-image { color: var(--apple-blue); }
         @media (prefers-color-scheme: dark) {
             .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn:not(.has-image), .builder-qa-panel.mode-select .question-input-wrap .question-row-img-off { color: rgb(24, 78, 125); opacity: 1; }
             .builder-qa-panel.mode-select .question-input-wrap .img-upload-btn.has-image { color: rgb(10, 134, 249); }
-            .builder-qa-panel.mode-select .builder-option-row:not(.select-is-correct) .img-upload-btn.has-image { color: var(--apple-blue); }
+            .builder-qa-panel.mode-select .builder-option-row:not(.select-is-correct):not(.tf-state-true):not(.tf-state-false) .img-upload-btn.has-image { color: var(--apple-blue); }
         }
 
         .question-input-row .builder-question-input { margin-bottom: 0; width: 100%; background-color: rgb(234, 245, 254); color: rgb(131, 194, 251); font-size: 17px; font-weight: 500; line-height: 1.4; padding: 5px 76px 5px 8px; border-radius: 10px; border: 2px solid transparent; resize: none; overflow: hidden; box-sizing: border-box; display: block; }
@@ -1053,7 +1124,17 @@
             background-color: var(--builder-card-bg-dark);
             z-index: 1;
             border-radius: inherit;
-            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.2s ease;
+        }
+        
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true .row-bg {
+            background-color: var(--sel-selected-bg) !important;
+            box-shadow: inset 0 0 0 2px var(--sel-selected-border);
+        }
+        
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false .row-bg {
+            background-color: var(--sel-false-bg) !important;
+            box-shadow: inset 0 0 0 2px var(--sel-false-border);
         }
         
         .builder-qa-panel.mode-select .builder-option-row.select-is-correct .row-bg {
@@ -1061,13 +1142,60 @@
             box-shadow: inset 0 0 0 2px var(--sel-selected-border);
         }
         
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct:has(+ .builder-option-row.select-is-correct) .row-bg {
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.select-is-correct:not(.dragging):has(+ .builder-option-row.select-is-correct:not(.dragging)) .row-bg {
             box-shadow: inset 0 2px 0 0 var(--sel-selected-border), inset 2px 0 0 0 var(--sel-selected-border), inset -2px 0 0 0 var(--sel-selected-border);
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
         
-        .builder-qa-panel.mode-select .builder-option-row.select-is-correct + .builder-option-row.select-is-correct .row-bg {
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.select-is-correct:not(.dragging) + .builder-option-row.select-is-correct:not(.dragging) .row-bg {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-true:not(.dragging):has(+ .builder-option-row.tf-state-true:not(.dragging)) .row-bg {
+            box-shadow: inset 0 2px 0 0 var(--sel-selected-border), inset 2px 0 0 0 var(--sel-selected-border), inset -2px 0 0 0 var(--sel-selected-border);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-true:not(.dragging) + .builder-option-row.tf-state-true:not(.dragging) .row-bg {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-false:not(.dragging):has(+ .builder-option-row.tf-state-false:not(.dragging)) .row-bg {
+            box-shadow: inset 0 2px 0 0 var(--sel-false-border), inset 2px 0 0 0 var(--sel-false-border), inset -2px 0 0 0 var(--sel-false-border);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-false:not(.dragging) + .builder-option-row.tf-state-false:not(.dragging) .row-bg {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        /* JS-controlled Visual Merging classes for when drag is active */
+        body.is-dragging-active .builder-qa-panel.mode-select .builder-option-row.select-is-correct.visual-merge-bottom .row-bg,
+        body.is-dragging-active .builder-qa-panel.mode-select .builder-option-row.tf-state-true.visual-merge-bottom .row-bg {
+            box-shadow: inset 0 2px 0 0 var(--sel-selected-border), inset 2px 0 0 0 var(--sel-selected-border), inset -2px 0 0 0 var(--sel-selected-border);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        body.is-dragging-active .builder-qa-panel.mode-select .builder-option-row.select-is-correct.visual-merge-top .row-bg,
+        body.is-dragging-active .builder-qa-panel.mode-select .builder-option-row.tf-state-true.visual-merge-top .row-bg {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        body.is-dragging-active .builder-qa-panel.mode-select .builder-option-row.tf-state-false.visual-merge-bottom .row-bg {
+            box-shadow: inset 0 2px 0 0 var(--sel-false-border), inset 2px 0 0 0 var(--sel-false-border), inset -2px 0 0 0 var(--sel-false-border);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        body.is-dragging-active .builder-qa-panel.mode-select .builder-option-row.tf-state-false.visual-merge-top .row-bg {
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
@@ -1084,6 +1212,12 @@
         .builder-qa-panel.mode-select .builder-option-row.select-is-correct.dragging .row-bg {
             box-shadow: inset 0 0 0 2px var(--sel-selected-border), 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08) !important;
         }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true.dragging .row-bg {
+            box-shadow: inset 0 0 0 2px var(--sel-selected-border), 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08) !important;
+        }
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false.dragging .row-bg {
+            box-shadow: inset 0 0 0 2px var(--sel-false-border), 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08) !important;
+        }
 
         @media (prefers-color-scheme: dark) {
             .builder-option-row.dragging .row-bg {
@@ -1094,6 +1228,12 @@
             }
             .builder-qa-panel.mode-select .builder-option-row.select-is-correct.dragging .row-bg {
                 box-shadow: inset 0 0 0 2px var(--sel-selected-border), 0 12px 30px rgba(0,0,0,0.35), 0 -8px 20px rgba(0,0,0,0.2) !important;
+            }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-true.dragging .row-bg {
+                box-shadow: inset 0 0 0 2px var(--sel-selected-border), 0 12px 30px rgba(0,0,0,0.35), 0 -8px 20px rgba(0,0,0,0.2) !important;
+            }
+            .builder-qa-panel.mode-select .builder-option-row.tf-state-false.dragging .row-bg {
+                box-shadow: inset 0 0 0 2px var(--sel-false-border), 0 12px 30px rgba(0,0,0,0.35), 0 -8px 20px rgba(0,0,0,0.2) !important;
             }
         }
         
@@ -1437,9 +1577,14 @@ var EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" he
             </div>
 
             <button class="next-btn" id="results-download-bottom-btn" onclick="submitResults()" style="display:none; margin: 0; box-shadow: 0 4px 16px rgba(0,0,0,0.3); width: 100%;">Submit Results</button>
-            <button class="add-button" id="floating-add-question-btn" aria-label="Add item" onclick="addBuilderQuestion()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
+            <div class="add-button" id="floating-add-question-btn" aria-label="Add item" style="position: relative;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; pointer-events: none;"><path d="M12 5v14M5 12h14"/></svg>
+                <select id="native-add-question-select" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; -webkit-appearance: none; appearance: none;" onchange="handleNativeAddQuestion(this)">
+                    <option value="" disabled selected></option>
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="true_false">True or False</option>
+                </select>
+            </div>
         </div>
 </div>
 
@@ -4217,14 +4362,18 @@ let sessionAssets = null;
         return 'b' + builderIdCounter;
     }
 
-    function addBuilderQuestion() {
+    function addBuilderQuestion(type = 'multiple_choice') {
         const newQuestion = {
             id: makeBuilderId(),
             questionText: '',
             questionImage: '',
-            questionType: 'single',
+            questionType: type === 'true_false' ? 'single' : 'single',
+            uiType: type,
             points: 1,
-            options: [
+            options: type === 'true_false' ? [
+                { id: makeBuilderId(), text: '', tfState: 'none', image: '', explanation: '' },
+                { id: makeBuilderId(), text: '', tfState: 'none', image: '', explanation: '' }
+            ] : [
                 { id: makeBuilderId(), text: '', isCorrect: true, image: '', explanation: '' },
                 { id: makeBuilderId(), text: '', isCorrect: false, image: '', explanation: '' }
             ]
@@ -4238,6 +4387,13 @@ let sessionAssets = null;
             if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
     }
+
+    window.handleNativeAddQuestion = function(select) {
+        if (!select.value) return;
+        const type = select.value;
+        select.value = ""; // Reset
+        addBuilderQuestion(type);
+    };
 
     function removeBuilderQuestion(qId) {
         builderQuestions = builderQuestions.filter(q => q.id !== qId);
@@ -4654,23 +4810,150 @@ let sessionAssets = null;
         activeScorePopover = null;
     }
 
+    let activeTFPopover = null;
+
+    function getTFPopoverTop(index, anchorCenterY) {
+        const paddingTop = 5;
+        const btnH = 24;
+        const gap = 4;
+        const btnCenterYRelative = paddingTop + (btnH + gap) * index + btnH / 2;
+        return anchorCenterY - btnCenterYRelative;
+    }
+
+    function openTFPopover(triggerEl, anchorEl, qId, optId, currentState) {
+        if (activeTFPopover) closeTFPopover();
+
+        const popover = document.createElement('div');
+        popover.className = 'tf-popover';
+
+        const btnTrue = document.createElement('button');
+        btnTrue.className = 'tf-btn tf-true';
+        btnTrue.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
+        btnTrue.onclick = () => { selectTFState(popover, anchorEl, qId, optId, 'true', 0); };
+
+        const btnNone = document.createElement('button');
+        btnNone.className = 'tf-btn tf-none';
+        btnNone.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
+        btnNone.onclick = () => { selectTFState(popover, anchorEl, qId, optId, 'none', 1); };
+
+        const btnFalse = document.createElement('button');
+        btnFalse.className = 'tf-btn tf-false';
+        btnFalse.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
+        btnFalse.onclick = () => { selectTFState(popover, anchorEl, qId, optId, 'false', 2); };
+
+        popover.appendChild(btnTrue);
+        popover.appendChild(btnNone);
+        popover.appendChild(btnFalse);
+
+        getScorePopoverRoot().appendChild(popover);
+        activeTFPopover = { popover, targetBtn: triggerEl };
+
+        requestAnimationFrame(() => {
+            const r = anchorEl.getBoundingClientRect();
+            const popW = popover.offsetWidth || 36;
+            
+            let left = r.left + r.width / 2 - popW / 2;
+            
+            let currentIndex = 1;
+            if (currentState === 'true') currentIndex = 0;
+            if (currentState === 'false') currentIndex = 2;
+            
+            const anchorCenterY = r.top + r.height / 2;
+            let top = getTFPopoverTop(currentIndex, anchorCenterY);
+            
+            popover.style.top = top + 'px';
+            popover.style.left = left + 'px';
+            
+            const paddingTop = 5;
+            const btnH = 28;
+            const gap = 4;
+            const originY = paddingTop + (btnH + gap) * currentIndex + btnH / 2;
+            popover.style.transformOrigin = `center ${originY}px`;
+            
+            popover.classList.add('open');
+        });
+    }
+
+    function selectTFState(popover, anchorEl, qId, optId, state, clickedIndex) {
+        const r = anchorEl.getBoundingClientRect();
+        const anchorCenterY = r.top + r.height / 2;
+        const newTop = getTFPopoverTop(clickedIndex, anchorCenterY);
+        
+        popover.style.top = newTop + 'px';
+        
+        const paddingTop = 5;
+        const btnH = 24;
+        const gap = 4;
+        const originY = paddingTop + (btnH + gap) * clickedIndex + btnH / 2;
+        popover.style.transformOrigin = `center ${originY}px`;
+        
+        const question = builderQuestions.find(q => q.id === qId);
+        if (question) {
+            const option = question.options.find(o => o.id === optId);
+            if (option) {
+                option.tfState = state;
+                saveBuilderState();
+                
+                // Update DOM manually without full re-render
+                const row = document.querySelector(`.builder-card[data-q-id="${qId}"] .builder-option-row[data-opt-id="${optId}"]`);
+                if (row) {
+                    row.className = 'builder-option-row tf-state-' + (state || 'empty');
+                    const correctBtn = row.querySelector('.correct-toggle-btn');
+                    if (correctBtn) {
+                        correctBtn.className = 'correct-toggle-btn tf-state-' + (state || 'empty');
+                        if (state === 'true') {
+                            correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
+                        } else if (state === 'false') {
+                            correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
+                        } else if (state === 'none') {
+                            correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
+                        } else {
+                            correctBtn.innerHTML = '';
+                        }
+                    }
+                }
+                
+                if (activeTFPopover && activeTFPopover.popover === popover) {
+                    activeTFPopover.state = state;
+                }
+            }
+        }
+    }
+
+    function closeTFPopover() {
+        if (!activeTFPopover) return;
+        const { popover } = activeTFPopover;
+        popover.classList.remove('open');
+        setTimeout(() => { if (popover.parentNode) popover.parentNode.removeChild(popover); }, 160);
+        activeTFPopover = null;
+    }
+
     // FIX 1: Close popover on outside click — consume the event with stopPropagation()
     // so the element underneath (e.g. a delete button) does NOT also fire.
     document.addEventListener('click', (e) => {
-        if (!activeScorePopover) return;
-        if (!activeScorePopover.pillBtn.contains(e.target) && !activeScorePopover.popover.contains(e.target)) {
-            e.stopPropagation();
-            closeScorePopover();
+        if (activeScorePopover) {
+            if (!activeScorePopover.pillBtn.contains(e.target) && !activeScorePopover.popover.contains(e.target)) {
+                e.stopPropagation();
+                closeScorePopover();
+            }
+        }
+        if (activeTFPopover) {
+            if (!activeTFPopover.targetBtn.contains(e.target) && !activeTFPopover.popover.contains(e.target)) {
+                e.stopPropagation();
+                closeTFPopover();
+            }
         }
     }, true);
 
     // Close the score popover whenever the user scrolls or resizes (pill position becomes stale).
     window.addEventListener('scroll', () => {
         if (activeScorePopover) closeScorePopover();
+        if (activeTFPopover) closeTFPopover();
     }, { passive: true, capture: true });
 
     window.addEventListener('resize', () => {
         if (activeScorePopover) closeScorePopover();
+        if (activeTFPopover) closeTFPopover();
     });
 
     function renderBuilderQuestions() {
@@ -4733,7 +5016,7 @@ let sessionAssets = null;
 
             const qInput = document.createElement('textarea');
             qInput.className = 'builder-question-input editable-input';
-            qInput.placeholder = 'Question';
+            qInput.placeholder = (question.uiType === 'true_false') ? 'True or False' : 'Question';
             qInput.value = question.questionText;
             qInput.rows = 1;
             qInput.readOnly = (builderViewMode === 'select');
@@ -4809,8 +5092,14 @@ let sessionAssets = null;
                 rowBg.className = 'row-bg';
                 row.appendChild(rowBg);
 
-                if (builderViewMode === 'select' && option.isCorrect) {
+                if (builderViewMode === 'select' && option.isCorrect && question.uiType !== 'true_false') {
                     row.classList.add('select-is-correct');
+                }
+                let effectiveTfState = option.tfState;
+                if (!effectiveTfState || effectiveTfState === 'empty') effectiveTfState = 'none';
+
+                if (question.uiType === 'true_false') {
+                    row.classList.add('tf-state-' + effectiveTfState);
                 }
 
                 const removeOptBtn = document.createElement('button');
@@ -4831,11 +5120,26 @@ let sessionAssets = null;
                 row.appendChild(removeOptBtn);
 
                 const correctBtn = document.createElement('button');
-                correctBtn.className = 'correct-toggle-btn' + (option.isCorrect ? ' is-correct' : '') + (qType === 'multiple' ? ' is-checkbox' : '');
-                correctBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
-                correctBtn.title = qType === 'multiple' ? 'Toggle as a correct answer' : 'Mark as the correct answer';
+                if (question.uiType === 'true_false') {
+                    correctBtn.className = 'correct-toggle-btn tf-state-' + effectiveTfState;
+                    if (effectiveTfState === 'true') {
+                        correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
+                    } else if (effectiveTfState === 'false') {
+                        correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
+                    } else if (effectiveTfState === 'none') {
+                        correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
+                    }
+                    correctBtn.title = 'True/False state';
+                } else {
+                    correctBtn.className = 'correct-toggle-btn' + (option.isCorrect ? ' is-correct' : '') + (qType === 'multiple' ? ' is-checkbox' : '');
+                    correctBtn.innerHTML = option.isCorrect ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>' : '';
+                    correctBtn.title = qType === 'multiple' ? 'Toggle as a correct answer' : 'Mark as the correct answer';
+                }
+
                 if (builderViewMode === 'customize') {
-                    correctBtn.onclick = () => setBuilderCorrect(question.id, option.id);
+                    if (question.uiType !== 'true_false') {
+                        correctBtn.onclick = () => setBuilderCorrect(question.id, option.id);
+                    }
                 }
                 row.appendChild(correctBtn);
 
@@ -4896,7 +5200,12 @@ let sessionAssets = null;
                     row.addEventListener('pointerup', (e) => {
                         if (dragHasMoved) return;
                         if (e.target.closest('.img-upload-btn')) return;
-                        toggleBuilderSelectAnswer(question.id, option.id);
+                        if (question.uiType === 'true_false') {
+                            const correctBtnEl = row.querySelector('.correct-toggle-btn');
+                            openTFPopover(row, correctBtnEl, question.id, option.id, effectiveTfState);
+                        } else {
+                            toggleBuilderSelectAnswer(question.id, option.id);
+                        }
                     });
                 } else {
                     row.onclick = null;
@@ -4963,7 +5272,7 @@ let sessionAssets = null;
 
                 const selectLabel = document.createElement('span');
                 selectLabel.className = 'add-option-label';
-                selectLabel.innerText = 'Select Answers';
+                selectLabel.innerText = question.uiType === 'true_false' ? 'Select True or False Answers' : 'Select Answers';
                 addOptBtn.appendChild(selectLabel);
             } else {
                 addOptBtn.title = 'Add another answer';
@@ -5067,6 +5376,8 @@ let sessionAssets = null;
     }
 
     builderQuestionListEl.addEventListener('pointerdown', (e) => {
+        if (activeScorePopover) closeScorePopover();
+        if (activeTFPopover) closeTFPopover();
         const qHandle = e.target.closest('.question-drag-handle-inline');
         if (qHandle && !document.body.classList.contains('is-animating')) {
             const card = qHandle.closest('.builder-card');
@@ -5226,7 +5537,81 @@ let sessionAssets = null;
         const initialIndex = rows.indexOf(row);
         let currentIndex = initialIndex;
 
+        function updateVisualMerge(instant = false) {
+            const visualRows = [...rows];
+            visualRows.splice(initialIndex, 1);
+            visualRows.splice(currentIndex, 0, row);
+
+            const getState = (el) => {
+                if (!el || el.classList.contains('dragging')) return null;
+                if (el.classList.contains('select-is-correct')) return 'select-is-correct';
+                if (el.classList.contains('tf-state-true')) return 'tf-state-true';
+                if (el.classList.contains('tf-state-false')) return 'tf-state-false';
+                return null;
+            };
+
+            visualRows.forEach((r, i) => {
+                if (r.classList.contains('dragging')) {
+                    r.classList.remove('visual-merge-bottom', 'visual-merge-top', 'visual-hide-separator');
+                    return;
+                }
+
+                const nextR = visualRows[i + 1];
+                const prevR = visualRows[i - 1];
+
+                const rState = getState(r);
+                const nextState = getState(nextR);
+                const prevState = getState(prevR);
+                
+                const shouldMergeBottom = (rState && nextState === rState);
+                const shouldMergeTop = (rState && prevState === rState);
+
+                if (shouldMergeBottom) {
+                    if (instant) {
+                        r.classList.add('visual-merge-bottom');
+                        if (r._pendingMergeBottom) { clearTimeout(r._pendingMergeBottom); r._pendingMergeBottom = null; }
+                    } else if (!r.classList.contains('visual-merge-bottom') && !r._pendingMergeBottom) {
+                        r._pendingMergeBottom = setTimeout(() => {
+                            r.classList.add('visual-merge-bottom');
+                            r._pendingMergeBottom = null;
+                        }, 200);
+                    }
+                } else {
+                    if (r._pendingMergeBottom) {
+                        clearTimeout(r._pendingMergeBottom);
+                        r._pendingMergeBottom = null;
+                    }
+                    r.classList.remove('visual-merge-bottom');
+                }
+
+                if (shouldMergeTop) {
+                    if (instant) {
+                        r.classList.add('visual-merge-top');
+                        if (r._pendingMergeTop) { clearTimeout(r._pendingMergeTop); r._pendingMergeTop = null; }
+                    } else if (!r.classList.contains('visual-merge-top') && !r._pendingMergeTop) {
+                        r._pendingMergeTop = setTimeout(() => {
+                            r.classList.add('visual-merge-top');
+                            r._pendingMergeTop = null;
+                        }, 200);
+                    }
+                } else {
+                    if (r._pendingMergeTop) {
+                        clearTimeout(r._pendingMergeTop);
+                        r._pendingMergeTop = null;
+                    }
+                    r.classList.remove('visual-merge-top');
+                }
+
+                if (rState || nextState) {
+                    r.classList.add('visual-hide-separator');
+                } else {
+                    r.classList.remove('visual-hide-separator');
+                }
+            });
+        }
+
         row.classList.add('dragging');
+        updateVisualMerge();
 
         handle.setPointerCapture(e.pointerId);
 
@@ -5248,8 +5633,17 @@ let sessionAssets = null;
 
             row.style.transform = `translateY(${deltaY}px) scale(1.02)`;
 
-            const offsetSlots = Math.round(deltaY / rowHeight);
-            let targetIndex = initialIndex + offsetSlots;
+            let currentOffset = currentIndex - initialIndex;
+            let floatOffset = deltaY / rowHeight;
+            let newOffset = currentOffset;
+
+            if (floatOffset > currentOffset + 0.55) {
+                newOffset = Math.ceil(floatOffset - 0.55);
+            } else if (floatOffset < currentOffset - 0.55) {
+                newOffset = Math.floor(floatOffset + 0.55);
+            }
+            
+            let targetIndex = initialIndex + newOffset;
             targetIndex = Math.max(0, Math.min(rows.length - 1, targetIndex));
 
             if (targetIndex !== currentIndex) {
@@ -5268,6 +5662,8 @@ let sessionAssets = null;
                     r.style.transform = 'translateY(0px)';
                 }
             });
+
+            updateVisualMerge();
         }
 
         function onPointerUp(ev) {
@@ -5277,36 +5673,47 @@ let sessionAssets = null;
             handle.removeEventListener('pointercancel', onPointerUp);
 
             row.classList.remove('dragging');
-            row.classList.add('snap-back');
+            updateVisualMerge(true);
 
-            const finalVisualOffset = (currentIndex - initialIndex) * rowHeight;
-            row.style.transform = `translateY(${finalVisualOffset}px) scale(1)`;
+            if (currentIndex !== initialIndex) {
+                const referenceRow = rows[currentIndex];
+                if (currentIndex > initialIndex) {
+                    referenceRow.after(row);
+                } else {
+                    referenceRow.before(row);
+                }
+                
+                rows.forEach(r => {
+                    if (r !== row) {
+                        r.style.transform = '';
+                        r.style.transition = '';
+                    }
+                });
+                
+                const rawDelta = ev.clientY - startY;
+                const deltaY = Math.max(minTranslateY, Math.min(maxTranslateY, rawDelta));
+                const offsetFromNewPos = deltaY - (currentIndex - initialIndex) * rowHeight;
+                row.style.transform = `translateY(${offsetFromNewPos}px) scale(1)`;
+                row.getBoundingClientRect();
+                
+                reorderBuilderOptions(card.id.replace('card-', ''), initialIndex, currentIndex);
+            }
+
+            row.classList.add('snap-back');
+            row.style.transform = 'translateY(0px) scale(1)';
 
             setTimeout(() => {
                 row.classList.remove('snap-back');
-
-                if (currentIndex !== initialIndex) {
-                    const referenceRow = rows[currentIndex];
-                    if (currentIndex > initialIndex) {
-                        referenceRow.after(row);
-                    } else {
-                        referenceRow.before(row);
-                    }
-                    reorderBuilderOptions(card.id.replace('card-', ''), initialIndex, currentIndex);
-                }
-
+                row.style.transform = '';
+                
                 rows.forEach(r => {
                     r.style.transform = '';
                     r.style.transition = '';
                 });
-                row.style.transform = '';
-
+                
                 if (qaPanel) qaPanel.style.overflow = '';
-
                 document.body.classList.remove('is-animating', 'is-dragging-active');
-
                 setTimeout(() => { dragHasMoved = false; }, 50);
-
             }, 300);
         }
 
