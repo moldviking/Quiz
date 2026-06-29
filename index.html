@@ -267,9 +267,9 @@
         .options-container .option-btn:first-child { margin-top: 0; border-top-left-radius: 16px; border-top-right-radius: 16px; }
         .options-container .option-btn:last-child { margin-bottom: 0; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
         .option-btn:not(:last-child)::after { content: ''; position: absolute; left: 48px; right: 14px; bottom: 0; height: 1px; background-color: var(--separator); }
-        .option-btn:hover:not(:disabled):not(:last-child)::after, .option-btn:active:not(:disabled):not(:last-child)::after, .option-btn.selected:not(:last-child)::after,
+        .option-btn.selected:not(:last-child)::after,
         .option-btn.correct-state:not(:last-child)::after, .option-btn.incorrect-state:not(:last-child)::after, .option-btn.missed-state:not(:last-child)::after,
-        .option-btn:has(+ .option-btn:hover:not(:disabled))::after, .option-btn:has(+ .option-btn:active:not(:disabled))::after, .option-btn:has(+ .option-btn.selected)::after,
+        .option-btn:has(+ .option-btn.selected)::after,
         .option-btn:has(+ .option-btn.correct-state)::after, .option-btn:has(+ .option-btn.incorrect-state)::after, .option-btn:has(+ .option-btn.missed-state)::after { display: none; }
 
         .option-content-col { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; min-width: 0; word-break: break-word; }
@@ -277,7 +277,7 @@
         @media (prefers-color-scheme: dark) { .option-img-wrap { background: rgba(255,255,255,0.06); } }
         .option-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; pointer-events: none; }
 
-        .option-btn:hover:not(:disabled) { background-color: var(--option-hover); }
+        .option-btn:hover:not(:disabled) { /* remove background hover */ }
         .option-btn.selected { border-color: var(--apple-blue); background-color: var(--option-selected-bg); z-index: 2; }
         .multi-select-hint { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: -10px 0 14px 2px; display: flex; align-items: center; gap: 6px; }
         .multi-select-hint svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
@@ -353,6 +353,25 @@
 
         .tf-popover { position: fixed; z-index: 9999; pointer-events: auto; background: var(--bg-alert); border: 1px solid var(--alert-border); border-radius: 999px; box-shadow: 0 8px 28px rgba(0,0,0,0.18); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0; visibility: hidden; transform: scale(0.88); transition: opacity 0.15s ease, transform 0.15s ease, top 0.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0.15s; width: 32px; box-sizing: border-box; }
         .tf-popover.open { opacity: 1; visibility: visible; transform: scale(1); transition: opacity 0.15s ease, transform 0.15s ease, top 0.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0s; }
+        
+        .add-question-popover {
+            position: fixed; z-index: 10000;
+            background: var(--bg-alert); border: 1px solid var(--alert-border); border-radius: 14px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.25); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+            display: flex; flex-direction: column; opacity: 0; visibility: hidden;
+            transform: scale(0.96) translateY(4px); transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0.15s;
+            overflow: hidden; width: auto; min-width: 180px; padding: 6px; box-sizing: border-box;
+        }
+        @media (prefers-color-scheme: dark) { .add-question-popover { box-shadow: 0 12px 48px rgba(0,0,0,0.5); } }
+        .add-question-popover.open { opacity: 1; visibility: visible; transform: scale(1) translateY(0); transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0s; }
+        .add-q-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: transparent; border: none; border-radius: 10px;
+            color: var(--text-main); font-size: 15px; font-weight: 500; cursor: pointer; text-align: left;
+            transition: background 0.15s; width: 100%; box-sizing: border-box;
+        }
+        .add-q-btn:active { background: rgba(0,0,0,0.05); }
+        @media (prefers-color-scheme: dark) { .add-q-btn:active { background: rgba(255,255,255,0.05); } }
+        .add-q-btn svg { flex-shrink: 0; color: var(--text-main); }
         @media (prefers-color-scheme: dark) { .tf-popover { box-shadow: 0 8px 28px rgba(0,0,0,0.5); } }
         .tf-btn { width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease, opacity 0.1s ease; padding: 0; flex-shrink: 0; background: transparent; }
         .tf-btn:active { transform: scale(0.9); opacity: 0.8; }
@@ -1577,13 +1596,8 @@ var EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" he
             </div>
 
             <button class="next-btn" id="results-download-bottom-btn" onclick="submitResults()" style="display:none; margin: 0; box-shadow: 0 4px 16px rgba(0,0,0,0.3); width: 100%;">Submit Results</button>
-            <div class="add-button" id="floating-add-question-btn" aria-label="Add item" style="position: relative;">
+            <div class="add-button" id="floating-add-question-btn" aria-label="Add item" style="position: relative;" onclick="openAddQuestionPopover(this)">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; pointer-events: none;"><path d="M12 5v14M5 12h14"/></svg>
-                <select id="native-add-question-select" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; -webkit-appearance: none; appearance: none;" onchange="handleNativeAddQuestion(this)">
-                    <option value="" disabled selected></option>
-                    <option value="multiple_choice">Multiple Choice</option>
-                    <option value="true_false">True or False</option>
-                </select>
             </div>
         </div>
 </div>
@@ -2232,15 +2246,18 @@ function unpackQuizFile(buffer) {
                 options: (question.options || []).map((opt, oIdx) => {
                     const optImg = processImage(opt.image);
                     if (bOptions[oIdx]) bOptions[oIdx].image = optImg;
-                    return {
+                    const res = {
                         text: opt.option || opt.text,
                         image: optImg || "",
                         isCorrect: !!(opt.isCorrect || opt.correct),
                         explanation: opt.explanation || ""
                     };
+                    if (opt.tfState) res.tfState = opt.tfState;
+                    return res;
                 }),
                 explanation: question.explanation || ""
             };
+            if (question.uiType) fullQuestionData.uiType = question.uiType;
 
             const encryptedBlock = await encryptSingleItem(fullQuestionData, studentKey);
             playQuestions.push({ encryptedBlock: encryptedBlock });
@@ -2529,6 +2546,7 @@ let sessionAssets = null;
     let currentQuestionIndex = 0;
     let currentDecryptedQuestion = null;
     let activeBlobUrls = [];
+    let tfPlayStates = [];
     let score = 0;
     let selectedOptionIndexes = []; 
     let isQuestionReviewed = false;
@@ -2683,6 +2701,7 @@ let sessionAssets = null;
             builderBackBtnEl.style.display = 'none';
             builderDownloadBtnEl.style.display = 'none';
             document.getElementById('results-done-btn').style.display = 'flex';
+            document.getElementById('later-btn').style.display = 'none';
             
             bottomActionBar.style.display = 'flex';
             document.getElementById('control-container').style.display = 'none';
@@ -2726,6 +2745,7 @@ let sessionAssets = null;
             currentQuestionIndex,
             score,
             selectedOptionIndexes,
+            tfPlayStates,
             isQuestionReviewed,
             quizMetadata
         };
@@ -2752,6 +2772,7 @@ let sessionAssets = null;
             } else {
                 selectedOptionIndexes = [];
             }
+            tfPlayStates = state.tfPlayStates || [];
             isQuestionReviewed = state.isQuestionReviewed || false;
             quizMetadata = state.quizMetadata || { name: "Quiz", desc: "" };
 
@@ -2864,6 +2885,7 @@ let sessionAssets = null;
                 } catch(err) {
                     alert("Incorrect Builder Password.");
                     resultsFileSelector.value = '';
+                    closePlaySetupModal();
                     return;
                 }
                 
@@ -2874,11 +2896,13 @@ let sessionAssets = null;
                 const masterQuestions = await decryptSingleItem(origData.builderProfile.encryptedPayload, teacherKey);
                 
                 resultsFileSelector.value = '';
+                closePlaySetupModal();
                 showTeacherResultsScreen(resultsObj, masterQuestions, origData);
 
             } catch (err) {
                 alert("Failed to process results file: " + err.message);
                 resultsFileSelector.value = '';
+                closePlaySetupModal();
             }
         };
         reader.readAsArrayBuffer(file);
@@ -2953,16 +2977,18 @@ let sessionAssets = null;
                         let text = "";
                         let image = "";
                         let explanation = "";
+                        let tfState = "none";
                         if (typeof opt === 'object') {
                             isCorrect = (opt.correct == 1 || opt.correct === true || opt.correct === 'true');
                             text = opt.option || opt.text || "";
                             image = opt.image || "";
                             explanation = opt.explanation || "";
+                            tfState = opt.tfState || "none";
                         } else {
                             text = opt;
                             isCorrect = (oIdx === 0);
                         }
-                        return { text, isCorrect, image, explanation, originalIndex: oIdx };
+                        return { text, isCorrect, image, explanation, tfState, originalIndex: oIdx };
                     });
 
                     const isLegacyStringArray = qData.options.every(opt => typeof opt !== 'object');
@@ -2985,13 +3011,14 @@ let sessionAssets = null;
                         .filter(i => i !== -1);
 
                     const optionsData = mappedOptions.map(opt => ({
-                        text: opt.text, image: opt.image, explanation: opt.explanation, originalIndex: opt.originalIndex, isCorrect: opt.isCorrect
+                        text: opt.text, image: opt.image, explanation: opt.explanation, originalIndex: opt.originalIndex, isCorrect: opt.isCorrect, tfState: opt.tfState
                     }));
 
                     return {
                         question: qData.question,
                         questionImage: qData.questionImage || "",
                         questionType,
+                        uiType: qData.uiType || '',
                         options: optionsData,
                         correctIndexes,
                         points: (typeof qData.points === 'number' && qData.points >= 1 && qData.points <= 10)
@@ -3153,9 +3180,11 @@ let sessionAssets = null;
                 }
 
                 await loadQuestionsIntoBuilder(rawData);
+                closePlaySetupModal();
 
             } catch (err) {
                 alert(`Import Failed: ${err.message}`);
+                closePlaySetupModal();
             } finally {
                 builderFileSelector.value = '';
             }
@@ -3293,6 +3322,7 @@ let sessionAssets = null;
         currentQuestionIndex = 0;
         score = 0;
         userAnswers = [];
+        userTimings = [];
         laterQueue = [];
         isSecondPass = false;
         
@@ -3407,6 +3437,7 @@ let sessionAssets = null;
 
     async function loadQuestion() {
         selectedOptionIndexes = [];
+        tfPlayStates = [];
         isQuestionReviewed = false;
         nextButtonEl.disabled = true;
 
@@ -3434,13 +3465,19 @@ let sessionAssets = null;
         currentDecryptedQuestion.questionImage = await resolveAssetToBlobUrl(currentDecryptedQuestion.questionImage);
         
         if (currentDecryptedQuestion.options) {
+            if (!currentDecryptedQuestion.uiType && currentDecryptedQuestion.options.some(o => o.tfState)) {
+                currentDecryptedQuestion.uiType = 'true_false';
+            }
             for (let i = 0; i < currentDecryptedQuestion.options.length; i++) {
                 currentDecryptedQuestion.options[i].image = await resolveAssetToBlobUrl(currentDecryptedQuestion.options[i].image);
+            }
+            if (currentDecryptedQuestion.uiType === 'true_false' && tfPlayStates.length === 0) {
+                tfPlayStates = new Array(currentDecryptedQuestion.options.length).fill('empty');
             }
         }
 
         buildOptionsDOM();
-        if (selectedOptionIndexes.length === 0 && !isQuestionReviewed) {
+        if (selectedOptionIndexes.length === 0 && tfPlayStates.every(s => s === 'empty' || s === 'none') && !isQuestionReviewed) {
             currentQuestionStartTime = Date.now();
         }
         saveProgressToStorage();
@@ -3626,15 +3663,23 @@ let sessionAssets = null;
         
         let hasNoCorrectAnswers = false;
         if (currentData.options) {
-            hasNoCorrectAnswers = currentData.options.filter(o => o.isCorrect || o.correct).length === 0;
+            hasNoCorrectAnswers = currentData.options.filter(o => o.isCorrect || o.correct || o.tfState === 'true').length === 0;
         }
 
         const pts = currentData.points || 1;
         progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
         const playPtsEl = document.getElementById('play-points');
         if (playPtsEl) {
-            if (pts > 1) {
-                playPtsEl.innerText = `${pts} points`;
+            let totalPts = pts;
+            if (currentData.uiType === 'true_false' && currentData.options) {
+                totalPts = pts * currentData.options.length;
+            }
+            if (totalPts > 1) {
+                if (currentData.uiType === 'true_false') {
+                    playPtsEl.innerText = `${totalPts} points (${pts} pt/answer)`;
+                } else {
+                    playPtsEl.innerText = `${pts} points`;
+                }
                 playPtsEl.style.display = 'block';
             } else {
                 playPtsEl.style.display = 'none';
@@ -3651,11 +3696,21 @@ let sessionAssets = null;
         }
 
         if (multiSelectHintEl) {
-            multiSelectHintEl.style.display = (isMultiple && !hasNoCorrectAnswers) ? 'flex' : 'none';
+            multiSelectHintEl.style.display = 'flex';
+            if (currentData.uiType === 'true_false') {
+                multiSelectHintEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale-icon lucide-scale"><path d="M12 3v18"/><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M7 21h10"/></svg><span>True or False</span>';
+            } else if (isMultiple) {
+                multiSelectHintEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-check-icon lucide-check-check"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg><span>Multiple Choice</span>';
+            } else {
+                multiSelectHintEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Single Choice</span>';
+            }
         }
 
-        if (hasNoCorrectAnswers) {
+        if (hasNoCorrectAnswers && currentData.uiType !== 'true_false') {
             nextButtonEl.disabled = false;
+        } else if (currentData.uiType === 'true_false') {
+            const allAnswered = tfPlayStates.length === currentData.options.length && tfPlayStates.every(s => s && s !== 'empty');
+            nextButtonEl.disabled = !allAnswered;
         }
         
         optionsContainerEl.innerHTML = '';
@@ -3663,10 +3718,39 @@ let sessionAssets = null;
             const button = document.createElement('button');
             button.classList.add('option-btn');
 
-            const numEl = document.createElement('span');
-            numEl.className = 'option-number';
-            numEl.innerText = index + 1;
-            button.appendChild(numEl);
+            let correctBtn = null;
+            if (currentData.uiType === 'true_false') {
+                correctBtn = document.createElement('button');
+                const currentState = tfPlayStates[index] || 'empty';
+                correctBtn.className = 'correct-toggle-btn tf-state-' + currentState;
+                
+                if (currentState === 'true') {
+                    correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
+                } else if (currentState === 'false') {
+                    correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
+                } else if (currentState === 'none') {
+                    correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
+                } else if (currentState === 'empty') {
+                    correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="var(--border-color)" stroke-width="2" fill="none"/></svg>';
+                }
+                
+                // Allow interaction unless reviewed
+                if (!isQuestionReviewed) {
+                    correctBtn.style.pointerEvents = 'none'; // let the row handle the click
+                    button.onclick = (e) => {
+                        e.stopPropagation();
+                        openPlayTFPopover(button, correctBtn, index, currentState);
+                    };
+                }
+                
+                button.appendChild(correctBtn);
+            } else {
+                const numEl = document.createElement('span');
+                numEl.className = 'option-number';
+                numEl.innerText = index + 1;
+                button.appendChild(numEl);
+                button.onclick = () => selectOption(index);
+            }
 
             const contentCol = document.createElement('div');
             contentCol.classList.add('option-content-col');
@@ -3689,9 +3773,116 @@ let sessionAssets = null;
                 button.appendChild(imgWrap);
             }
 
-            button.onclick = () => selectOption(index);
             optionsContainerEl.appendChild(button);
         });
+    }
+
+    let activePlayTFPopover = null;
+
+    function closePlayTFPopover() {
+        if (!activePlayTFPopover) return;
+        const { popover } = activePlayTFPopover;
+        popover.classList.remove('open');
+        setTimeout(() => { if (popover.parentNode) popover.parentNode.removeChild(popover); }, 160);
+        activePlayTFPopover = null;
+    }
+
+    document.addEventListener('click', (e) => {
+        if (activePlayTFPopover && !activePlayTFPopover.popover.contains(e.target) && !activePlayTFPopover.targetBtn.contains(e.target)) {
+            closePlayTFPopover();
+        }
+    });
+
+    function getPlayTFPopoverTop(index, anchorCenterY) {
+        const paddingTop = 5;
+        const btnH = 24;
+        const gap = 4;
+        const btnCenterYRelative = paddingTop + (btnH + gap) * index + btnH / 2;
+        return anchorCenterY - btnCenterYRelative;
+    }
+
+    function openPlayTFPopover(rowBtn, correctBtn, index, currentState) {
+        if (activePlayTFPopover) closePlayTFPopover();
+
+        const popover = document.createElement('div');
+        popover.className = 'tf-popover';
+
+        const btnTrue = document.createElement('button');
+        btnTrue.className = 'tf-btn tf-true';
+        btnTrue.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
+        btnTrue.onclick = (e) => { e.stopPropagation(); if (tfPlayStates[index] === 'true') closePlayTFPopover(); else selectPlayTFState(index, 'true', 0); };
+
+        const btnNone = document.createElement('button');
+        btnNone.className = 'tf-btn tf-none';
+        btnNone.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
+        btnNone.onclick = (e) => { e.stopPropagation(); if (tfPlayStates[index] === 'none') closePlayTFPopover(); else selectPlayTFState(index, 'none', 1); };
+
+        const btnFalse = document.createElement('button');
+        btnFalse.className = 'tf-btn tf-false';
+        btnFalse.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
+        btnFalse.onclick = (e) => { e.stopPropagation(); if (tfPlayStates[index] === 'false') closePlayTFPopover(); else selectPlayTFState(index, 'false', 2); };
+
+        popover.appendChild(btnTrue);
+        popover.appendChild(btnNone);
+        popover.appendChild(btnFalse);
+
+        const rect = correctBtn.getBoundingClientRect();
+        
+        // Append to body to avoid overflow issues
+        document.body.appendChild(popover);
+        activePlayTFPopover = { popover, targetBtn: rowBtn };
+
+        requestAnimationFrame(() => {
+            const popW = popover.offsetWidth || 36;
+            let left = rect.left + rect.width / 2 - popW / 2;
+            
+            let currentIndex = 1;
+            const actualState = tfPlayStates[index] || 'none';
+            if (actualState === 'true') currentIndex = 0;
+            if (actualState === 'false') currentIndex = 2;
+            
+            const anchorCenterY = rect.top + rect.height / 2;
+            const newTop = getPlayTFPopoverTop(currentIndex, anchorCenterY);
+            
+            popover.style.top = newTop + 'px';
+            popover.style.left = left + 'px';
+            
+            const paddingTop = 5;
+            const btnH = 24;
+            const gap = 4;
+            const originY = paddingTop + (btnH + gap) * currentIndex + btnH / 2;
+            popover.style.transformOrigin = `center ${originY}px`;
+            
+            popover.classList.add('open');
+        });
+    }
+
+    function selectPlayTFState(index, state, clickedIndex) {
+        tfPlayStates[index] = state;
+        buildOptionsDOM();
+
+        if (activePlayTFPopover) {
+            const { popover } = activePlayTFPopover;
+            const rowBtns = optionsContainerEl.querySelectorAll('.option-btn');
+            const rowBtn = rowBtns[index];
+            const anchorEl = rowBtn ? rowBtn.querySelector('.correct-toggle-btn') : null;
+            
+            if (anchorEl) {
+                const r = anchorEl.getBoundingClientRect();
+                const anchorCenterY = r.top + r.height / 2;
+                const newTop = getPlayTFPopoverTop(clickedIndex, anchorCenterY);
+                
+                popover.style.top = newTop + 'px';
+                
+                const paddingTop = 5;
+                const btnH = 24;
+                const gap = 4;
+                const originY = paddingTop + (btnH + gap) * clickedIndex + btnH / 2;
+                popover.style.transformOrigin = `center ${originY}px`;
+            }
+        }
+
+        saveProgressToStorage();
     }
 
     function addPlayExplanationIcons() {
@@ -3755,25 +3946,39 @@ let sessionAssets = null;
 
     async function handleMainAction() {
         if (!currentDecryptedQuestion) return;
+        const currentData = currentDecryptedQuestion;
+        const isTF = currentData.uiType === 'true_false';
 
         if (quizMetadata.mode === 'exam') {
             // Exam Mode: No review phase. Record answer, score, clean up, and advance immediately.
-            const chosen = [...selectedOptionIndexes].sort((a, b) => a - b);
+            const chosen = isTF ? [...tfPlayStates] : [...selectedOptionIndexes].sort((a, b) => a - b);
             userAnswers.push(chosen);
             userTimings.push(Date.now() - currentQuestionStartTime);
 
-            const currentData = currentDecryptedQuestion;
-            const correctIndexes = [];
-            if (currentData.options) {
+            let isFullyCorrect = false;
+            if (isTF) {
+                let tfScore = 0;
                 currentData.options.forEach((opt, idx) => {
-                    if (opt.isCorrect || opt.correct) correctIndexes.push(idx);
+                    const correctAns = opt.tfState || 'none';
+                    if (chosen[idx] === correctAns) {
+                        tfScore += 1;
+                    } else {
+                        tfScore -= 1;
+                    }
                 });
-            }
-
-            const isFullyCorrect = chosen.length === correctIndexes.length &&
-                chosen.every((v, i) => v === correctIndexes[i]);
-            if (isFullyCorrect) {
-                score += (currentData.points || 1);
+                score += tfScore;
+                isFullyCorrect = currentData.options.every((opt, idx) => chosen[idx] === (opt.tfState || 'none'));
+            } else {
+                const correctIndexes = [];
+                if (currentData.options) {
+                    currentData.options.forEach((opt, idx) => {
+                        if (opt.isCorrect || opt.correct || opt.tfState === 'true') correctIndexes.push(idx);
+                    });
+                }
+                isFullyCorrect = chosen.length === correctIndexes.length && chosen.every((v, i) => v === correctIndexes[i]);
+                if (isFullyCorrect) {
+                    score += (currentData.points || 1);
+                }
             }
 
             if (currentQuestionIndex < quizData.length - 1) {
@@ -3785,48 +3990,70 @@ let sessionAssets = null;
             // Practice / Open Mode
             if (!isQuestionReviewed) {
                 isQuestionReviewed = true;
-                const chosen = [...selectedOptionIndexes].sort((a, b) => a - b);
+                const chosen = isTF ? [...tfPlayStates] : [...selectedOptionIndexes].sort((a, b) => a - b);
                 userAnswers.push(chosen);
                 userTimings.push(Date.now() - currentQuestionStartTime);
 
-                const currentData = currentDecryptedQuestion;
-                const correctIndexes = [];
-                if (currentData.options) {
+                let isFullyCorrect = false;
+                let correctIndexes = [];
+                if (isTF) {
+                    let tfScore = 0;
                     currentData.options.forEach((opt, idx) => {
-                        if (opt.isCorrect || opt.correct) correctIndexes.push(idx);
+                        const correctAns = opt.tfState || 'none';
+                        if (chosen[idx] === correctAns) {
+                            tfScore += 1;
+                        } else {
+                            tfScore -= 1;
+                        }
                     });
-                }
-
-                const isFullyCorrect = chosen.length === correctIndexes.length &&
-                    chosen.every((v, i) => v === correctIndexes[i]);
-                if (isFullyCorrect) {
-                    score += (currentData.points || 1);
+                    score += tfScore;
+                    isFullyCorrect = currentData.options.every((opt, idx) => chosen[idx] === (opt.tfState || 'none'));
+                } else {
+                    if (currentData.options) {
+                        currentData.options.forEach((opt, idx) => {
+                            if (opt.isCorrect || opt.correct || opt.tfState === 'true') correctIndexes.push(idx);
+                        });
+                    }
+                    isFullyCorrect = chosen.length === correctIndexes.length && chosen.every((v, i) => v === correctIndexes[i]);
+                    if (isFullyCorrect) {
+                        score += (currentData.points || 1);
+                    }
                 }
 
                 const buttons = optionsContainerEl.querySelectorAll('.option-btn');
-                const hasNoCorrectAnswers = correctIndexes.length === 0;
+                const hasNoCorrectAnswers = !isTF && correctIndexes.length === 0;
 
                 buttons.forEach((btn, idx) => {
                     btn.classList.remove('selected');
                     btn.disabled = true;
 
-                    const wasChosen = chosen.includes(idx);
-                    const isCorrectOption = correctIndexes.includes(idx);
-
-                    if (hasNoCorrectAnswers) {
-                        if (wasChosen) {
-                            btn.classList.add('incorrect-state');
-                            btn.classList.add('was-chosen');
+                    if (isTF) {
+                        const correctAns = currentData.options[idx].tfState || 'none';
+                        const userAns = chosen[idx];
+                        if (userAns === correctAns) {
+                            btn.classList.add('correct-state');
                         } else {
-                            btn.classList.add('dimmed-state');
+                            btn.classList.add('incorrect-state');
                         }
                     } else {
-                        if (isCorrectOption) {
-                            btn.classList.add('correct-state');
-                        } else if (wasChosen && !isCorrectOption) {
-                            btn.classList.add('incorrect-state');
+                        const wasChosen = chosen.includes(idx);
+                        const isCorrectOption = correctIndexes.includes(idx);
+
+                        if (hasNoCorrectAnswers) {
+                            if (wasChosen) {
+                                btn.classList.add('incorrect-state');
+                                btn.classList.add('was-chosen');
+                            } else {
+                                btn.classList.add('dimmed-state');
+                            }
                         } else {
-                            btn.classList.add('dimmed-state');
+                            if (isCorrectOption) {
+                                btn.classList.add('correct-state');
+                            } else if (wasChosen && !isCorrectOption) {
+                                btn.classList.add('incorrect-state');
+                            } else {
+                                btn.classList.add('dimmed-state');
+                            }
                         }
 
                         if (wasChosen) {
@@ -3849,6 +4076,7 @@ let sessionAssets = null;
     }
 
     async function showResults() {
+        clearInterval(playTimerInterval);
         clearStorage();
 
         const gameContent = document.getElementById('quiz-game');
@@ -3901,8 +4129,54 @@ let sessionAssets = null;
 
         scoreCircleEl.style.display = 'flex';
         // Practice or Open mode
-        const maxPoints = quizData.reduce((sum, q) => sum + (q.points || 1), 0);
-        const earnedPoints = score; 
+        let maxPoints = 0;
+        let earnedPoints = 0;
+
+        for (let qIdx = 0; qIdx < quizData.length; qIdx++) {
+            const rawData = quizData[qIdx];
+            let data = rawData;
+            
+            if (rawData.encryptedBlock && sessionCryptoKey) {
+                try {
+                    data = await decryptSingleItem(rawData.encryptedBlock, sessionCryptoKey);
+                } catch(e) { continue; }
+            }
+            
+            if (!data.uiType && data.options && data.options.some(o => o.tfState)) {
+                data.uiType = 'true_false';
+            }
+            
+            const chosen = Array.isArray(userAnswers[qIdx]) ? userAnswers[qIdx] : (userAnswers[qIdx] != null ? [userAnswers[qIdx]] : []);
+            const isNewTF = data.uiType === 'true_false' && (chosen.length === 0 || typeof chosen[0] === 'string');
+
+            if (isNewTF) {
+                const ptValue = (data.points || 1);
+                maxPoints += (data.options ? data.options.length * ptValue : ptValue);
+                if (chosen.length > 0) {
+                    let qScore = 0;
+                    data.options.forEach((opt, idx) => {
+                        if (chosen[idx] === (opt.tfState || 'none')) qScore += ptValue;
+                    });
+                    earnedPoints += qScore;
+                }
+            } else {
+                maxPoints += (data.points || 1);
+                if (chosen.length > 0) {
+                    const correctIndexes = [];
+                    if (data.options) {
+                        data.options.forEach((opt, idx) => {
+                            if (opt.isCorrect || opt.correct || opt.tfState === 'true') correctIndexes.push(idx);
+                        });
+                    }
+                    const chosenSorted = [...chosen].sort((a, b) => a - b);
+                    const correctSorted = [...correctIndexes].sort((a, b) => a - b);
+                    if (chosenSorted.length === correctSorted.length && chosenSorted.every((v, i) => v === correctSorted[i])) {
+                        earnedPoints += (data.points || 1);
+                    }
+                }
+            }
+        }
+
         const percentage = maxPoints > 0 ? Math.round((earnedPoints / maxPoints) * 100) : 0;
 
         const hasWeightedQuestions = quizData.some(q => (q.points || 1) > 1);
@@ -3938,18 +4212,30 @@ let sessionAssets = null;
                 }
             }
             
-            const chosen = Array.isArray(userAnswers[qIdx]) ? userAnswers[qIdx] : (userAnswers[qIdx] != null ? [userAnswers[qIdx]] : []);
-            const correctIndexes = [];
-            if (data.options) {
-                data.options.forEach((opt, idx) => {
-                    if (opt.isCorrect || opt.correct) correctIndexes.push(idx);
-                });
+            if (!data.uiType && data.options && data.options.some(o => o.tfState)) {
+                data.uiType = 'true_false';
             }
             
-            const chosenSorted = [...chosen].sort((a, b) => a - b);
-            const correctSorted = [...correctIndexes].sort((a, b) => a - b);
-            if (chosenSorted.length === correctSorted.length && chosenSorted.every((v, i) => v === correctSorted[i])) {
-                correctCount++;
+            const chosen = Array.isArray(userAnswers[qIdx]) ? userAnswers[qIdx] : (userAnswers[qIdx] != null ? [userAnswers[qIdx]] : []);
+            const isNewTF = data.uiType === 'true_false' && (chosen.length === 0 || typeof chosen[0] === 'string');
+
+            const correctIndexes = [];
+            let isFullyCorrect = false;
+
+            if (isNewTF) {
+                isFullyCorrect = data.options.every((opt, idx) => chosen[idx] === (opt.tfState || 'none'));
+                if (isFullyCorrect) correctCount++;
+            } else {
+                if (data.options) {
+                    data.options.forEach((opt, idx) => {
+                        if (opt.isCorrect || opt.correct || opt.tfState === 'true') correctIndexes.push(idx);
+                    });
+                }
+                const chosenSorted = [...chosen].sort((a, b) => a - b);
+                const correctSorted = [...correctIndexes].sort((a, b) => a - b);
+                if (chosenSorted.length === correctSorted.length && chosenSorted.every((v, i) => v === correctSorted[i])) {
+                    correctCount++;
+                }
             }
 
             const itemDiv = document.createElement('div');
@@ -3969,13 +4255,63 @@ let sessionAssets = null;
                 }
             }
 
-            const timeSpentMs = userTimings && userTimings[qIdx] ? userTimings[qIdx] : 0;
-            const timeSpentStr = timeSpentMs > 0 ? `<div style="font-size:13px;color:var(--text-tertiary);margin-top:4px;font-weight:400;">Time: ${(timeSpentMs / 1000).toFixed(1).replace('.', ',')}s</div>` : '';
-
             const qText = document.createElement('p');
             qText.className = 'review-question-text';
-            qText.innerHTML = `<strong>${qIdx + 1}.</strong> ${data.question || data.questionText || ""}${timeSpentStr}`;
+            qText.innerHTML = `<strong>${qIdx + 1}.</strong> ${data.question || data.questionText || ""}`;
+            
+            const qHasExpl = data.explanation && (getExplText(data.explanation) || getExplImage(data.explanation));
+            if (qHasExpl) {
+                const explBtn = document.createElement('button');
+                explBtn.className = 'play-explanation-btn';
+                explBtn.title = 'View explanation';
+                explBtn.innerHTML = EXPLANATION_SVG;
+                explBtn.style.display = 'inline-flex';
+                explBtn.style.verticalAlign = 'middle';
+                explBtn.style.marginTop = '-2px';
+                explBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    openExplanationViewModal("Question " + (qIdx + 1), data.explanation);
+                };
+                qText.appendChild(explBtn);
+            }
+            
             itemDiv.appendChild(qText);
+
+            const isMultiple = data.questionType === 'multiple';
+            const typeHeader = document.createElement('div');
+            typeHeader.style.display = 'flex';
+            typeHeader.style.flexDirection = 'column';
+            typeHeader.style.gap = '4px';
+            typeHeader.style.marginBottom = '12px';
+
+            const typeRow = document.createElement('div');
+            typeRow.style.display = 'flex';
+            typeRow.style.alignItems = 'center';
+            typeRow.style.gap = '6px';
+            typeRow.style.fontSize = '12px';
+            typeRow.style.color = 'var(--text-tertiary)';
+            typeRow.style.fontWeight = '500';
+
+            if (isNewTF) {
+                typeRow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M7 21h10"/></svg><span>True or False</span>';
+            } else if (isMultiple) {
+                typeRow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg><span>Multiple Choice</span>';
+            } else {
+                typeRow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Single Choice</span>';
+            }
+            
+            typeHeader.appendChild(typeRow);
+
+            const timeSpentMs = userTimings && userTimings[qIdx] ? userTimings[qIdx] : 0;
+            const displayTime = timeSpentMs < 86400000 ? timeSpentMs : 0;
+            const timeRow = document.createElement('div');
+            timeRow.style.fontSize = '12px';
+            timeRow.style.color = 'var(--text-tertiary)';
+            timeRow.style.fontWeight = '400';
+            timeRow.innerText = `Time: ${(displayTime / 1000).toFixed(1).replace('.', ',')}s`;
+            typeHeader.appendChild(timeRow);
+
+            itemDiv.appendChild(typeHeader);
 
             const choicesDiv = document.createElement('div');
             choicesDiv.className = 'review-choices';
@@ -3986,10 +4322,35 @@ let sessionAssets = null;
                     const badge = document.createElement('div');
                     badge.className = 'review-badge';
 
-                    const numEl = document.createElement('span');
-                    numEl.className = 'option-number';
-                    numEl.innerText = oIdx + 1;
-                    badge.appendChild(numEl);
+                    let userAns = null;
+                    let correctAns = null;
+
+                    if (isNewTF) {
+                        userAns = chosen[oIdx] || 'none';
+                        correctAns = option.tfState || 'none';
+                        
+                        const stateIcon = document.createElement('div');
+                        stateIcon.className = 'correct-toggle-btn tf-state-' + userAns;
+                        stateIcon.style.pointerEvents = 'none';
+                        stateIcon.style.marginRight = '12px';
+                        stateIcon.style.marginLeft = '4px';
+                        stateIcon.style.flexShrink = '0';
+                        stateIcon.style.position = 'relative';
+
+                        if (userAns === 'true') {
+                            stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
+                        } else if (userAns === 'false') {
+                            stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
+                        } else {
+                            stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
+                        }
+                        badge.appendChild(stateIcon);
+                    } else {
+                        const numEl = document.createElement('span');
+                        numEl.className = 'option-number';
+                        numEl.innerText = oIdx + 1;
+                        badge.appendChild(numEl);
+                    }
 
                     const textCol = document.createElement('div');
                     textCol.className = 'review-badge-text-col';
@@ -4024,14 +4385,34 @@ let sessionAssets = null;
                         }
                     }
 
-                    if (isCorrectOption) {
-                        badge.classList.add('correct-review');
-                    } else if (wasChosen && !isCorrectOption) {
-                        badge.classList.add('incorrect-review');
+                    if (isNewTF) {
+                        if (userAns === correctAns) {
+                            badge.classList.add('correct-review');
+                        } else {
+                            badge.classList.add('incorrect-review');
+                        }
+                    } else {
+                        if (isCorrectOption) {
+                            badge.classList.add('correct-review');
+                        } else if (wasChosen && !isCorrectOption) {
+                            badge.classList.add('incorrect-review');
+                        }
+                        if (wasChosen) {
+                            badge.classList.add('was-chosen');
+                        }
                     }
 
-                    if (wasChosen) {
-                        badge.classList.add('was-chosen');
+                    const hasExpl = option.explanation && (getExplText(option.explanation) || getExplImage(option.explanation));
+                    if (hasExpl) {
+                        const explBtn = document.createElement('button');
+                        explBtn.className = 'play-explanation-btn';
+                        explBtn.title = 'View explanation';
+                        explBtn.innerHTML = EXPLANATION_SVG;
+                        explBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            openExplanationViewModal(option.text || option.option, option.explanation);
+                        };
+                        badge.appendChild(explBtn);
                     }
 
                     choicesDiv.appendChild(badge);
@@ -4069,6 +4450,7 @@ let sessionAssets = null;
     }
 
     function resetToUpload() {
+        clearInterval(playTimerInterval);
         clearStorage();
         localStorage.removeItem('app_mode');
         
@@ -4388,11 +4770,57 @@ let sessionAssets = null;
         });
     }
 
-    window.handleNativeAddQuestion = function(select) {
-        if (!select.value) return;
-        const type = select.value;
-        select.value = ""; // Reset
-        addBuilderQuestion(type);
+    let activeAddQuestionPopover = null;
+
+    function closeAddQuestionPopover() {
+        if (!activeAddQuestionPopover) return;
+        const { popover } = activeAddQuestionPopover;
+        popover.classList.remove('open');
+        setTimeout(() => { if (popover.parentNode) popover.parentNode.removeChild(popover); }, 160);
+        activeAddQuestionPopover = null;
+    }
+
+    window.openAddQuestionPopover = function(triggerEl) {
+        if (activeAddQuestionPopover) {
+            closeAddQuestionPopover();
+            return;
+        }
+
+        const popover = document.createElement('div');
+        popover.className = 'add-question-popover';
+
+        const mcBtn = document.createElement('button');
+        mcBtn.className = 'add-q-btn';
+        mcBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-check-icon lucide-check-check"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg> <span>Multiple Choice</span>`;
+        mcBtn.onclick = (e) => { e.stopPropagation(); addBuilderQuestion('multiple_choice'); closeAddQuestionPopover(); };
+
+        const tfBtn = document.createElement('button');
+        tfBtn.className = 'add-q-btn';
+        tfBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale-icon lucide-scale"><path d="M12 3v18"/><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M7 21h10"/></svg> <span>True or False</span>`;
+        tfBtn.onclick = (e) => { e.stopPropagation(); addBuilderQuestion('true_false'); closeAddQuestionPopover(); };
+
+        popover.appendChild(mcBtn);
+        popover.appendChild(tfBtn);
+
+        document.body.appendChild(popover);
+        activeAddQuestionPopover = { popover, targetBtn: triggerEl };
+
+        requestAnimationFrame(() => {
+            const r = triggerEl.getBoundingClientRect();
+            const popW = popover.offsetWidth || 180;
+            const popH = popover.offsetHeight || 90;
+            
+            let left = r.left - 16;
+            let top = r.top - popH - 12;
+            
+            if (left < 10) left = 10;
+            if (left + popW > window.innerWidth - 10) left = window.innerWidth - popW - 10;
+
+            popover.style.top = top + 'px';
+            popover.style.left = left + 'px';
+            popover.style.transformOrigin = `24px bottom`;
+            popover.classList.add('open');
+        });
     };
 
     function removeBuilderQuestion(qId) {
@@ -4826,20 +5254,27 @@ let sessionAssets = null;
         const popover = document.createElement('div');
         popover.className = 'tf-popover';
 
+        const getCurState = () => {
+            const question = builderQuestions.find(q => q.id === qId);
+            if (!question) return 'none';
+            const option = question.options.find(o => o.id === optId);
+            return option ? (option.tfState || 'none') : 'none';
+        };
+
         const btnTrue = document.createElement('button');
         btnTrue.className = 'tf-btn tf-true';
         btnTrue.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
-        btnTrue.onclick = () => { selectTFState(popover, anchorEl, qId, optId, 'true', 0); };
+        btnTrue.onclick = (e) => { e.stopPropagation(); if (getCurState() === 'true') closeTFPopover(); else selectTFState(popover, anchorEl, qId, optId, 'true', 0); };
 
         const btnNone = document.createElement('button');
         btnNone.className = 'tf-btn tf-none';
         btnNone.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
-        btnNone.onclick = () => { selectTFState(popover, anchorEl, qId, optId, 'none', 1); };
+        btnNone.onclick = (e) => { e.stopPropagation(); if (getCurState() === 'none') closeTFPopover(); else selectTFState(popover, anchorEl, qId, optId, 'none', 1); };
 
         const btnFalse = document.createElement('button');
         btnFalse.className = 'tf-btn tf-false';
         btnFalse.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
-        btnFalse.onclick = () => { selectTFState(popover, anchorEl, qId, optId, 'false', 2); };
+        btnFalse.onclick = (e) => { e.stopPropagation(); if (getCurState() === 'false') closeTFPopover(); else selectTFState(popover, anchorEl, qId, optId, 'false', 2); };
 
         popover.appendChild(btnTrue);
         popover.appendChild(btnNone);
@@ -4855,8 +5290,9 @@ let sessionAssets = null;
             let left = r.left + r.width / 2 - popW / 2;
             
             let currentIndex = 1;
-            if (currentState === 'true') currentIndex = 0;
-            if (currentState === 'false') currentIndex = 2;
+            const actualState = getCurState();
+            if (actualState === 'true') currentIndex = 0;
+            if (actualState === 'false') currentIndex = 2;
             
             const anchorCenterY = r.top + r.height / 2;
             let top = getTFPopoverTop(currentIndex, anchorCenterY);
@@ -4943,17 +5379,27 @@ let sessionAssets = null;
                 closeTFPopover();
             }
         }
+        if (activeAddQuestionPopover) {
+            if (!activeAddQuestionPopover.targetBtn.contains(e.target) && !activeAddQuestionPopover.popover.contains(e.target)) {
+                e.stopPropagation();
+                closeAddQuestionPopover();
+            }
+        }
     }, true);
 
     // Close the score popover whenever the user scrolls or resizes (pill position becomes stale).
     window.addEventListener('scroll', () => {
         if (activeScorePopover) closeScorePopover();
         if (activeTFPopover) closeTFPopover();
+        if (activeAddQuestionPopover) closeAddQuestionPopover();
+        if (typeof activePlayTFPopover !== 'undefined' && activePlayTFPopover) closePlayTFPopover();
     }, { passive: true, capture: true });
 
     window.addEventListener('resize', () => {
         if (activeScorePopover) closeScorePopover();
         if (activeTFPopover) closeTFPopover();
+        if (activeAddQuestionPopover) closeAddQuestionPopover();
+        if (typeof activePlayTFPopover !== 'undefined' && activePlayTFPopover) closePlayTFPopover();
     });
 
     function renderBuilderQuestions() {
@@ -5796,9 +6242,11 @@ let sessionAssets = null;
                             };
                             if (o.image) optObj.image = o.image;
                             if (o.explanation) optObj.explanation = o.explanation; 
+                            if (o.tfState) optObj.tfState = o.tfState;
                             return optObj;
                         })
                 };
+                if (q.uiType) qObj.uiType = q.uiType;
                 if (q.questionImage) qObj.questionImage = q.questionImage;
                 return qObj;
             })
@@ -6253,30 +6701,114 @@ let sessionAssets = null;
             const studentAnswers = Array.isArray(resultsObj.answers[qIdx]) ? resultsObj.answers[qIdx] : (resultsObj.answers[qIdx] != null ? [resultsObj.answers[qIdx]] : []);
             const timeSpentMs = resultsObj.timings && resultsObj.timings[qIdx] ? resultsObj.timings[qIdx] : 0;
             const timeSpentStr = timeSpentMs > 0 ? `<div style="font-size:13px;color:var(--text-tertiary);margin-top:4px;font-weight:400;">Time: ${(timeSpentMs / 1000).toFixed(1).replace('.', ',')}s</div>` : '';
-            
+            const isNewTF = q.uiType === 'true_false' && (studentAnswers.length === 0 || typeof studentAnswers[0] === 'string');
             const correctIndexes = [];
-            if (q.options) {
-                q.options.forEach((opt, oIdx) => {
-                    if (opt.isCorrect || opt.correct) correctIndexes.push(oIdx);
-                });
+            let isFullyCorrect = false;
+
+            if (isNewTF) {
+                const ptValue = (q.points || 1);
+                maxPoints += (q.options ? q.options.length * ptValue : ptValue);
+                isFullyCorrect = q.options.every((opt, oIdx) => studentAnswers[oIdx] === (opt.tfState || 'none'));
+                if (isFullyCorrect) correctCount++;
+                if (studentAnswers.length > 0) {
+                    let qScore = 0;
+                    q.options.forEach((opt, oIdx) => {
+                        if (studentAnswers[oIdx] === (opt.tfState || 'none')) qScore += ptValue;
+                    });
+                    earnedPoints += qScore;
+                }
+            } else {
+                maxPoints += (q.points || 1);
+                if (q.options) {
+                    q.options.forEach((opt, oIdx) => {
+                        if (opt.isCorrect || opt.correct || opt.tfState === 'true') correctIndexes.push(oIdx);
+                    });
+                }
+                isFullyCorrect = studentAnswers.length === correctIndexes.length &&
+                    [...studentAnswers].sort((a,b) => a-b).every((v, i) => v === [...correctIndexes].sort((a,b) => a-b)[i]);
+                if (isFullyCorrect) {
+                    correctCount++;
+                    earnedPoints += (q.points || 1);
+                }
             }
-            
-            const isFullyCorrect = studentAnswers.length === correctIndexes.length &&
-                [...studentAnswers].sort((a,b) => a-b).every((v, i) => v === [...correctIndexes].sort((a,b) => a-b)[i]);
-            
-            if (isFullyCorrect) {
-                correctCount++;
-                earnedPoints += (q.points || 1);
-            }
-            maxPoints += (q.points || 1);
             
             const itemDiv = document.createElement('div');
             itemDiv.className = 'review-item';
             
             const qText = document.createElement('p');
             qText.className = 'review-question-text';
-            qText.innerHTML = `<strong>${qIdx + 1}.</strong> ${q.question || q.questionText || ""} <span style="font-size:12px;opacity:0.7">${timeSpentStr}</span>`;
+            qText.innerHTML = `<strong>${qIdx + 1}.</strong> ${q.question || q.questionText || ""}`;
+            
+            const qHasExpl = q.explanation && (getExplText(q.explanation) || getExplImage(q.explanation));
+            if (qHasExpl) {
+                const explBtn = document.createElement('button');
+                explBtn.className = 'play-explanation-btn';
+                explBtn.title = 'View explanation';
+                explBtn.innerHTML = EXPLANATION_SVG;
+                explBtn.style.display = 'inline-flex';
+                explBtn.style.verticalAlign = 'middle';
+                explBtn.style.marginTop = '-2px';
+                explBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    openExplanationViewModal("Question " + (qIdx + 1), q.explanation);
+                };
+                qText.appendChild(explBtn);
+            }
+            
             itemDiv.appendChild(qText);
+
+            const isMultiple = q.questionType === 'multiple';
+            const typeHeader = document.createElement('div');
+            typeHeader.style.display = 'flex';
+            typeHeader.style.flexDirection = 'column';
+            typeHeader.style.gap = '4px';
+            typeHeader.style.marginBottom = '12px';
+
+            const typeRow = document.createElement('div');
+            typeRow.style.display = 'flex';
+            typeRow.style.alignItems = 'center';
+            typeRow.style.gap = '6px';
+            typeRow.style.fontSize = '12px';
+            typeRow.style.color = 'var(--text-tertiary)';
+            typeRow.style.fontWeight = '500';
+
+            if (isNewTF) {
+                typeRow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M7 21h10"/></svg><span>True or False</span>';
+            } else if (isMultiple) {
+                typeRow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg><span>Multiple Choice</span>';
+            } else {
+                typeRow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Single Choice</span>';
+            }
+            
+            typeHeader.appendChild(typeRow);
+
+            const timeRow = document.createElement('div');
+            timeRow.style.fontSize = '12px';
+            timeRow.style.color = 'var(--text-tertiary)';
+            timeRow.style.fontWeight = '400';
+            timeRow.innerText = `Time: ${(timeSpentMs / 1000).toFixed(1).replace('.', ',')}s`;
+            typeHeader.appendChild(timeRow);
+
+            itemDiv.appendChild(typeHeader);
+            
+            if (q.questionImage) {
+                let qImgUrl = "";
+                try {
+                    if (typeof q.questionImage === 'string' && q.questionImage.startsWith('data:')) {
+                        qImgUrl = q.questionImage;
+                    } else {
+                        qImgUrl = q.questionImage;
+                    }
+                } catch(e) {}
+                
+                if (qImgUrl) {
+                    const qImg = document.createElement('img');
+                    qImg.src = qImgUrl;
+                    qImg.className = 'review-q-img';
+                    qImg.onclick = () => openLightbox(qImgUrl);
+                    itemDiv.appendChild(qImg);
+                }
+            }
             
             const choicesDiv = document.createElement('div');
             choicesDiv.className = 'review-choices';
@@ -6287,22 +6819,65 @@ let sessionAssets = null;
                     const badge = document.createElement('div');
                     badge.className = 'review-badge';
 
-                    const numEl = document.createElement('span');
-                    numEl.className = 'option-number';
-                    numEl.innerText = oIdx + 1;
-                    badge.appendChild(numEl);
+                    let userAns = null;
+                    let correctAns = null;
 
-                    const textCol = document.createElement('div');
-                    textCol.className = 'review-badge-text-col';
+                    if (isNewTF) {
+                        userAns = studentAnswers[oIdx] || 'none';
+                        correctAns = opt.tfState || 'none';
+                        
+                        const stateIcon = document.createElement('div');
+                        stateIcon.className = 'correct-toggle-btn tf-state-' + userAns;
+                        stateIcon.style.pointerEvents = 'none';
+                        stateIcon.style.marginRight = '12px';
+                        stateIcon.style.marginLeft = '4px';
+                        stateIcon.style.flexShrink = '0';
+                        stateIcon.style.position = 'relative';
 
+                        if (userAns === 'true') {
+                            stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
+                        } else if (userAns === 'false') {
+                            stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
+                        } else {
+                            stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
+                        }
+                        badge.appendChild(stateIcon);
+                    } else {
+                        const numEl = document.createElement('span');
+                        numEl.className = 'option-number';
+                        numEl.innerText = oIdx + 1;
+                        badge.appendChild(numEl);
+                    }
+
+                    const contentCol = document.createElement('div');
+                    contentCol.style.flex = '1';
+                    
                     const textSpan = document.createElement('span');
-                    textSpan.innerText = opt.option || opt.text || "";
-                    textCol.appendChild(textSpan);
+                    textSpan.innerText = opt.text || opt.option || "";
+                    contentCol.appendChild(textSpan);
+                    
+                    badge.appendChild(contentCol);
 
-                    const wasChosen = studentAnswers.includes(oIdx);
-                    const isCorrectOption = correctIndexes.includes(oIdx);
+                    if (isNewTF) {
+                        if (userAns === correctAns) {
+                            badge.classList.add('correct-review');
+                        } else {
+                            badge.classList.add('incorrect-review');
+                        }
+                    } else {
+                        const wasChosen = studentAnswers.includes(oIdx);
+                        const isCorrectOption = correctIndexes.includes(oIdx);
 
-                    badge.appendChild(textCol);
+                        if (isCorrectOption) {
+                            badge.classList.add('correct-review');
+                        } else if (wasChosen && !isCorrectOption) {
+                            badge.classList.add('incorrect-review');
+                        }
+
+                        if (wasChosen) {
+                            badge.classList.add('was-chosen');
+                        }
+                    }
 
                     if (opt.image) {
                         let optImgUrl = "";
@@ -6340,6 +6915,19 @@ let sessionAssets = null;
 
                     if (wasChosen) {
                         badge.classList.add('was-chosen');
+                    }
+
+                    const hasExpl = opt.explanation && (getExplText(opt.explanation) || getExplImage(opt.explanation));
+                    if (hasExpl) {
+                        const explBtn = document.createElement('button');
+                        explBtn.className = 'play-explanation-btn';
+                        explBtn.title = 'View explanation';
+                        explBtn.innerHTML = EXPLANATION_SVG;
+                        explBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            openExplanationViewModal(opt.text || opt.option, opt.explanation);
+                        };
+                        badge.appendChild(explBtn);
                     }
 
                     choicesDiv.appendChild(badge);
