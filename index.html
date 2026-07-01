@@ -267,8 +267,10 @@
         .options-container .option-btn:first-child { margin-top: 0; border-top-left-radius: 16px; border-top-right-radius: 16px; }
         .options-container .option-btn:last-child { margin-bottom: 0; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
         .option-btn:not(:last-child)::after { content: ''; position: absolute; left: 48px; right: 14px; bottom: 0; height: 1px; background-color: var(--separator); }
+        .option-btn.tf-active-row:not(:last-child)::after,
         .option-btn.selected:not(:last-child)::after,
         .option-btn.correct-state:not(:last-child)::after, .option-btn.incorrect-state:not(:last-child)::after, .option-btn.missed-state:not(:last-child)::after,
+        .option-btn:has(+ .option-btn.tf-active-row)::after,
         .option-btn:has(+ .option-btn.selected)::after,
         .option-btn:has(+ .option-btn.correct-state)::after, .option-btn:has(+ .option-btn.incorrect-state)::after, .option-btn:has(+ .option-btn.missed-state)::after { display: none; }
 
@@ -351,11 +353,29 @@
         .img-modal-overlay.active .img-modal-content { transform: scale(1) translateY(0); opacity: 1; }
         .img-modal-image { display: block; max-width: 100%; max-height: 90vh; object-fit: contain; }
 
-        .tf-popover { position: fixed; z-index: 9999; pointer-events: auto; background: var(--bg-alert); border: 1px solid var(--alert-border); border-radius: 999px; box-shadow: 0 8px 28px rgba(0,0,0,0.18); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0; visibility: hidden; transform: scale(0.88); transition: opacity 0.15s ease, transform 0.15s ease, top 0.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0.15s; width: 32px; box-sizing: border-box; }
-        .tf-popover.open { opacity: 1; visibility: visible; transform: scale(1); transition: opacity 0.15s ease, transform 0.15s ease, top 0.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0s; }
+        .tf-popover { position: absolute; z-index: 9999; pointer-events: auto; background: var(--bg-alert); border: 1px solid var(--alert-border); border-radius: 999px; box-shadow: 0 12px 40px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0; visibility: hidden; transform: scale(0.88); transition: opacity 0.15s ease, transform 0.15s ease, top 0.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0.15s; width: 32px; box-sizing: border-box; }
+        .tf-popover.open { opacity: 1; visibility: visible; transform: scale(1.02); transition: opacity 0.15s ease, transform 0.15s ease, top 0.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 0s linear 0s; }
+        
+        .builder-option-row.tf-active-row, .option-btn.tf-active-row { 
+            z-index: 9998; 
+            position: relative; 
+            transform: scale(1.02);
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+        .option-btn.tf-active-row { 
+            background-color: var(--bg-card) !important; 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08); 
+        }
+        .builder-option-row.tf-active-row .row-bg { 
+            background-color: var(--bg-card) !important; 
+            bottom: 0; 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08); 
+        }
+        .builder-qa-panel:has(.tf-active-row) { overflow: visible; }
+        .builder-option-row.tf-active-row::after, .builder-option-row:has(+ .builder-option-row.tf-active-row)::after { opacity: 0; display: none !important; }
         
         .add-question-popover {
-            position: fixed; z-index: 10000;
+            position: absolute; z-index: 10000;
             background: var(--bg-alert); border: 1px solid var(--alert-border); border-radius: 14px;
             box-shadow: 0 12px 48px rgba(0,0,0,0.25); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
             display: flex; flex-direction: column; opacity: 0; visibility: hidden;
@@ -372,7 +392,7 @@
         .add-q-btn:active { background: rgba(0,0,0,0.05); }
         @media (prefers-color-scheme: dark) { .add-q-btn:active { background: rgba(255,255,255,0.05); } }
         .add-q-btn svg { flex-shrink: 0; color: var(--text-main); }
-        @media (prefers-color-scheme: dark) { .tf-popover { box-shadow: 0 8px 28px rgba(0,0,0,0.5); } }
+        @media (prefers-color-scheme: dark) { .tf-popover { box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.5); } }
         .tf-btn { width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease, opacity 0.1s ease; padding: 0; flex-shrink: 0; background: transparent; }
         .tf-btn:active { transform: scale(0.9); opacity: 0.8; }
         .tf-btn svg { width: 24px; height: 24px; pointer-events: none; }
@@ -1031,9 +1051,9 @@
         .score-pill-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
         .score-pill-btn:active { opacity: 0.7; }
 
-        #score-popover-root { position: fixed; top: 0; left: 0; width: 0; height: 0; overflow: visible; z-index: 9999; pointer-events: none; }
+        #score-popover-root { position: absolute; top: 0; left: 0; width: 0; height: 0; overflow: visible; z-index: 9999; pointer-events: none; }
         #score-popover-root > .score-popover { pointer-events: auto; }
-        .score-popover { position: fixed; z-index: 9999; background: rgba(234, 245, 254, 0.9); border: 1px solid rgba(9, 124, 249, 0.15); border-radius: 999px; box-shadow: 0 8px 28px rgba(0,0,0,0.18); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 0; white-space: nowrap; opacity: 0; visibility: hidden; transform: scale(0.88); transform-origin: center center; transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s; width: 36px; }
+        .score-popover { position: absolute; z-index: 9999; background: rgba(234, 245, 254, 0.9); border: 1px solid rgba(9, 124, 249, 0.15); border-radius: 999px; box-shadow: 0 8px 28px rgba(0,0,0,0.18); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 0; white-space: nowrap; opacity: 0; visibility: hidden; transform: scale(0.88); transform-origin: center center; transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s; width: 36px; }
         .score-popover.open { opacity: 1; visibility: visible; transform: scale(1); transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0s; }
         @media (prefers-color-scheme: dark) { .score-popover { background: rgba(37, 45, 53, 0.9); border-color: rgba(24, 78, 125, 0.3); box-shadow: 0 8px 28px rgba(0,0,0,0.5); } }
         .score-stepper { display: flex; flex-direction: column; align-items: center; gap: 0; width: 100%; }
@@ -1148,21 +1168,45 @@
         
         .builder-qa-panel.mode-select .builder-option-row.tf-state-true .row-bg {
             background-color: var(--sel-selected-bg) !important;
-            box-shadow: inset 0 0 0 2px var(--sel-selected-border);
+            box-shadow: inset 0 0 0 2px var(--sel-selected-border), 0 4px 16px rgba(0,0,0,0.06);
         }
         
         .builder-qa-panel.mode-select .builder-option-row.tf-state-false .row-bg {
             background-color: var(--sel-false-bg) !important;
-            box-shadow: inset 0 0 0 2px var(--sel-false-border);
+            box-shadow: inset 0 0 0 2px var(--sel-false-border), 0 4px 16px rgba(0,0,0,0.06);
         }
         
         .builder-qa-panel.mode-select .builder-option-row.select-is-correct .row-bg {
             background-color: var(--sel-selected-bg) !important;
-            box-shadow: inset 0 0 0 2px var(--sel-selected-border);
+            box-shadow: inset 0 0 0 2px var(--sel-selected-border), 0 4px 16px rgba(0,0,0,0.06);
+        }
+        
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-true,
+        .builder-qa-panel.mode-select .builder-option-row.tf-state-false,
+        .builder-qa-panel.mode-select .builder-option-row.select-is-correct {
+            z-index: 2;
+        }
+
+        body .builder-qa-panel.mode-select .builder-option-row.tf-active-row {
+            z-index: 9998 !important;
+        }
+
+        body .builder-qa-panel.mode-select .builder-option-row.dragging {
+            z-index: 9999 !important;
+        }
+
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-false.tf-active-row .row-bg {
+            background-color: var(--sel-false-bg) !important;
+            box-shadow: inset 0 0 0 2px var(--sel-false-border), 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08) !important;
+        }
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-true.tf-active-row .row-bg,
+        body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.select-is-correct.tf-active-row .row-bg {
+            background-color: var(--sel-selected-bg) !important;
+            box-shadow: inset 0 0 0 2px var(--sel-selected-border), 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08) !important;
         }
         
         body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.select-is-correct:not(.dragging):has(+ .builder-option-row.select-is-correct:not(.dragging)) .row-bg {
-            box-shadow: inset 0 2px 0 0 var(--sel-selected-border), inset 2px 0 0 0 var(--sel-selected-border), inset -2px 0 0 0 var(--sel-selected-border);
+            box-shadow: inset 0 2px 0 0 var(--sel-selected-border), inset 2px 0 0 0 var(--sel-selected-border), inset -2px 0 0 0 var(--sel-selected-border), 0 4px 16px rgba(0,0,0,0.06);
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
@@ -1173,7 +1217,7 @@
         }
         
         body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-true:not(.dragging):has(+ .builder-option-row.tf-state-true:not(.dragging)) .row-bg {
-            box-shadow: inset 0 2px 0 0 var(--sel-selected-border), inset 2px 0 0 0 var(--sel-selected-border), inset -2px 0 0 0 var(--sel-selected-border);
+            box-shadow: inset 0 2px 0 0 var(--sel-selected-border), inset 2px 0 0 0 var(--sel-selected-border), inset -2px 0 0 0 var(--sel-selected-border), 0 4px 16px rgba(0,0,0,0.06);
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
@@ -1184,7 +1228,7 @@
         }
 
         body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.tf-state-false:not(.dragging):has(+ .builder-option-row.tf-state-false:not(.dragging)) .row-bg {
-            box-shadow: inset 0 2px 0 0 var(--sel-false-border), inset 2px 0 0 0 var(--sel-false-border), inset -2px 0 0 0 var(--sel-false-border);
+            box-shadow: inset 0 2px 0 0 var(--sel-false-border), inset 2px 0 0 0 var(--sel-false-border), inset -2px 0 0 0 var(--sel-false-border), 0 4px 16px rgba(0,0,0,0.06);
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
@@ -3376,6 +3420,7 @@ let sessionAssets = null;
     }
 
     function cleanUpCurrentQuestion() {
+        if (typeof activePlayTFPopover !== 'undefined' && activePlayTFPopover) closePlayTFPopover(true);
         // Revoke Blob URLs
         activeBlobUrls.forEach(url => URL.revokeObjectURL(url));
         activeBlobUrls = [];
@@ -3779,11 +3824,20 @@ let sessionAssets = null;
 
     let activePlayTFPopover = null;
 
-    function closePlayTFPopover() {
+    function closePlayTFPopover(instant = false) {
         if (!activePlayTFPopover) return;
-        const { popover } = activePlayTFPopover;
+        const popover = activePlayTFPopover.popover;
+        activePlayTFPopover.row.classList.remove('tf-active-row');
         popover.classList.remove('open');
-        setTimeout(() => { if (popover.parentNode) popover.parentNode.removeChild(popover); }, 160);
+        popover.classList.remove('open');
+        
+        if (instant) {
+            if (popover && popover.parentNode) popover.parentNode.removeChild(popover);
+        } else {
+            setTimeout(() => { 
+                if (popover && popover.parentNode && !popover.classList.contains('open')) popover.parentNode.removeChild(popover); 
+            }, 160);
+        }
         activePlayTFPopover = null;
     }
 
@@ -3802,7 +3856,15 @@ let sessionAssets = null;
     }
 
     function openPlayTFPopover(rowBtn, correctBtn, index, currentState) {
-        if (activePlayTFPopover) closePlayTFPopover();
+        if (activePlayTFPopover) {
+            if (activePlayTFPopover.targetBtn === rowBtn) {
+                closePlayTFPopover();
+                return;
+            }
+            closePlayTFPopover();
+        }
+
+        rowBtn.classList.add('tf-active-row');
 
         const popover = document.createElement('div');
         popover.className = 'tf-popover';
@@ -3830,18 +3892,19 @@ let sessionAssets = null;
         
         // Append to body to avoid overflow issues
         document.body.appendChild(popover);
-        activePlayTFPopover = { popover, targetBtn: rowBtn };
+        activePlayTFPopover = { popover, targetBtn: rowBtn, row: rowBtn };
 
         requestAnimationFrame(() => {
+            if (!activePlayTFPopover || activePlayTFPopover.popover !== popover) return;
             const popW = popover.offsetWidth || 36;
-            let left = rect.left + rect.width / 2 - popW / 2;
+            let left = rect.left + window.scrollX + rect.width / 2 - popW / 2;
             
             let currentIndex = 1;
             const actualState = tfPlayStates[index] || 'none';
             if (actualState === 'true') currentIndex = 0;
             if (actualState === 'false') currentIndex = 2;
             
-            const anchorCenterY = rect.top + rect.height / 2;
+            const anchorCenterY = rect.top + window.scrollY + rect.height / 2;
             const newTop = getPlayTFPopoverTop(currentIndex, anchorCenterY);
             
             popover.style.top = newTop + 'px';
@@ -3865,11 +3928,16 @@ let sessionAssets = null;
             const { popover } = activePlayTFPopover;
             const rowBtns = optionsContainerEl.querySelectorAll('.option-btn');
             const rowBtn = rowBtns[index];
+            if (rowBtn) {
+                rowBtn.classList.add('tf-active-row');
+                activePlayTFPopover.targetBtn = rowBtn;
+                activePlayTFPopover.row = rowBtn;
+            }
             const anchorEl = rowBtn ? rowBtn.querySelector('.correct-toggle-btn') : null;
             
             if (anchorEl) {
                 const r = anchorEl.getBoundingClientRect();
-                const anchorCenterY = r.top + r.height / 2;
+                const anchorCenterY = r.top + window.scrollY + r.height / 2;
                 const newTop = getPlayTFPopoverTop(clickedIndex, anchorCenterY);
                 
                 popover.style.top = newTop + 'px';
@@ -3958,12 +4026,11 @@ let sessionAssets = null;
             let isFullyCorrect = false;
             if (isTF) {
                 let tfScore = 0;
+                const ptValue = currentData.points || 1;
                 currentData.options.forEach((opt, idx) => {
                     const correctAns = opt.tfState || 'none';
                     if (chosen[idx] === correctAns) {
-                        tfScore += 1;
-                    } else {
-                        tfScore -= 1;
+                        tfScore += ptValue;
                     }
                 });
                 score += tfScore;
@@ -3998,12 +4065,11 @@ let sessionAssets = null;
                 let correctIndexes = [];
                 if (isTF) {
                     let tfScore = 0;
+                    const ptValue = currentData.points || 1;
                     currentData.options.forEach((opt, idx) => {
                         const correctAns = opt.tfState || 'none';
                         if (chosen[idx] === correctAns) {
-                            tfScore += 1;
-                        } else {
-                            tfScore -= 1;
+                            tfScore += ptValue;
                         }
                     });
                     score += tfScore;
@@ -4077,6 +4143,7 @@ let sessionAssets = null;
 
     async function showResults() {
         clearInterval(playTimerInterval);
+        if (typeof activePlayTFPopover !== 'undefined' && activePlayTFPopover) closePlayTFPopover();
         clearStorage();
 
         const gameContent = document.getElementById('quiz-game');
@@ -4341,8 +4408,10 @@ let sessionAssets = null;
                             stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
                         } else if (userAns === 'false') {
                             stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--error-red)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M18 6 6 18" stroke="#ffffff"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="m6 6 12 12" stroke="#ffffff"/></svg>';
-                        } else {
+                        } else if (userAns === 'none') {
                             stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
+                        } else {
+                            stateIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="var(--border-color)" stroke-width="2" fill="none"/></svg>';
                         }
                         badge.appendChild(stateIcon);
                     } else {
@@ -4810,8 +4879,8 @@ let sessionAssets = null;
             const popW = popover.offsetWidth || 180;
             const popH = popover.offsetHeight || 90;
             
-            let left = r.left - 16;
-            let top = r.top - popH - 12;
+            let left = r.left + window.scrollX - 16;
+            let top = r.top + window.scrollY - popH - 12;
             
             if (left < 10) left = 10;
             if (left + popW > window.innerWidth - 10) left = window.innerWidth - popW - 10;
@@ -5154,10 +5223,10 @@ let sessionAssets = null;
         const popW = popover.offsetWidth  || 36;
         const popH = popover.offsetHeight || 80;
 
-        let left = r.left + r.width / 2 - popW / 2;
-        left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
-
-        let top = r.top + r.height / 2 - popH / 2;
+        let left = r.left + window.scrollX + r.width / 2 - popW / 2;
+        let top = r.top + window.scrollY - popH - 8;
+        
+        if (top < window.scrollY) top = r.bottom + window.scrollY + 8;
         
         popover.style.top  = top + 'px';
         popover.style.left = left + 'px';
@@ -5249,7 +5318,18 @@ let sessionAssets = null;
     }
 
     function openTFPopover(triggerEl, anchorEl, qId, optId, currentState) {
-        if (activeTFPopover) closeTFPopover();
+        if (activeTFPopover) {
+            if (activeTFPopover.targetBtn === triggerEl) {
+                closeTFPopover();
+                return;
+            }
+            closeTFPopover();
+        }
+
+        const parentRow = anchorEl.closest('.builder-option-row');
+        if (parentRow) {
+            parentRow.classList.add('tf-active-row');
+        }
 
         const popover = document.createElement('div');
         popover.className = 'tf-popover';
@@ -5281,23 +5361,24 @@ let sessionAssets = null;
         popover.appendChild(btnFalse);
 
         getScorePopoverRoot().appendChild(popover);
-        activeTFPopover = { popover, targetBtn: triggerEl };
+        activeTFPopover = { popover, targetBtn: triggerEl, row: anchorEl.closest('.builder-option-row') };
 
         requestAnimationFrame(() => {
+            if (!activeTFPopover || activeTFPopover.popover !== popover) return;
             const r = anchorEl.getBoundingClientRect();
             const popW = popover.offsetWidth || 36;
             
-            let left = r.left + r.width / 2 - popW / 2;
+            const left = r.left + window.scrollX + r.width / 2 - popW / 2;
             
             let currentIndex = 1;
             const actualState = getCurState();
             if (actualState === 'true') currentIndex = 0;
             if (actualState === 'false') currentIndex = 2;
             
-            const anchorCenterY = r.top + r.height / 2;
-            let top = getTFPopoverTop(currentIndex, anchorCenterY);
+            const anchorCenterY = r.top + window.scrollY + r.height / 2;
+            const newTop = getTFPopoverTop(currentIndex, anchorCenterY);
             
-            popover.style.top = top + 'px';
+            popover.style.top = newTop + 'px';
             popover.style.left = left + 'px';
             
             const paddingTop = 5;
@@ -5312,7 +5393,7 @@ let sessionAssets = null;
 
     function selectTFState(popover, anchorEl, qId, optId, state, clickedIndex) {
         const r = anchorEl.getBoundingClientRect();
-        const anchorCenterY = r.top + r.height / 2;
+        const anchorCenterY = r.top + window.scrollY + r.height / 2;
         const newTop = getTFPopoverTop(clickedIndex, anchorCenterY);
         
         popover.style.top = newTop + 'px';
@@ -5333,10 +5414,12 @@ let sessionAssets = null;
                 // Update DOM manually without full re-render
                 const row = document.querySelector(`.builder-card[data-q-id="${qId}"] .builder-option-row[data-opt-id="${optId}"]`);
                 if (row) {
-                    row.className = 'builder-option-row tf-state-' + (state || 'empty');
+                    row.classList.remove('tf-state-true', 'tf-state-false', 'tf-state-none', 'tf-state-empty');
+                    row.classList.add('tf-state-' + (state || 'empty'));
                     const correctBtn = row.querySelector('.correct-toggle-btn');
                     if (correctBtn) {
-                        correctBtn.className = 'correct-toggle-btn tf-state-' + (state || 'empty');
+                        correctBtn.classList.remove('tf-state-true', 'tf-state-false', 'tf-state-none', 'tf-state-empty');
+                        correctBtn.classList.add('tf-state-' + (state || 'empty'));
                         if (state === 'true') {
                             correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="var(--success-green)" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M20 6 9 17l-5-5" stroke="#ffffff"/></svg>';
                         } else if (state === 'false') {
@@ -5358,41 +5441,60 @@ let sessionAssets = null;
 
     function closeTFPopover() {
         if (!activeTFPopover) return;
-        const { popover } = activeTFPopover;
+        const { popover, row } = activeTFPopover;
         popover.classList.remove('open');
+        if (row) row.classList.remove('tf-active-row');
         setTimeout(() => { if (popover.parentNode) popover.parentNode.removeChild(popover); }, 160);
         activeTFPopover = null;
     }
 
-    // FIX 1: Close popover on outside click — consume the event with stopPropagation()
-    // so the element underneath (e.g. a delete button) does NOT also fire.
     document.addEventListener('click', (e) => {
         if (activeScorePopover) {
             if (!activeScorePopover.pillBtn.contains(e.target) && !activeScorePopover.popover.contains(e.target)) {
-                e.stopPropagation();
                 closeScorePopover();
             }
         }
         if (activeTFPopover) {
             if (!activeTFPopover.targetBtn.contains(e.target) && !activeTFPopover.popover.contains(e.target)) {
-                e.stopPropagation();
                 closeTFPopover();
             }
         }
         if (activeAddQuestionPopover) {
             if (!activeAddQuestionPopover.targetBtn.contains(e.target) && !activeAddQuestionPopover.popover.contains(e.target)) {
-                e.stopPropagation();
                 closeAddQuestionPopover();
             }
         }
-    }, true);
+    });
 
-    // Close the score popover whenever the user scrolls or resizes (pill position becomes stale).
-    window.addEventListener('scroll', () => {
-        if (activeScorePopover) closeScorePopover();
-        if (activeTFPopover) closeTFPopover();
-        if (activeAddQuestionPopover) closeAddQuestionPopover();
-        if (typeof activePlayTFPopover !== 'undefined' && activePlayTFPopover) closePlayTFPopover();
+    // Close the score popover whenever the user scrolls beyond a threshold (30px)
+    let popoverScrollState = { initialScrolls: new Map() };
+    window.addEventListener('scroll', (e) => {
+        const hasOpenPopover = activeScorePopover || activeTFPopover || activeAddQuestionPopover || (typeof activePlayTFPopover !== 'undefined' && activePlayTFPopover);
+        if (!hasOpenPopover) {
+            popoverScrollState.initialScrolls.clear();
+            return;
+        }
+        
+        const target = e.target;
+        const isDoc = target === document || target === document.documentElement || target === window;
+        const st = isDoc ? window.scrollY : target.scrollTop;
+        const sl = isDoc ? window.scrollX : target.scrollLeft;
+        
+        if (!popoverScrollState.initialScrolls.has(target)) {
+            popoverScrollState.initialScrolls.set(target, { top: st, left: sl });
+        }
+        
+        const initial = popoverScrollState.initialScrolls.get(target);
+        const dy = Math.abs(st - initial.top);
+        const dx = Math.abs(sl - initial.left);
+        
+        if (dy > 30 || dx > 30) {
+            if (activeScorePopover) closeScorePopover();
+            if (activeTFPopover) closeTFPopover();
+            if (activeAddQuestionPopover) closeAddQuestionPopover();
+            if (typeof activePlayTFPopover !== 'undefined' && activePlayTFPopover) closePlayTFPopover();
+            popoverScrollState.initialScrolls.clear();
+        }
     }, { passive: true, capture: true });
 
     window.addEventListener('resize', () => {
@@ -5576,6 +5678,10 @@ let sessionAssets = null;
                         correctBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="12" fill="#7878804d" stroke="none"/><path transform="translate(4, 4) scale(0.6667)" stroke-width="3" d="M5 12h14" stroke="#ffffff"/></svg>';
                     }
                     correctBtn.title = 'True/False state';
+                    correctBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        openTFPopover(correctBtn, correctBtn, question.id, option.id, effectiveTfState);
+                    };
                 } else {
                     correctBtn.className = 'correct-toggle-btn' + (option.isCorrect ? ' is-correct' : '') + (qType === 'multiple' ? ' is-checkbox' : '');
                     correctBtn.innerHTML = option.isCorrect ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>' : '';
@@ -5642,19 +5748,26 @@ let sessionAssets = null;
                 }
 
                 if (builderViewMode === 'select') {
-                    row.onclick = null;
-                    row.addEventListener('pointerup', (e) => {
+                    row.onclick = (e) => {
                         if (dragHasMoved) return;
                         if (e.target.closest('.img-upload-btn')) return;
                         if (question.uiType === 'true_false') {
+                            e.stopPropagation();
                             const correctBtnEl = row.querySelector('.correct-toggle-btn');
-                            openTFPopover(row, correctBtnEl, question.id, option.id, effectiveTfState);
+                            if (correctBtnEl) correctBtnEl.click();
                         } else {
                             toggleBuilderSelectAnswer(question.id, option.id);
                         }
-                    });
+                    };
                 } else {
-                    row.onclick = null;
+                    row.onclick = (e) => {
+                        if (e.target.closest('.builder-option-input') || e.target.closest('.drag-handle-btn') || e.target.closest('.img-upload-btn') || e.target.closest('.explanation-btn') || e.target.closest('.delete-btn')) return;
+                        if (question.uiType === 'true_false') {
+                            e.stopPropagation();
+                            const correctBtnEl = row.querySelector('.correct-toggle-btn');
+                            if (correctBtnEl) correctBtnEl.click();
+                        }
+                    };
                 }
 
                 const deleteConfirmBtn = document.createElement('div');
