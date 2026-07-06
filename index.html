@@ -2923,9 +2923,11 @@ let sessionAssets = null;
             const originX = ((rect.left + rect.width / 2 - modeRect.left) / modeRect.width) * 100;
             const originY = ((rect.top + rect.height / 2 - modeRect.top) / modeRect.height) * 100;
             modeSelectSection.style.transformOrigin = `${originX}% ${originY}%`;
+            window.activeExplodedCanvas = createBtnCanvas;
             createBtnCanvas.particleAnim.explode();
         } else {
             modeSelectSection.style.transformOrigin = `center center`;
+            window.activeExplodedCanvas = null;
         }
         
         modeSelectSection.classList.add('anim-zoom-fade-out');
@@ -2943,10 +2945,6 @@ let sessionAssets = null;
                 addBuilderQuestion();
             }
             saveBuilderState();
-
-            if (createBtnCanvas && createBtnCanvas.particleAnim) {
-                createBtnCanvas.particleAnim.reset();
-            }
 
             setTimeout(() => {
                 builderSection.classList.remove('anim-zoom-fade-in');
@@ -3283,9 +3281,11 @@ let sessionAssets = null;
             const originX = ((rect.left + rect.width / 2 - modeRect.left) / modeRect.width) * 100;
             const originY = ((rect.top + rect.height / 2 - modeRect.top) / modeRect.height) * 100;
             modeSelectSection.style.transformOrigin = `${originX}% ${originY}%`;
+            window.activeExplodedCanvas = editBtnCanvas;
             editBtnCanvas.particleAnim.explode();
         } else {
             modeSelectSection.style.transformOrigin = `center center`;
+            window.activeExplodedCanvas = null;
         }
         
         modeSelectSection.classList.add('anim-zoom-fade-out');
@@ -3303,10 +3303,6 @@ let sessionAssets = null;
             
             renderBuilderQuestions();
             saveBuilderState();
-
-            if (editBtnCanvas && editBtnCanvas.particleAnim) {
-                editBtnCanvas.particleAnim.reset();
-            }
 
             setTimeout(() => {
                 builderSection.classList.remove('anim-zoom-fade-in');
@@ -7074,15 +7070,16 @@ let sessionAssets = null;
             modeSelectSection.style.display = 'block';
             modeSelectSection.classList.add('anim-zoom-fade-in-reverse');
             
-            document.querySelectorAll('.card-canvas-bg').forEach(canvas => {
-                if (canvas.particleAnim) canvas.particleAnim.implode();
-            });
+            if (window.activeExplodedCanvas && window.activeExplodedCanvas.particleAnim) {
+                window.activeExplodedCanvas.particleAnim.implode();
+            }
             
             setTimeout(() => {
                 modeSelectSection.classList.remove('anim-zoom-fade-in-reverse');
-                document.querySelectorAll('.card-canvas-bg').forEach(canvas => {
-                    if (canvas.particleAnim) canvas.particleAnim.isImploding = false;
-                });
+                if (window.activeExplodedCanvas && window.activeExplodedCanvas.particleAnim) {
+                    window.activeExplodedCanvas.particleAnim.isImploding = false;
+                    window.activeExplodedCanvas = null;
+                }
             }, 600);
         }, 500);
     }
@@ -7420,19 +7417,16 @@ let sessionAssets = null;
 
             this.canvas.parentElement.addEventListener('mousemove', (e) => updateMousePos(e.clientX, e.clientY));
             this.canvas.parentElement.addEventListener('mouseleave', resetMousePos);
-            this.canvas.parentElement.addEventListener('pointerdown', () => this.isDown = true);
-            this.canvas.parentElement.addEventListener('pointerup', () => this.isDown = false);
-            this.canvas.parentElement.addEventListener('pointercancel', () => this.isDown = false);
+            this.canvas.parentElement.addEventListener('mousedown', () => this.isDown = true);
+            this.canvas.parentElement.addEventListener('mouseup', () => this.isDown = false);
 
             // Touch support
             this.canvas.parentElement.addEventListener('touchstart', (e) => {
-                this.isDown = true;
                 if (e.touches.length > 0) updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
             }, { passive: true });
             this.canvas.parentElement.addEventListener('touchmove', (e) => {
-                e.preventDefault(); // Prevent page scrolling while interacting with the particle cloud
                 if (e.touches.length > 0) updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
-            }, { passive: false });
+            }, { passive: true });
             this.canvas.parentElement.addEventListener('touchend', resetMousePos);
             this.canvas.parentElement.addEventListener('touchcancel', resetMousePos);
 
@@ -7516,48 +7510,58 @@ let sessionAssets = null;
         explode() {
             this.isExploding = true;
             this.isImploding = false;
+            this.explodeStartTime = Date.now();
             const centerX = this.width / 2;
             const centerY = this.height / 2;
             for (let i = 0; i < this.numParticles; i++) {
                 const p = this.particles[i];
+                p.startX = p.x;
+                p.startY = p.y;
+                
                 const originX = centerX + (Math.random() - 0.5) * 80;
                 const originY = centerY + (Math.random() - 0.5) * 80;
-                const dx = p.x - originX;
-                const dy = p.y - originY;
-                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                const speed = Math.random() * 2 + 0.5;
-                p.vx = (dx / dist) * speed;
-                p.vy = (dy / dist) * speed;
-                p.explodeAngle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.4;
-                p.explodeSpeedMult = Math.random() * 0.4 + 0.8;
+                const dx = p.startX - originX;
+                const dy = p.startY - originY;
+                
+                const speedMult = Math.random() * 0.4 + 0.8;
+                const distanceOut = (500 + Math.random() * 400) * speedMult;
+                const angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.4;
+                
+                p.endX = p.startX + Math.cos(angle) * distanceOut;
+                p.endY = p.startY + Math.sin(angle) * distanceOut;
             }
         }
 
         implode() {
             this.isImploding = true;
             this.isExploding = false;
+            this.implodeStartTime = Date.now();
+            
             const centerX = this.width / 2;
             const centerY = this.height / 2;
+            
             for (let i = 0; i < this.numParticles; i++) {
                 const p = this.particles[i];
-                const t = this.targetPoints[p.targetIndex];
-                if (!t) continue;
+                if (p.startX === undefined) {
+                    const t = this.targetPoints[p.targetIndex] || p;
+                    p.startX = t.x;
+                    p.startY = t.y;
+                    
+                    const originX = centerX + (Math.random() - 0.5) * 80;
+                    const originY = centerY + (Math.random() - 0.5) * 80;
+                    const dx = p.startX - originX;
+                    const dy = p.startY - originY;
+                    
+                    const speedMult = Math.random() * 0.4 + 0.8;
+                    const distanceOut = (500 + Math.random() * 400) * speedMult;
+                    const angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.4;
+                    
+                    p.endX = p.startX + Math.cos(angle) * distanceOut;
+                    p.endY = p.startY + Math.sin(angle) * distanceOut;
+                }
                 
-                const originX = centerX + (Math.random() - 0.5) * 80;
-                const originY = centerY + (Math.random() - 0.5) * 80;
-                const dx = t.x - originX;
-                const dy = t.y - originY;
-                
-                p.explodeAngle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.4;
-                p.explodeSpeedMult = Math.random() * 0.4 + 0.8;
-                
-                const distanceOut = 400 + Math.random() * 300; 
-                p.x = t.x + Math.cos(p.explodeAngle) * distanceOut;
-                p.y = t.y + Math.sin(p.explodeAngle) * distanceOut;
-                
-                const inwardSpeed = 25 * p.explodeSpeedMult;
-                p.vx = -Math.cos(p.explodeAngle) * inwardSpeed;
-                p.vy = -Math.sin(p.explodeAngle) * inwardSpeed;
+                p.x = p.endX;
+                p.y = p.endY;
             }
         }
 
@@ -7590,53 +7594,44 @@ let sessionAssets = null;
             for (let i = 0; i < this.numParticles; i++) {
                 const p = this.particles[i];
 
-                if (this.isExploding) {
-                    const accel = 0.4 * (p.explodeSpeedMult || 1);
-                    p.vx += Math.cos(p.explodeAngle) * accel;
-                    p.vy += Math.sin(p.explodeAngle) * accel;
+                if (this.isExploding || this.isImploding) {
+                    const elapsed = Date.now() - (this.isExploding ? this.explodeStartTime : this.implodeStartTime);
+                    let t = Math.min(1, elapsed / 600); // 600ms duration
                     
-                    p.vx *= 1.03;
-                    p.vy *= 1.03;
-
-                    const prevX = p.x;
-                    const prevY = p.y;
+                    if (this.isImploding) {
+                        t = 1 - t; // Reverse interpolation
+                    }
                     
-                    p.x += p.vx;
-                    p.y += p.vy;
-
-                    const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(prevX - p.vx * 0.8, prevY - p.vy * 0.8);
-                    this.ctx.lineTo(p.x, p.y);
-                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(0.7, speed / 15)})`;
-                    this.ctx.lineWidth = 1 + Math.min(3, speed / 20);
-                    this.ctx.stroke();
-                    continue;
-                } else if (this.isImploding) {
-                    const t = this.targetPoints[p.targetIndex];
-                    if (!t) continue;
-                    
-                    p.vx *= 0.92;
-                    p.vy *= 0.92;
+                    const ease = t * t * t * t; 
                     
                     const prevX = p.x;
                     const prevY = p.y;
                     
-                    p.x += p.vx;
-                    p.y += p.vy;
+                    p.x = p.startX + (p.endX - p.startX) * ease;
+                    p.y = p.startY + (p.endY - p.startY) * ease;
                     
-                    const dx = t.x - p.x;
-                    const dy = t.y - p.y;
-                    p.x += dx * 0.05;
-                    p.y += dy * 0.05;
-
-                    const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                    const dx = p.x - prevX;
+                    const dy = p.y - prevY;
+                    const speed = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (speed < 0.1) {
+                        this.ctx.beginPath();
+                        this.ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        continue;
+                    }
+                    
                     this.ctx.beginPath();
-                    this.ctx.moveTo(prevX - p.vx * 0.8, prevY - p.vy * 0.8);
-                    this.ctx.lineTo(p.x, p.y);
-                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(0.8, speed / 10)})`;
-                    this.ctx.lineWidth = 1 + Math.min(3, speed / 15);
+                    if (this.isExploding) {
+                        this.ctx.moveTo(p.x - dx * 1.5, p.y - dy * 1.5);
+                        this.ctx.lineTo(p.x, p.y);
+                    } else {
+                        this.ctx.moveTo(p.x + dx * 1.5, p.y + dy * 1.5);
+                        this.ctx.lineTo(p.x, p.y);
+                    }
+                    
+                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(0.8, speed / 5)})`;
+                    this.ctx.lineWidth = 1 + Math.min(3, speed / 10);
                     this.ctx.stroke();
                     continue;
                 } else {
