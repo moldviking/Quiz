@@ -7421,12 +7421,34 @@ let sessionAssets = null;
             this.canvas.parentElement.addEventListener('mouseup', () => this.isDown = false);
 
             // Touch support
+            let touchStartX = 0;
+            let touchStartY = 0;
+
             this.canvas.parentElement.addEventListener('touchstart', (e) => {
-                if (e.touches.length > 0) updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
+                if (e.touches.length > 0) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    this.isDown = true; // Assume tap/click initially
+                    updateMousePos(touchStartX, touchStartY);
+                }
             }, { passive: true });
+            
             this.canvas.parentElement.addEventListener('touchmove', (e) => {
-                if (e.touches.length > 0) updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
-            }, { passive: true });
+                e.preventDefault(); // User preferred blocking scroll over the cards
+                if (e.touches.length > 0) {
+                    const clientX = e.touches[0].clientX;
+                    const clientY = e.touches[0].clientY;
+                    
+                    const dx = clientX - touchStartX;
+                    const dy = clientY - touchStartY;
+                    if (Math.sqrt(dx * dx + dy * dy) > 10) {
+                        this.isDown = false; // It's a swipe, switch to repel!
+                    }
+                    
+                    updateMousePos(clientX, clientY);
+                }
+            }, { passive: false });
+            
             this.canvas.parentElement.addEventListener('touchend', resetMousePos);
             this.canvas.parentElement.addEventListener('touchcancel', resetMousePos);
 
