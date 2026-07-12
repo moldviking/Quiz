@@ -891,6 +891,17 @@
         .timer-badge.badge-indefinite { color: rgba(255,255,255,0.7); font-weight: 500; background: rgba(0,0,0,0.2); }
         #island-timer { cursor: pointer; }
         @media (max-width: 850px) { .options-island { width: 100% !important; } }
+        .topic-grid-1 { display: grid; grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr; gap: 8px; margin-bottom: 12px; }
+        .topic-grid-2 { display: grid; grid-template-columns: 2fr 3fr 1fr; gap: 8px; }
+        .calendar-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; }
+        @media (max-width: 600px) {
+            .topic-grid-1 { grid-template-columns: 1fr 1fr !important; }
+            .topic-grid-2 { grid-template-columns: 1fr !important; }
+            .calendar-header-flex { flex-direction: column !important; gap: 12px !important; align-items: stretch !important; }
+            .calendar-header-flex > div:first-child { justify-content: space-between; width: 100%; }
+            #calendar-time-selectors { width: 100%; justify-content: center; }
+            .calendar-grid-header { font-size: 10px !important; }
+        }
         .grouped-scale-option .scale-check { display: none; color: var(--apple-blue); }
         .grouped-scale-option.active .scale-check { display: block; }
         /* error styles moved to central location */
@@ -1943,7 +1954,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
                                 <div id="class-topic-fields" class="island-accordion">
                                     <div class="island-accordion-inner">
-                                    <div style="display: grid; grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr; gap: 8px; margin-bottom: 12px;">
+                                    <div class="topic-grid-1">
                                         <div>
                                             <input type="text" id="meta-school" class="text-input" placeholder="School" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
                                         </div>
@@ -1957,7 +1968,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                             <input type="text" id="meta-classroom" class="text-input" placeholder="Room" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
                                         </div>
                                     </div>
-                                    <div style="display: grid; grid-template-columns: 2fr 3fr 1fr; gap: 8px;">
+                                    <div class="topic-grid-2">
                                         <div>
                                             <input type="text" id="meta-subject" class="text-input" placeholder="Subject" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
                                         </div>
@@ -2119,7 +2130,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             
                             <!-- Calendar View -->
                             <div id="access-calendar-view" style="display: none; flex-direction: column; height: 100%;">
-                                <div id="access-calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative;">
+                                <div id="access-calendar-header" class="calendar-header-flex">
                                     <div style="font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px;">
                                         <button class="icon-btn" onclick="changeCalendarMonth(-1)" style="padding: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-main);">
                                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
