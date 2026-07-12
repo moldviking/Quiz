@@ -14,13 +14,13 @@
             --bg-body: #f2f2f6;
             --bg-card: #ffffff;
             --bg-panel: #ffffff;
-            --bg-alert: rgba(255, 255, 255, 0.9);
+            --bg-alert: rgba(255, 255, 255, 0.7);
             --text-main: #1d1d1f;
             --text-secondary: #86868b;
             --text-tertiary: #aeaeb2;
             --apple-blue: #0071e3;
             --border-color: #e8e8ed;
-            --alert-border: rgba(255, 255, 255, 0.4);
+            --alert-border: rgba(255, 255, 255, 0.3);
             
             --score-inactive: rgb(131, 194, 251);
             --score-active: rgb(9, 124, 249);
@@ -78,13 +78,13 @@
                 --bg-body: #000000;
                 --bg-card: #1A1A1C;
                 --bg-panel: #1c1c1e;
-                --bg-alert: rgba(28, 28, 30, 0.9);
+                --bg-alert: rgba(30, 30, 30, 0.75);
                 --text-main: #f5f5f7;
                 --text-secondary: #98989d;
                 --text-tertiary: #6e6e73;
                 --apple-blue: #0a84ff;
                 --border-color: #38383a;
-                --alert-border: rgba(255, 255, 255, 0.15);
+                --alert-border: rgba(255, 255, 255, 0.1);
                 
                 --score-inactive: rgb(24, 78, 125);
                 --score-active: rgb(10, 134, 249);
@@ -257,10 +257,7 @@
             .mode-choice-btn { aspect-ratio: auto; min-height: 220px; }
         }
 
-        #play-question-image {
-            max-width: 100%; max-height: 250px; border-radius: 18px; margin-bottom: 24px; object-fit: contain;
-            display: none; background-color: var(--option-bg); border: 1px solid var(--border-color); cursor: zoom-in; transition: opacity 0.2s;
-        }
+        /* removed #play-question-image CSS as it is now styled via wrapper */
         #play-question-image:hover { opacity: 0.9; }
 
         .options-container { display: flex; flex-direction: column; gap: 0; margin-bottom: 24px; background-color: var(--bg-panel); border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
@@ -269,7 +266,7 @@
         .option-btn {
             background-color: transparent; color: var(--text-main); border: 2px solid transparent; padding: 12px 14px;
             border-radius: 0; text-align: left; font-size: 15px; font-weight: 500; cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; width: 100%; display: flex; flex-direction: row;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; width: 100%; display: flex; flex-direction: row;
             justify-content: space-between; align-items: center; gap: 12px; box-sizing: border-box; position: relative; margin: -1px 0;
         }
         .options-container .option-btn:first-child { margin-top: 0; border-top-left-radius: 16px; border-top-right-radius: 16px; }
@@ -297,11 +294,11 @@
         .multi-select-hint svg { width: 13px; height: 13px; fill: none; flex-shrink: 0; }
         .play-points-badge { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: -18px 0 18px 2px; display: block; }
 
-        .option-btn.missed-state { background-color: transparent !important; color: var(--success-text) !important; border-color: var(--success-green) !important; cursor: default; z-index: 2; }
-        .option-btn.correct-state { background-color: var(--sel-selected-bg) !important; color: var(--sel-selected-text) !important; border-color: var(--sel-selected-border) !important; cursor: default; z-index: 1; }
-        .option-btn.correct-state.was-chosen { border-color: var(--apple-blue) !important; z-index: 2; }
-        .option-btn.incorrect-state { background-color: var(--sel-false-bg) !important; color: var(--sel-false-text) !important; border-color: var(--sel-false-border) !important; cursor: default; z-index: 1; }
-        .option-btn.incorrect-state.was-chosen { border-color: var(--apple-blue) !important; z-index: 2; }
+        .option-btn.missed-state { background-color: transparent; color: var(--success-text); border-color: var(--success-green); cursor: default; z-index: 2; }
+        .option-btn.correct-state { background-color: var(--sel-selected-bg); color: var(--sel-selected-text); border-color: var(--sel-selected-border); cursor: default; z-index: 1; }
+        .option-btn.correct-state.was-chosen { border-color: var(--apple-blue); z-index: 2; }
+        .option-btn.incorrect-state { background-color: var(--sel-false-bg); color: var(--sel-false-text); border-color: var(--sel-false-border); cursor: default; z-index: 1; }
+        .option-btn.incorrect-state.was-chosen { border-color: var(--apple-blue); z-index: 2; }
         
         .option-btn.correct-state:has(+ .option-btn.incorrect-state),
         .option-btn.incorrect-state:has(+ .option-btn.correct-state) { margin-bottom: 0; }
@@ -463,30 +460,65 @@
         .correct-toggle-btn[class*="tf-state-"] svg { width: 24px; height: 24px; }
 
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg);
-            display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; visibility: hidden;
-            transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none; will-change: opacity;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: transparent;
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+            pointer-events: none; touch-action: none;
+            visibility: hidden; transition: visibility 0s linear 0.15s;
         }
-        .modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
+        .modal-overlay::before {
+            content: ''; position: absolute; inset: 0; background-color: var(--overlay-bg);
+            z-index: -1; opacity: 0; transition: opacity 0.15s ease-out;
+        }
+        .modal-overlay.active::before { opacity: 1; }
+        .modal-overlay.active { visibility: visible; pointer-events: auto; transition: visibility 0s linear 0s; }
         .apple-alert {
             background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left;
             box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);
             backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid var(--alert-border); box-sizing: border-box; -webkit-transform: translateZ(0);
-            transform: translateZ(0); will-change: opacity;
+            border: 1px solid var(--alert-border); box-sizing: border-box;
+            position: relative; z-index: 1;
+            opacity: 0; transition: opacity 0.15s ease-out;
         }
+        .modal-overlay.active .apple-alert { opacity: 1; }
         @media (prefers-color-scheme: dark) { .apple-alert { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); } }
         .alert-content { padding: 24px 20px 20px 20px; }
         .alert-title { font-size: 19px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-main); letter-spacing: -0.5px; }
+        .time-popover {
+            position: fixed;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease 0.05s, visibility 0s linear 0.3s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center center;
+            transform: translate(-50%, -50%) scale(0.9);
+            margin-top: 0;
+            z-index: 99999;
+            width: max-content;
+            max-width: 90vw;
+            box-sizing: border-box;
+        }
+        .time-popover.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+            margin-top: -10px;
+            pointer-events: auto;
+            transition: opacity 0.15s ease, visibility 0s linear 0s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
         .alert-message { font-size: 14px; font-weight: 400; margin: 0; color: var(--text-main); line-height: 1.4; }
 
         .alert-buttons { display: flex; gap: 12px; padding: 0 20px 20px 20px; }
         .alert-btn { flex: 1; padding: 12px 10px; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 999px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
-        .alert-btn.cancel-btn { background-color: var(--apple-blue); color: #ffffff; }
-        .alert-btn.destructive { background-color: rgba(0, 0, 0, 0.05); color: var(--error-red); }
+        .modal-btn-bg, .alert-btn.secondary { background-color: rgba(0, 0, 0, 0.05) !important; box-shadow: none !important; }
+        .apple-alert, .explanation-modal-box, .img-modal-box { --option-bg: rgba(0, 0, 0, 0.05); }
+        .alert-btn.secondary { color: var(--text-main); }
+        .alert-btn.cancel-btn { background-color: rgba(0, 0, 0, 0.05); color: var(--text-main); }
         .alert-btn.primary { background-color: var(--apple-blue); color: #ffffff; }
-        .alert-btn.secondary { background-color: rgba(0, 0, 0, 0.05); color: var(--text-main); }
+        .alert-btn.destructive { background-color: var(--error-red); color: #ffffff; }
         @media (prefers-color-scheme: dark) { 
+            .modal-btn-bg, .alert-btn.secondary { background-color: rgba(255, 255, 255, 0.1) !important; }
+            .apple-alert, .explanation-modal-box, .img-modal-box { --option-bg: rgba(255, 255, 255, 0.1); }
+            .alert-btn.cancel-btn { background-color: rgba(255, 255, 255, 0.1); }
             .alert-btn.destructive { background-color: rgba(255, 255, 255, 0.1); } 
             .alert-btn.secondary { background-color: rgba(255, 255, 255, 0.1); }
         }
@@ -727,7 +759,7 @@
             align-items: center;
             gap: 6px;
             box-sizing: border-box;
-            transition: transform 0.15s, opacity 0.2s;
+            transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, transform 0.15s, opacity 0.2s;
             margin-left: auto;
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -735,8 +767,15 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.06);
         }
         .later-btn svg { width: 18px; height: 18px; }
-        @media (prefers-color-scheme: dark) { .later-btn { background: rgba(255, 149, 0, 0.25); } }
-        .later-btn:active { transform: scale(0.96); opacity: 0.85; }
+        @media (prefers-color-scheme: dark) { .later-btn:not(:disabled) { background: rgba(255, 149, 0, 0.25); } }
+        .later-btn:active:not(:disabled) { transform: scale(0.96); opacity: 0.85; }
+        .later-btn:disabled {
+            background: var(--control-bg);
+            color: var(--text-tertiary);
+            border-color: transparent;
+            cursor: default;
+            opacity: 0.5;
+        }
 
 
         .pwd-wrapper { position: relative; display: flex; align-items: center; margin-top: 14px; }
@@ -833,7 +872,7 @@
         .options-island.full-width { width: 100%; }
         .island-expanded-horizontal { width: 100% !important; cursor: default !important; }
         .island-hidden-horizontal { width: 0 !important; padding: 0 !important; margin: 0 !important; border: 0 !important; opacity: 0 !important; overflow: hidden !important; min-height: 0 !important; max-height: 0 !important; }
-        .island-accordion { display: grid; grid-template-rows: 0fr; opacity: 0; overflow: hidden; margin-top: 0; transition: grid-template-rows 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.6s cubic-bezier(0.4, 0, 0.2, 1); align-items: start; }
+        .island-accordion { display: grid; grid-template-rows: 0fr; opacity: 0; overflow: hidden; margin-top: 0; transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1); align-items: start; }
         .island-accordion.open-summary { grid-template-rows: 1fr; opacity: 1; margin-top: 16px; }
         .island-accordion.open-fields { grid-template-rows: 1fr; opacity: 1; margin-top: 16px; }
         .island-accordion-inner { min-height: 0; width: 100%; }
@@ -843,6 +882,7 @@
         .grading-sidebar-btn { background: transparent; border: none; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; }
         .grading-sidebar-btn:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
         .grading-sidebar-btn.active { background: var(--apple-blue); color: #fff; font-weight: 600; }
+        .grading-sidebar-btn.active #sidebar-time-limit-val { background: rgba(255, 255, 255, 0.25) !important; color: #fff !important; }
         .grading-sub-btn { background: transparent; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; }
         .grading-sub-btn:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
         .grading-sub-btn.active { color: var(--apple-blue); font-weight: 600; background: rgba(0, 122, 255, 0.08); }
@@ -850,7 +890,7 @@
         .timer-badge { background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 15px; color: #fff; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; }
         .timer-badge.badge-indefinite { color: rgba(255,255,255,0.7); font-weight: 500; background: rgba(0,0,0,0.2); }
         #island-timer { cursor: pointer; }
-        @media (max-width: 600px) { .options-island { width: 100%; } }
+        @media (max-width: 850px) { .options-island { width: 100% !important; } }
         .grouped-scale-option .scale-check { display: none; color: var(--apple-blue); }
         .grouped-scale-option.active .scale-check { display: block; }
         /* error styles moved to central location */
@@ -1179,9 +1219,12 @@
         .score-step-btn:disabled { opacity: 0 !important; pointer-events: none !important; cursor: default; }
         .score-value-label { width: 40px; text-align: center; font-size: 13px; font-weight: 700; color: var(--score-active); user-select: none; padding: 2px 0; line-height: 1.2; cursor: pointer; }
 
-        .img-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; visibility: hidden; transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none; }
-        .img-modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
-        .img-modal-box { background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px; }
+        .img-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: transparent; display: flex; justify-content: center; align-items: center; z-index: 10000; pointer-events: none; touch-action: none; visibility: hidden; transition: visibility 0s linear 0.15s; }
+        .img-modal-overlay::before { content: ''; position: absolute; inset: 0; background-color: var(--overlay-bg); z-index: -1; opacity: 0; transition: opacity 0.15s ease-out; }
+        .img-modal-overlay.active::before { opacity: 1; }
+        .img-modal-overlay.active { visibility: visible; pointer-events: auto; transition: visibility 0s linear 0s; }
+        .img-modal-box { background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px; position: relative; z-index: 1; opacity: 0; transition: opacity 0.15s ease-out; }
+        .img-modal-overlay.active .img-modal-box { opacity: 1; }
         @media (prefers-color-scheme: dark) { .img-modal-box { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); } }
         .img-modal-title { font-size: 17px; font-weight: 600; color: var(--text-main); margin: 0 0 6px 0; letter-spacing: -0.3px; }
         .img-modal-sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px 0; line-height: 1.4; }
@@ -1189,6 +1232,8 @@
         .img-preview-area { width: 100%; height: 140px; border-radius: 18px; border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 14px; background-color: var(--option-bg); cursor: pointer; transition: all 0.2s ease; }
         .img-preview-area:hover, .img-preview-area.dragover { border-color: var(--apple-blue); background-color: var(--option-selected-bg); }
         .img-preview-area img { width: 100%; height: 100%; object-fit: contain; }
+        .img-preview-area.view-only:hover { background-color: var(--option-bg); border-color: transparent; }
+        .img-preview-area.view-only:hover img { transform: scale(1.6); }
         .img-preview-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-tertiary); pointer-events: none; }
         .img-preview-placeholder svg { width: 28px; height: 28px; fill: currentColor; }
         .img-preview-placeholder span { font-size: 13px; font-weight: 500; }
@@ -1210,10 +1255,13 @@
         .play-explanation-btn { flex-shrink: 0; width: 18px; height: 18px; border: none; background: transparent; color: var(--text-tertiary); opacity: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; margin-left: 10px; margin-top: -10px; margin-bottom: -10px; border-radius: 4px; }
         .play-explanation-btn svg { width: 18px; height: 18px; }
 
-        .explanation-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; visibility: hidden; transition: opacity 0.15s ease-out, visibility 0s linear 0.15s; touch-action: none; }
-        .explanation-modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.15s ease-out, visibility 0s linear 0s; }
-        .explanation-modal-wrapper { position: relative; width: 340px; }
-        .explanation-modal-box { position: relative; background: var(--bg-alert); width: 100%; border-radius: 28px; text-align: left; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--alert-border); box-sizing: border-box; padding: 50px 14px 14px 14px; transition: height 0.3s ease; overflow: hidden; }
+        .explanation-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: transparent; display: flex; justify-content: center; align-items: center; z-index: 10000; pointer-events: none; touch-action: none; visibility: hidden; transition: visibility 0s linear 0.15s; }
+        .explanation-modal-overlay::before { content: ''; position: absolute; inset: 0; background-color: var(--overlay-bg); z-index: -1; opacity: 0; transition: opacity 0.15s ease-out; }
+        .explanation-modal-overlay.active::before { opacity: 1; }
+        .explanation-modal-overlay.active { visibility: visible; pointer-events: auto; transition: visibility 0s linear 0s; }
+        .explanation-modal-wrapper { position: relative; width: 340px; z-index: 1; }
+        .explanation-modal-box { position: relative; background: var(--bg-alert); width: 100%; border-radius: 28px; text-align: left; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--alert-border); box-sizing: border-box; padding: 50px 14px 14px 14px; overflow: hidden; position: relative; opacity: 0; transition: opacity 0.15s ease-out; }
+        .explanation-modal-overlay.active .explanation-modal-box, .img-modal-overlay.active .explanation-modal-box { opacity: 1; }
         @media (prefers-color-scheme: dark) { .explanation-modal-box { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); } }
         .explanation-modal-top-btn { position: absolute; top: 14px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: transform 0.15s ease, opacity 0.2s ease; padding: 0; }
         .explanation-modal-top-btn:active { transform: scale(0.9); opacity: 0.8; }
@@ -1624,6 +1672,58 @@
     </style>
 
 <script>
+const QuizDB = {
+    dbName: 'QuizStudioDB',
+    storeName: 'QuizStudioStore',
+    db: null,
+    init: function() {
+        return new Promise((resolve, reject) => {
+            if (this.db) return resolve(this.db);
+            const request = indexedDB.open(this.dbName, 1);
+            request.onerror = (e) => reject(e);
+            request.onupgradeneeded = (e) => {
+                e.target.result.createObjectStore(this.storeName);
+            };
+            request.onsuccess = (e) => {
+                this.db = e.target.result;
+                resolve(this.db);
+            };
+        });
+    },
+    setItem: async function(key, value) {
+        await this.init();
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction([this.storeName], "readwrite");
+            const store = tx.objectStore(this.storeName);
+            const request = store.put(value, key);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    },
+    getItem: async function(key) {
+        await this.init();
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction([this.storeName], "readonly");
+            const store = tx.objectStore(this.storeName);
+            const request = store.get(key);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    },
+    removeItem: async function(key) {
+        await this.init();
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction([this.storeName], "readwrite");
+            const store = tx.objectStore(this.storeName);
+            const request = store.delete(key);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+};
+
+
+
 var EYE_OPEN_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
 var EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
 
@@ -1666,7 +1766,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download-icon lucide-download"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
             Download
         </button>
-        <button class="glass-exit-btn" id="results-done-btn" onclick="resetToUpload()" style="display:none; margin-left: auto;">
+        <button class="glass-exit-btn" id="results-done-btn" onclick="confirmDone()" style="display:none; margin-left: auto;">
             <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             Done
         </button>
@@ -1689,7 +1789,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 </div>
             </button>
             <button class="mode-choice-btn btn-check" onclick="triggerCheckAnswers()">
-                <div id="continue-checking-badge" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: none;">Continue Checking</div>
+                <div id="continue-checking-badge" onclick="resumeSession(event, 'check_answers')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Checking</div>
                 <canvas class="card-canvas-bg" data-svg-path="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></canvas>
                 <div class="mode-bottom-content">
                     <div class="mode-choice-header">
@@ -1701,8 +1801,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <span class="mode-sub">Evaluate a student's submitted results file.</span>
                 </div>
             </button>
-            <button class="mode-choice-btn btn-create" onclick="goToBuilderFresh()">
-                <div id="continue-editing-badge" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: none;">Continue Editing</div>
+            <button class="mode-choice-btn btn-create" onclick="triggerCreateQuiz()">
+                <div id="continue-editing-badge" onclick="resumeSession(event, 'builder')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Editing</div>
                 <canvas class="card-canvas-bg" data-svg-path="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></canvas>
                 <div class="mode-bottom-content">
                     <div class="mode-choice-header">
@@ -1715,7 +1815,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 </div>
             </button>
             <button class="mode-choice-btn btn-edit" onclick="triggerBuilderUpload()">
-                <div id="continue-editing-edit-badge" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: none;">Continue Editing</div>
+                <div id="continue-editing-edit-badge" onclick="resumeSession(event, 'builder')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Editing</div>
                 <canvas class="card-canvas-bg" data-svg-path="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></canvas>
                 <div class="mode-bottom-content">
                     <div class="mode-choice-header">
@@ -1753,15 +1853,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             </div>
             <p class="quiz-desc" id="display-desc"></p>
         </div>
-        <h2 id="question-text">Loading...</h2>
-        <p class="play-points-badge" id="play-points" style="display:none;"></p>
-        
-        <img id="play-question-image" src="" alt="Question Image" title="Nagyításhoz kattints ide" />
-
-        <p class="multi-select-hint" id="multi-select-hint" style="display:none;">
-            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            Select all answers that apply
-        </p>
+        <div class="play-question-header" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px;">
+            <div style="flex: 1; min-width: 0;">
+                <h2 id="question-text" style="margin-top: 0;">Loading...</h2>
+                <p class="play-points-badge" id="play-points" style="display:none;"></p>
+                <p class="multi-select-hint" id="multi-select-hint" style="display:none; margin-top: 10px;">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    Select all answers that apply
+                </p>
+            </div>
+            <div id="play-question-img-wrap" class="option-img-wrap" style="display:none; cursor: zoom-in; width: 140px; height: 140px;" title="Nagyításhoz kattints ide">
+                <img id="play-question-image" class="option-img" src="" alt="Question Image" />
+            </div>
+        </div>
         
         <div class="options-container" id="options"></div>
         <button class="next-btn" id="next-button" disabled onclick="handleMainAction()">Check</button>
@@ -1922,11 +2026,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <div id="scale-config-letter" class="scale-config-container" style="display: block;">
                         <label class="field-label">Letter Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">A</span><input type="number" id="bounds-letter-a" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">B</span><input type="number" id="bounds-letter-b" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">C</span><input type="number" id="bounds-letter-c" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">D</span><input type="number" id="bounds-letter-d" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">F</span><input type="number" id="bounds-letter-f" class="text-input" value="50" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">A</span><input type="number" id="bounds-letter-a" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">B</span><input type="number" id="bounds-letter-b" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">C</span><input type="number" id="bounds-letter-c" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">D</span><input type="number" id="bounds-letter-d" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">F</span><input type="number" id="bounds-letter-f" class="text-input" value="50" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
                         </div>
                         <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Letters represent grouped percentage ranges (e.g., A = 90–100%).</p>
                     </div>
@@ -1934,11 +2038,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <div id="scale-config-5point" class="scale-config-container" style="display: none;">
                         <label class="field-label">5-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">5</span><input type="number" id="bounds-5p-5" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><input type="number" id="bounds-5p-4" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><input type="number" id="bounds-5p-3" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><input type="number" id="bounds-5p-2" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-5p-1" class="text-input" value="50" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">5</span><input type="number" id="bounds-5p-5" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><input type="number" id="bounds-5p-4" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><input type="number" id="bounds-5p-3" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><input type="number" id="bounds-5p-2" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-5p-1" class="text-input" value="50" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
                         </div>
                         <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Often 5 is the highest (excellent) and 1 is the lowest (fail).</p>
                     </div>
@@ -1946,16 +2050,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <div id="scale-config-10point" class="scale-config-container" style="display: none;">
                         <label class="field-label">10-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">10</span><input type="number" id="bounds-10p-10" class="text-input" value="95" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">9</span><input type="number" id="bounds-10p-9" class="text-input" value="85" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">8</span><input type="number" id="bounds-10p-8" class="text-input" value="75" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">7</span><input type="number" id="bounds-10p-7" class="text-input" value="65" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">6</span><input type="number" id="bounds-10p-6" class="text-input" value="55" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">5</span><input type="number" id="bounds-10p-5" class="text-input" value="45" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">4</span><input type="number" id="bounds-10p-4" class="text-input" value="35" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">3</span><input type="number" id="bounds-10p-3" class="text-input" value="25" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">2</span><input type="number" id="bounds-10p-2" class="text-input" value="15" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-10p-1" class="text-input" value="5" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">10</span><input type="number" id="bounds-10p-10" class="text-input" value="95" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">9</span><input type="number" id="bounds-10p-9" class="text-input" value="85" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">8</span><input type="number" id="bounds-10p-8" class="text-input" value="75" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">7</span><input type="number" id="bounds-10p-7" class="text-input" value="65" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">6</span><input type="number" id="bounds-10p-6" class="text-input" value="55" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">5</span><input type="number" id="bounds-10p-5" class="text-input" value="45" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">4</span><input type="number" id="bounds-10p-4" class="text-input" value="35" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">3</span><input type="number" id="bounds-10p-3" class="text-input" value="25" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">2</span><input type="number" id="bounds-10p-2" class="text-input" value="15" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-10p-1" class="text-input" value="5" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
                         </div>
                         <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">A highly precise numerical scale where 10 is perfect.</p>
                     </div>
@@ -1963,10 +2067,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <div id="scale-config-4point" class="scale-config-container" style="display: none;">
                         <label class="field-label">4-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><input type="number" id="bounds-4p-4" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><input type="number" id="bounds-4p-3" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><input type="number" id="bounds-4p-2" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-4p-1" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><input type="number" id="bounds-4p-4" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('4point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><input type="number" id="bounds-4p-3" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('4point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><input type="number" id="bounds-4p-2" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('4point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-4p-1" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('4point')"></div>
                         </div>
                         <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Used to measure mastery of specific skills rather than overall percentages.</p>
                     </div>
@@ -2189,6 +2293,32 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         </div>
 </div>
 
+<div class="modal-overlay" id="session-conflict-modal" onclick="if(event.target===this) closeSessionConflictModal()">
+    <div class="apple-alert" style="width: 320px;">
+        <div class="alert-content">
+            <h3 class="alert-title">Session in Progress</h3>
+            <p class="alert-message" id="session-conflict-message">You have a session in progress.</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-btn" id="session-conflict-btn-new" style="background-color: #ffffff; color: var(--apple-blue);">Upload New</button>
+            <button class="alert-btn primary" id="session-conflict-btn-continue">Continue</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="done-confirm-modal" onclick="if(event.target===this) closeDoneConfirmModal()">
+    <div class="apple-alert">
+        <div class="alert-content">
+            <h3 class="alert-title" id="done-confirm-title">Finish Session?</h3>
+            <p class="alert-message" id="done-confirm-message">Are you sure you want to finish?</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-btn secondary" onclick="closeDoneConfirmModal()">Cancel</button>
+            <button class="alert-btn destructive" onclick="executeDoneConfirm()">Done</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="exit-modal">
     <div class="apple-alert">
         <div class="alert-content">
@@ -2283,7 +2413,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 <p class="alert-message" id="config-quiz-desc-modal" style="margin-bottom: 16px;">Description</p>
                 
                 <p style="text-align: left; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 14px;">Question Order</p>
-                <div class="options-container" style="margin-bottom: 12px;">
+                <div class="options-container modal-btn-bg" style="margin-bottom: 12px; box-shadow: none;">
                     <button class="option-btn selected" id="btn-seq" onclick="selectMode('seq')">
                         <div style="padding-left: 26px;">Sequential</div>
                     </button>
@@ -2295,8 +2425,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     </button>
                 </div>
 
-                <div id="rnd-options-wrapper" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin-bottom 0.3s ease; margin-bottom: 0;">
-                    <div id="rnd-options-container" style="background: var(--bg-panel); border-radius: 12px; padding: 12px; text-align: left;">
+                <div id="rnd-options-wrapper" style="max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.3s ease, margin-bottom 0.3s ease, opacity 0.3s ease; margin-bottom: 0;">
+                    <div id="rnd-options-container" class="modal-btn-bg" style="border-radius: 12px; padding: 12px; text-align: left;">
                         <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; cursor: pointer;">
                             <span style="font-size: 14px; font-weight: 500; color: var(--text-main);">Randomize Questions</span>
                             <input type="checkbox" id="toggle-rnd-questions" class="ios-toggle" checked onchange="handleRndToggle(this, 'questions')">
@@ -2354,34 +2484,31 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     </div>
 </div>
 
-<div class="modal-overlay" id="time-picker-modal" onclick="closeTimePopover()">
-    <div class="apple-alert" onclick="event.stopPropagation()" style="width: 100%; max-width: 380px; margin-bottom: 24px; padding: 16px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h3 class="alert-title" id="time-picker-title" style="margin: 0; font-size: 16px; cursor: pointer; transition: color 0.2s;"
-                onmouseover="this.dataset.orig=this.textContent; this.textContent='Now'; this.style.color='var(--apple-blue)'"
-                onmouseout="this.textContent=this.dataset.orig; this.style.color=''"
-                onclick="goToNow()">Select Time</h3>
-            <button class="icon-btn" onclick="closeTimePopover()" style="background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-        </div>
-        <div class="timer-picker-container" style="display: flex; justify-content: center; margin-bottom: 0;">
-            <div class="timer-group">
-                <div class="timer-column" id="calendar-time-ch" onscroll="handleTimerScroll(this, 'ch')"></div>
-                <div class="timer-column-fg-wrapper">
-                    <div class="timer-column-fg" id="calendar-time-ch-fg"></div>
-                </div>
-                <div class="timer-label">hours</div>
+<div id="time-picker-popover" class="time-popover apple-alert" onclick="event.stopPropagation()" style="width: max-content; padding: 16px; margin: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 class="alert-title" id="time-picker-title" style="margin: 0; font-size: 16px; cursor: pointer; transition: color 0.2s;"
+            onmouseover="this.dataset.orig=this.textContent; this.textContent='Now'; this.style.color='var(--apple-blue)'"
+            onmouseout="this.textContent=this.dataset.orig; this.style.color=''"
+            onclick="goToNow()">Select Time</h3>
+        <button class="icon-btn" onclick="closeTimePopover()" style="background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+    </div>
+    <div class="timer-picker-container" style="display: flex; justify-content: center; margin-bottom: 0;">
+        <div class="timer-group">
+            <div class="timer-column" id="calendar-time-ch" onscroll="handleTimerScroll(this, 'ch')"></div>
+            <div class="timer-column-fg-wrapper">
+                <div class="timer-column-fg" id="calendar-time-ch-fg"></div>
             </div>
-            <div class="timer-group">
-                <div class="timer-column" id="calendar-time-cm" onscroll="handleTimerScroll(this, 'cm')"></div>
-                <div class="timer-column-fg-wrapper">
-                    <div class="timer-column-fg" id="calendar-time-cm-fg"></div>
-                </div>
-                <div class="timer-label">min</div>
-            </div>
+            <div class="timer-label">hours</div>
         </div>
-        <button class="alert-btn primary" onclick="closeTimePopover()" style="width: 100%; margin-top: 16px;">Done</button>
+        <div class="timer-group">
+            <div class="timer-column" id="calendar-time-cm" onscroll="handleTimerScroll(this, 'cm')"></div>
+            <div class="timer-column-fg-wrapper">
+                <div class="timer-column-fg" id="calendar-time-cm-fg"></div>
+            </div>
+            <div class="timer-label">min</div>
+        </div>
     </div>
 </div>
 
@@ -2433,11 +2560,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 <div class="img-modal-overlay" id="img-view-modal" onclick="closeImgViewModal()">
     <div class="img-modal-box" onclick="event.stopPropagation()">
-        <p class="img-modal-title">Image Preview</p>
-        <div class="img-preview-area" style="cursor:default; pointer-events:none; height:200px;">
-            <img id="img-view-modal-img" src="" alt="" style="width:100%;height:100%;object-fit:contain;">
+        <p class="img-modal-title" id="img-view-modal-title" style="text-align: center;">Preview Question Image</p>
+        <div style="background-color: var(--option-bg); border-radius: 18px; margin-bottom: 14px; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="img-preview-area view-only" id="img-view-modal-preview-area" style="cursor:zoom-in; height:250px; border:none; margin-bottom: 0; background-color: transparent; border-radius: 0;">
+                <img id="img-view-modal-img" src="" alt="" style="width:100%;height:100%;object-fit:contain; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);">
+            </div>
+            <div id="img-view-modal-caption" style="display: none; padding: 12px 16px; font-size: 14px; color: var(--text-secondary); text-align: left; background-color: transparent; border-top: 1px solid var(--border-color);"></div>
         </div>
-        <div class="img-modal-actions" style="margin-top:14px;">
+        <div class="img-modal-actions">
             <button class="img-modal-btn secondary" style="flex:1;" onclick="closeImgViewModal()">Close</button>
         </div>
     </div>
@@ -2910,6 +3040,7 @@ async function unpackQuizFile(buffer) {
                 questionType: question.questionType,
                 points: question.points,
                 questionImage: qImg || "",
+                questionImageCaption: question.questionImageCaption || "",
                 options: (question.options || []).map((opt, oIdx) => {
                     const optImg = processImage(opt.image);
                     if (bOptions[oIdx]) bOptions[oIdx].image = optImg;
@@ -2924,6 +3055,7 @@ async function unpackQuizFile(buffer) {
                     const res = {
                         text: opt.option || opt.text,
                         image: optImg || "",
+                        imageCaption: opt.imageCaption || "",
                         isCorrect: !!(opt.isCorrect || opt.correct),
                         explanation: expl || ""
                     };
@@ -3479,21 +3611,23 @@ let isBuilderOverrideActive = false;
         requestAnimationFrame(() => autoGrow(builderQuizDescEl));
     });
 
-    function initializeAppState() {
-        const mode = localStorage.getItem('app_mode');
+    async function initializeAppState() {
+        const mode = await QuizDB.getItem('app_mode');
         if (mode === 'play') {
-            loadProgressFromStorage();
+            await loadProgressFromStorage();
         } else if (mode === 'builder') {
-            loadBuilderFromStorage();
-        } else if (localStorage.getItem('builder_session')) {
-            loadBuilderFromStorage(true);
+            await loadBuilderFromStorage();
+        } else if (mode === 'check_answers') {
+            await loadCheckAnswersFromStorage();
+        } else if (await QuizDB.getItem('builder_session')) {
+            await loadBuilderFromStorage(true);
         }
         if (typeof updateContinueEditingBadge === 'function') {
-            updateContinueEditingBadge();
+            await updateContinueEditingBadge();
         }
     }
 
-    function saveProgressToStorage() {
+    async function saveProgressToStorage() {
         const state = {
             quizData,
             userAnswers,
@@ -3506,16 +3640,15 @@ let isBuilderOverrideActive = false;
             isQuestionReviewed,
             quizMetadata
         };
-        localStorage.setItem('active_quiz_session', JSON.stringify(state));
-        localStorage.setItem('app_mode', 'play');
+        await QuizDB.setItem('active_quiz_session', state);
+        await QuizDB.setItem('app_mode', 'play');
     }
 
-    function loadProgressFromStorage() {
-        const savedState = localStorage.getItem('active_quiz_session');
-        if (!savedState) return;
+    async function loadProgressFromStorage() {
+        const state = await QuizDB.getItem('active_quiz_session');
+        if (!state) return;
 
         try {
-            const state = JSON.parse(savedState);
             quizData = state.quizData || [];
             userAnswers = state.userAnswers || [];
             userTimings = state.userTimings || [];
@@ -3539,6 +3672,9 @@ let isBuilderOverrideActive = false;
                 
                 modeSelectSection.style.display = 'none';
                 builderSection.style.display = 'none';
+                if (typeof teacherResultsSection !== 'undefined' && teacherResultsSection) {
+                    teacherResultsSection.style.display = 'none';
+                }
                 gameSection.style.display = 'block';
                 setTopBar('exit');
                 
@@ -3549,8 +3685,8 @@ let isBuilderOverrideActive = false;
         }
     }
 
-    function clearStorage() {
-        localStorage.removeItem('active_quiz_session');
+    async function clearStorage() {
+        await QuizDB.removeItem('active_quiz_session');
     }
 
     function openLightbox(src) {
@@ -3559,13 +3695,28 @@ let isBuilderOverrideActive = false;
         document.body.style.overflow = 'hidden';
     }
 
-    function closeLightbox() {
+    window.closeLightbox = function() {
         lightboxOverlay.classList.remove('active');
         document.body.style.overflow = '';
         setTimeout(() => { lightboxImg.src = ''; }, 200);
     }
+    
+    // Also export openLightbox just in case
+    window.openLightbox = openLightbox;
 
-    playQuestionImgEl.onclick = () => openLightbox(playQuestionImgEl.src);
+    // Attach via JS to guarantee binding
+    if (lightboxOverlay) {
+        lightboxOverlay.onclick = window.closeLightbox;
+    }
+    const lightboxCloseBtn = document.querySelector('.lightbox-close');
+    if (lightboxCloseBtn) {
+        lightboxCloseBtn.onclick = (e) => {
+            e.stopPropagation(); // prevent bubbling to overlay if needed
+            window.closeLightbox();
+        };
+    }
+
+    const playQuestionImgWrapEl = document.getElementById('play-question-img-wrap');
 
     function goToPlayUpload() {
         document.getElementById('file-selector').click();
@@ -3588,7 +3739,7 @@ let isBuilderOverrideActive = false;
         
         modeSelectSection.classList.add('anim-zoom-fade-out');
         
-        setTimeout(() => {
+        setTimeout(async () => {
             modeSelectSection.style.display = 'none';
             modeSelectSection.classList.remove('anim-zoom-fade-out');
             
@@ -3599,9 +3750,9 @@ let isBuilderOverrideActive = false;
             
             if (!isRestore && builderQuestions.length === 0) {
                 addBuilderQuestion();
-                localStorage.removeItem('builder_is_edit');
+                await QuizDB.removeItem('builder_is_edit');
             }
-            saveBuilderState();
+            await saveBuilderState();
 
             setTimeout(() => {
                 builderSection.classList.remove('anim-zoom-fade-in');
@@ -3609,37 +3760,102 @@ let isBuilderOverrideActive = false;
         }, 500);
     }
 
-    function triggerBuilderUpload() {
-        if (localStorage.getItem('builder_session')) {
-            loadBuilderFromStorage();
-            return;
+    let currentHasBuilderSession = false;
+    let currentHasCheckAnswersSession = false;
+
+    function openSessionConflictModal(mode) {
+        const modal = document.getElementById('session-conflict-modal');
+        const msgEl = document.getElementById('session-conflict-message');
+        const newBtn = document.getElementById('session-conflict-btn-new');
+        const continueBtn = document.getElementById('session-conflict-btn-continue');
+        
+        newBtn.onclick = null;
+        continueBtn.onclick = null;
+        
+        if (mode === 'check_answers') {
+            msgEl.textContent = "You have a grading session in progress. Do you want to continue or upload a new file?";
+            newBtn.textContent = "Upload New";
+            newBtn.onclick = () => {
+                closeSessionConflictModal();
+                document.getElementById('results-file-selector').click();
+            };
+            continueBtn.onclick = () => {
+                closeSessionConflictModal();
+                loadCheckAnswersFromStorage();
+            };
+        } else if (mode === 'create') {
+            msgEl.textContent = "You have a building session in progress. Do you want to continue or create a new quiz?";
+            newBtn.textContent = "Create New";
+            newBtn.onclick = async () => {
+                closeSessionConflictModal();
+                await resetBuilder();
+                goToBuilderFresh(false);
+            };
+            continueBtn.onclick = () => {
+                closeSessionConflictModal();
+                loadBuilderFromStorage();
+            };
+        } else if (mode === 'edit') {
+            msgEl.textContent = "You have a building session in progress. Do you want to continue or upload a new file?";
+            newBtn.textContent = "Upload New";
+            newBtn.onclick = () => {
+                closeSessionConflictModal();
+                builderFileSelector.click();
+            };
+            continueBtn.onclick = () => {
+                closeSessionConflictModal();
+                loadBuilderFromStorage();
+            };
         }
-        builderFileSelector.click();
+        
+        modal.classList.add('active');
+    }
+
+    function closeSessionConflictModal() {
+        document.getElementById('session-conflict-modal').classList.remove('active');
+    }
+
+    function triggerCreateQuiz() {
+        if (currentHasBuilderSession) {
+            openSessionConflictModal('create');
+        } else {
+            goToBuilderFresh();
+        }
+    }
+
+    function triggerBuilderUpload() {
+        if (currentHasBuilderSession) {
+            openSessionConflictModal('edit');
+        } else {
+            builderFileSelector.click();
+        }
     }
 
     function triggerCheckAnswers() {
-        const reviewList = document.getElementById('teacher-review-list');
-        if (reviewList && reviewList.innerHTML.trim() !== '') {
-            modeSelectSection.classList.add('anim-zoom-fade-out');
-            setTimeout(() => {
-                modeSelectSection.style.display = 'none';
-                modeSelectSection.classList.remove('anim-zoom-fade-out');
-                
-                builderSection.style.display = 'none';
-                gameSection.style.display = 'none';
-                resultsSection.style.display = 'none';
-                
-                document.getElementById('main-container').classList.add('results-view');
-                setTopBar('results');
-                
-                const downloadBtn = document.getElementById('results-download-bottom-btn');
-                if (downloadBtn) downloadBtn.style.display = 'none';
-                bottomActionBar.style.display = 'none';
-                
-                teacherResultsSection.style.display = 'block';
-            }, 500);
+        if (currentHasCheckAnswersSession) {
+            openSessionConflictModal('check_answers');
         } else {
             document.getElementById('results-file-selector').click();
+        }
+    }
+
+    function resumeSession(e, mode) {
+        if (e) e.stopPropagation();
+        if (mode === 'check_answers') {
+            loadCheckAnswersFromStorage();
+        } else if (mode === 'builder') {
+            loadBuilderFromStorage();
+        }
+    }
+
+    async function loadCheckAnswersFromStorage() {
+        const session = await QuizDB.getItem('check_answers_session');
+        if (!session) return;
+        try {
+            await QuizDB.setItem('app_mode', 'check_answers');
+            showTeacherResultsScreen(session.resultsObj, session.masterQuestions, session.origData);
+        } catch (e) {
+            await QuizDB.removeItem('check_answers_session');
         }
     }
 
@@ -3671,6 +3887,8 @@ let isBuilderOverrideActive = false;
                     const resultsObj = resultsExport.unencryptedResults;
                     const masterQuestions = origData.questions; 
                     resultsFileSelector.value = '';
+                    await QuizDB.setItem('check_answers_session', { resultsObj, masterQuestions, origData });
+                    await QuizDB.setItem('app_mode', 'check_answers');
                     showTeacherResultsScreen(resultsObj, masterQuestions, origData);
                     return;
                 }
@@ -3710,6 +3928,8 @@ let isBuilderOverrideActive = false;
                 
                 resultsFileSelector.value = '';
                 closePlaySetupModal();
+                await QuizDB.setItem('check_answers_session', { resultsObj, masterQuestions, origData });
+                await QuizDB.setItem('app_mode', 'check_answers');
                 showTeacherResultsScreen(resultsObj, masterQuestions, origData);
 
             } catch (err) {
@@ -3969,14 +4189,17 @@ let isBuilderOverrideActive = false;
         const resolvedQuestions = [];
         for (const q of questionsArray) {
             let qImage = q.questionImage || "";
-            if (qImage && typeof qImage === 'object') {
+            if (qImage) {
                 qImage = await resolveAssetToBase64(qImage);
             }
             
             if (q.options) {
                 for (let o of q.options) {
-                    if (o.image && typeof o.image === 'object') {
+                    if (o.image) {
                         o.image = await resolveAssetToBase64(o.image);
+                    }
+                    if (o.explanation && o.explanation.image) {
+                        o.explanation.image = await resolveAssetToBase64(o.explanation.image);
                     }
                 }
             }
@@ -4056,7 +4279,7 @@ let isBuilderOverrideActive = false;
         
         modeSelectSection.classList.add('anim-zoom-fade-out');
         
-        setTimeout(() => {
+        setTimeout(async () => {
             modeSelectSection.style.display = 'none';
             gameSection.style.display = 'none';
             resultsSection.style.display = 'none';
@@ -4067,9 +4290,9 @@ let isBuilderOverrideActive = false;
             builderSection.style.display = 'block';
             builderSection.classList.add('anim-zoom-fade-in');
             
-            localStorage.setItem('builder_is_edit', 'true');
+            await QuizDB.setItem('builder_is_edit', 'true');
             renderBuilderQuestions();
-            saveBuilderState();
+            await saveBuilderState();
 
             setTimeout(() => {
                 builderSection.classList.remove('anim-zoom-fade-in');
@@ -4150,13 +4373,19 @@ let isBuilderOverrideActive = false;
         const rndWrapper = document.getElementById('rnd-options-wrapper');
         const rndChevron = document.getElementById('rnd-chevron');
         if (rndExpanded) {
+            rndWrapper.style.visibility = 'visible';
             rndWrapper.style.maxHeight = '150px';
             rndWrapper.style.marginBottom = '12px';
+            rndWrapper.style.opacity = '1';
             rndChevron.style.transform = 'rotate(90deg)';
         } else {
             rndWrapper.style.maxHeight = '0';
             rndWrapper.style.marginBottom = '0';
+            rndWrapper.style.opacity = '0';
             rndChevron.style.transform = 'rotate(0deg)';
+            setTimeout(() => {
+                if (!rndExpanded) rndWrapper.style.visibility = 'hidden';
+            }, 300);
         }
     }
 
@@ -4240,8 +4469,14 @@ let isBuilderOverrideActive = false;
 
         closePlaySetupModal();
         modeSelectSection.style.display = 'none';
+        resultsSection.style.display = 'none';
+        document.getElementById('main-container').classList.remove('results-view');
+        
         if (document.getElementById('builder-view')) {
             document.getElementById('builder-view').style.display = 'none';
+        }
+        if (typeof teacherResultsSection !== 'undefined' && teacherResultsSection) {
+            teacherResultsSection.style.display = 'none';
         }
         mainContainerEl.classList.remove('builder-wide');
         gameSection.style.display = 'block';
@@ -4387,6 +4622,8 @@ let isBuilderOverrideActive = false;
         tfPlayStates = [];
         isQuestionReviewed = false;
         nextButtonEl.disabled = true;
+        const laterBtnEl = document.getElementById('later-btn');
+        if (laterBtnEl) laterBtnEl.disabled = false;
 
         if (quizMetadata.mode === 'exam') {
             nextButtonEl.innerHTML = '<span>Next</span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 16px;"><polyline points="9 18 15 12 9 6"></polyline></svg>';
@@ -4405,7 +4642,7 @@ let isBuilderOverrideActive = false;
             }
         } else {
             // Legacy / Unencrypted
-            currentDecryptedQuestion = Object.assign({}, rawItem);
+            currentDecryptedQuestion = JSON.parse(JSON.stringify(rawItem));
         }
 
         // Convert base64 or encrypted binary assets to Blob URLs for memory efficiency and privacy
@@ -4434,6 +4671,9 @@ let isBuilderOverrideActive = false;
 
             for (let i = 0; i < currentDecryptedQuestion.options.length; i++) {
                 currentDecryptedQuestion.options[i].image = await resolveAssetToBlobUrl(currentDecryptedQuestion.options[i].image);
+                if (currentDecryptedQuestion.options[i].explanation && currentDecryptedQuestion.options[i].explanation.image) {
+                    currentDecryptedQuestion.options[i].explanation.image = await resolveAssetToBlobUrl(currentDecryptedQuestion.options[i].explanation.image);
+                }
             }
             if (currentDecryptedQuestion.uiType === 'true_false' && tfPlayStates.length === 0) {
                 tfPlayStates = new Array(currentDecryptedQuestion.options.length).fill('empty');
@@ -4456,7 +4696,7 @@ let isBuilderOverrideActive = false;
         const correctIndexes = []; 
         if (currentData.options) {
             currentData.options.forEach((opt, idx) => {
-                if (opt.isCorrect) correctIndexes.push(idx);
+                if (opt.isCorrect || opt.correct || opt.tfState === 'true') correctIndexes.push(idx);
             });
         }
 
@@ -4506,6 +4746,11 @@ let isBuilderOverrideActive = false;
             });
             nextButtonEl.disabled = false;
             nextButtonEl.innerText = quizMetadata.mode === 'exam' ? "Next" : "Check";
+        }
+        
+        const laterBtnEl = document.getElementById('later-btn');
+        if (laterBtnEl) {
+            laterBtnEl.disabled = isQuestionReviewed;
         }
     }
 
@@ -4651,12 +4896,17 @@ let isBuilderOverrideActive = false;
         }
         questionTextEl.innerText = currentData.question || "";
         
+        const playQuestionImgWrapEl = document.getElementById('play-question-img-wrap');
         if (currentData.questionImage) {
             playQuestionImgEl.src = currentData.questionImage;
-            playQuestionImgEl.style.display = 'block';
+            playQuestionImgEl.style.display = 'block'; // Ensure inline style doesn't hide it
+            playQuestionImgWrapEl.style.display = 'flex';
+            playQuestionImgWrapEl.onclick = () => window.openImgViewModal(currentData.questionImage, currentData.questionImageCaption || '');
         } else {
-            playQuestionImgEl.style.display = 'none';
             playQuestionImgEl.src = '';
+            playQuestionImgEl.style.display = 'none';
+            playQuestionImgWrapEl.style.display = 'none';
+            playQuestionImgWrapEl.onclick = null;
         }
 
         if (multiSelectHintEl) {
@@ -4734,6 +4984,10 @@ let isBuilderOverrideActive = false;
                 const img = document.createElement('img');
                 img.src = option.image;
                 img.classList.add('option-img');
+                img.onclick = (e) => {
+                    e.stopPropagation();
+                    window.openImgViewModal(img.src);
+                };
                 
                 imgWrap.appendChild(img);
                 button.appendChild(imgWrap);
@@ -5094,6 +5348,11 @@ let isBuilderOverrideActive = false;
                 nextButtonEl.innerHTML = '<span>Next</span><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 16px;"><polyline points="9 18 15 12 9 6"></polyline></svg>';
                 addPlayExplanationIcons();
                 saveProgressToStorage();
+                
+                const laterBtnEl = document.getElementById('later-btn');
+                if (laterBtnEl) {
+                    laterBtnEl.disabled = true;
+                }
             } else {
                 if (currentQuestionIndex < quizData.length - 1) {
                     await animateToNextQuestion();
@@ -5353,7 +5612,7 @@ let isBuilderOverrideActive = false;
                     const qImg = document.createElement('img');
                     qImg.src = qImgUrl;
                     qImg.className = 'review-q-img';
-                    qImg.onclick = () => openLightbox(qImgUrl);
+                    qImg.onclick = () => window.openImgViewModal(qImgUrl, data.questionImageCaption || '');
                     itemDiv.appendChild(qImg);
                 }
             }
@@ -5576,35 +5835,67 @@ let isBuilderOverrideActive = false;
         document.body.style.overflow = '';
     }
 
-    function updateContinueEditingBadge() {
+    async function updateContinueEditingBadge() {
         const badge = document.getElementById('continue-editing-badge');
         const editBadge = document.getElementById('continue-editing-edit-badge');
         const checkBadge = document.getElementById('continue-checking-badge');
         
-        const hasSession = localStorage.getItem('builder_session') !== null;
+        const session = await QuizDB.getItem('builder_session');
+        const hasSession = session !== undefined;
         const hasMemory = (typeof builderQuestions !== 'undefined' && builderQuestions.length > 0);
         const showBuilderBadge = hasSession || hasMemory;
-        const isEditMode = localStorage.getItem('builder_is_edit') === 'true';
+        currentHasBuilderSession = showBuilderBadge;
+        const isEditMode = await QuizDB.getItem('builder_is_edit') === 'true';
         
         if (badge) badge.style.display = (showBuilderBadge && !isEditMode) ? 'block' : 'none';
         if (editBadge) editBadge.style.display = (showBuilderBadge && isEditMode) ? 'block' : 'none';
         
-        if (checkBadge) {
-            const checkAnswersReviewList = document.getElementById('teacher-review-list');
-            const hasCheckAnswers = checkAnswersReviewList && checkAnswersReviewList.innerHTML.trim() !== '';
-            checkBadge.style.display = hasCheckAnswers ? 'block' : 'none';
+        const checkSession = await QuizDB.getItem('check_answers_session');
+        currentHasCheckAnswersSession = (checkSession !== undefined);
+        if (checkBadge) checkBadge.style.display = currentHasCheckAnswersSession ? 'block' : 'none';
+    }
+
+    async function confirmDone() {
+        const titleEl = document.getElementById('done-confirm-title');
+        const messageEl = document.getElementById('done-confirm-message');
+        
+        const currentMode = await QuizDB.getItem('app_mode');
+        if (currentMode === 'check_answers') {
+            titleEl.textContent = "Finish Grading?";
+            messageEl.textContent = "Are you sure you want to finish grading? Your session will be cleared.";
+        } else {
+            titleEl.textContent = "Finish Session?";
+            messageEl.textContent = "Are you sure you want to finish reviewing your results? You can't return to this screen later.";
         }
+        
+        document.getElementById('done-confirm-modal').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 
-    function confirmExit() {
+    function closeDoneConfirmModal() {
+        document.getElementById('done-confirm-modal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    async function executeDoneConfirm() {
+        closeDoneConfirmModal();
+        await resetToUpload();
+    }
+
+    async function confirmExit() {
         closeExitModal();
-        resetToUpload();
+        await resetToUpload();
     }
 
-    function resetToUpload() {
+    async function resetToUpload() {
+        const currentMode = await QuizDB.getItem('app_mode');
+        if (currentMode === 'check_answers') {
+            await QuizDB.removeItem('check_answers_session');
+        }
+        
         clearInterval(playTimerInterval);
-        clearStorage();
-        localStorage.removeItem('app_mode');
+        await clearStorage();
+        await QuizDB.removeItem('app_mode');
         
         document.getElementById('main-container').classList.remove('results-view');
         resultsSection.style.display = 'none';
@@ -5614,7 +5905,7 @@ let isBuilderOverrideActive = false;
         mainContainerEl.classList.remove('builder-wide');
         setTopBar(null);
         modeSelectSection.style.display = 'block';
-        updateContinueEditingBadge();
+        await updateContinueEditingBadge();
         if (window.activeExplodedCanvas && window.activeExplodedCanvas.particleAnim) {
             window.activeExplodedCanvas.particleAnim.implode();
             setTimeout(() => {
@@ -6232,8 +6523,18 @@ let isBuilderOverrideActive = false;
     function toggleTimePopover(e, target) {
         if (e) e.stopPropagation();
         calendarEditingTarget = target;
-        const modal = document.getElementById('time-picker-modal');
-        modal.classList.add('active');
+        const popover = document.getElementById('time-picker-popover');
+        
+        const btn = target === 'start' ? document.getElementById('calendar-time-btn') : document.getElementById('calendar-time-btn-end');
+        if (btn) {
+            document.body.appendChild(popover);
+            const rect = btn.getBoundingClientRect();
+            popover.style.left = (rect.left + rect.width / 2) + 'px';
+            popover.style.top = (rect.top + rect.height / 2) + 'px';
+        }
+        
+        popover.classList.add('active');
+        document.addEventListener('click', closeTimePopoverOutside);
         
         let d = null;
         if (accessSettings.mode === 'deadline') {
@@ -6258,9 +6559,20 @@ let isBuilderOverrideActive = false;
             }
         });
     }
+
+    function closeTimePopoverOutside(e) {
+        const popover = document.getElementById('time-picker-popover');
+        const btn1 = document.getElementById('calendar-time-btn');
+        const btn2 = document.getElementById('calendar-time-btn-end');
+        if (popover && !popover.contains(e.target) && (!btn1 || !btn1.contains(e.target)) && (!btn2 || !btn2.contains(e.target))) {
+            closeTimePopover();
+        }
+    }
     
     function closeTimePopover() {
-        document.getElementById('time-picker-modal').classList.remove('active');
+        const popover = document.getElementById('time-picker-popover');
+        if (popover) popover.classList.remove('active');
+        document.removeEventListener('click', closeTimePopoverOutside);
         updateCalendarTimeButtons();
         saveBuilderState();
     }
@@ -6577,7 +6889,7 @@ let isBuilderOverrideActive = false;
         renderTimerPicker();
     });
 
-    function saveBuilderState() {
+    async function saveBuilderState() {
         const state = {
             questions: builderQuestions,
             name: builderQuizNameEl.value,
@@ -6641,16 +6953,16 @@ let isBuilderOverrideActive = false;
                 laterEnabled: document.getElementById('later-toggle') ? document.getElementById('later-toggle').checked : false
             }
         };
-        localStorage.setItem('builder_session', JSON.stringify(state));
-        localStorage.setItem('app_mode', 'builder');
+        await QuizDB.setItem('builder_session', state);
+        await QuizDB.setItem('app_mode', 'builder');
         updateDownloadButtonState();
     }
 
-    function loadBuilderFromStorage(silent = false) {
-        const stateStr = localStorage.getItem('builder_session');
-        if (!stateStr) return;
+    async function loadBuilderFromStorage(silent = false) {
+        const state = await QuizDB.getItem('builder_session');
+        if (!state) return;
         try {
-            const state = JSON.parse(stateStr);
+            await QuizDB.setItem('app_mode', 'builder');
             builderQuestions = state.questions || [];
             builderQuestions.forEach(q => {
                 if (q.questionType !== 'multiple' && q.questionType !== 'single') {
@@ -6744,7 +7056,7 @@ let isBuilderOverrideActive = false;
             renderBuilderQuestions();
             requestAnimationFrame(() => autoGrow(builderQuizDescEl));
         } catch (e) {
-            localStorage.removeItem('builder_session');
+            await QuizDB.removeItem('builder_session');
         }
     }
 
@@ -6947,6 +7259,12 @@ let isBuilderOverrideActive = false;
     
     function updateExplanationTextareaHeight() {
         if (!explanationModalTextareaEl) return;
+        const modalBox = document.getElementById('expl-modal-box');
+        const currentModalHeight = modalBox.getBoundingClientRect().height;
+        const oldModalTransition = modalBox.style.transition;
+        modalBox.style.transition = 'none';
+        modalBox.style.height = currentModalHeight + 'px';
+        
         const oldHeightStr = explanationModalTextareaEl.style.height;
         explanationModalTextareaEl.style.height = 'auto';
         let sh = explanationModalTextareaEl.scrollHeight;
@@ -6958,8 +7276,13 @@ let isBuilderOverrideActive = false;
             newOverflowY = 'hidden';
             newHeightStr = sh + 'px';
         }
+        
+        explanationModalTextareaEl.style.height = oldHeightStr || 'auto';
+        modalBox.style.transition = oldModalTransition;
+        modalBox.style.height = 'auto';
+        
         if (oldHeightStr !== newHeightStr && oldHeightStr !== '' && oldHeightStr !== 'auto') {
-            animateBoxHeight(document.getElementById('expl-modal-box'), () => {
+            animateBoxHeight(modalBox, () => {
                 explanationModalTextareaEl.style.overflowY = newOverflowY;
                 explanationModalTextareaEl.style.height = newHeightStr;
             });
@@ -7024,6 +7347,12 @@ let isBuilderOverrideActive = false;
     const explImgCaptionTextareaEl = document.getElementById('expl-img-caption-textarea');
     function updateExplImgCaptionTextareaHeight() {
         if (!explImgCaptionTextareaEl) return;
+        const modalBox = document.getElementById('expl-modal-box');
+        const currentModalHeight = modalBox.getBoundingClientRect().height;
+        const oldModalTransition = modalBox.style.transition;
+        modalBox.style.transition = 'none';
+        modalBox.style.height = currentModalHeight + 'px';
+        
         const oldHeightStr = explImgCaptionTextareaEl.style.height;
         explImgCaptionTextareaEl.style.height = 'auto';
         let sh = explImgCaptionTextareaEl.scrollHeight;
@@ -7035,8 +7364,13 @@ let isBuilderOverrideActive = false;
             newOverflowY = 'hidden';
             newHeightStr = sh + 'px';
         }
+        
+        explImgCaptionTextareaEl.style.height = oldHeightStr || 'auto';
+        modalBox.style.transition = oldModalTransition;
+        modalBox.style.height = 'auto';
+        
         if (oldHeightStr !== newHeightStr && oldHeightStr !== '' && oldHeightStr !== 'auto') {
-            animateBoxHeight(document.getElementById('expl-modal-box'), () => {
+            animateBoxHeight(modalBox, () => {
                 explImgCaptionTextareaEl.style.overflowY = newOverflowY;
                 explImgCaptionTextareaEl.style.height = newHeightStr;
             });
@@ -7078,13 +7412,18 @@ let isBuilderOverrideActive = false;
     });
 
     explImgAreaEl.addEventListener('click', (e) => {
-        if (explImgAreaEl.classList.contains('read-only')) {
-            if (explanationModalPendingImage) openImgViewModal(explanationModalPendingImage);
-            return;
-        }
         if (e.target.tagName.toLowerCase() === 'textarea') return;
         if (e.target.closest('.expl-img-remove-btn')) return;
         if (window.getSelection().toString().trim().length > 0) return;
+        
+        if (explImgAreaEl.classList.contains('read-only')) {
+            if (explImgPreviewEl.src && explImgPreviewEl.style.display !== 'none') {
+                explImgPreviewEl.onclick = () => {
+                    window.openImgViewModal(explImgPreviewEl.src);
+                };
+            }
+            return;
+        }
         explImgFileInputEl.click();
     });
 
@@ -7155,7 +7494,7 @@ let isBuilderOverrideActive = false;
         const image = getExplImage(currentExplanation);
         const caption = getExplCaption(currentExplanation);
 
-        const titleText = answerText ? `Explain "${answerText}"` : 'Explain Answer';
+        const titleText = answerText ? `Explanation for "${answerText}"` : 'Explanation';
         explanationModalTitleEl.innerText = titleText;
         document.getElementById('expl-top-save').style.display = 'none';
         explanationModalTextareaEl.value = text;
@@ -8560,11 +8899,13 @@ let isBuilderOverrideActive = false;
                             if (o.image) optObj.image = o.image;
                             if (o.explanation) optObj.explanation = o.explanation; 
                             if (o.tfState) optObj.tfState = o.tfState;
+                            if (o.imageCaption) optObj.imageCaption = o.imageCaption;
                             return optObj;
                         })
                 };
                 if (q.uiType) qObj.uiType = q.uiType;
                 if (q.questionImage) qObj.questionImage = q.questionImage;
+                if (q.questionImageCaption) qObj.questionImageCaption = q.questionImageCaption;
                 return qObj;
             })
         };
@@ -8757,9 +9098,9 @@ let isBuilderOverrideActive = false;
         document.body.style.overflow = '';
     }
 
-    function confirmBuilderExit() {
+    async function confirmBuilderExit() {
         closeBuilderExitModal();
-        resetBuilder();
+        await resetBuilder();
         backToModeSelectFromBuilder();
     }
 
@@ -8820,6 +9161,12 @@ let isBuilderOverrideActive = false;
 
     function updateImgCaptionTextareaHeight() {
         if (!imgCaptionTextarea) return;
+        const modalBox = document.getElementById('img-modal-box');
+        const currentModalHeight = modalBox.getBoundingClientRect().height;
+        const oldModalTransition = modalBox.style.transition;
+        modalBox.style.transition = 'none';
+        modalBox.style.height = currentModalHeight + 'px';
+        
         const oldHeightStr = imgCaptionTextarea.style.height;
         imgCaptionTextarea.style.height = 'auto';
         let sh = imgCaptionTextarea.scrollHeight;
@@ -8831,8 +9178,13 @@ let isBuilderOverrideActive = false;
             newOverflowY = 'hidden';
             newHeightStr = sh + 'px';
         }
+        
+        imgCaptionTextarea.style.height = oldHeightStr || 'auto';
+        modalBox.style.transition = oldModalTransition;
+        modalBox.style.height = 'auto';
+        
         if (oldHeightStr !== newHeightStr && oldHeightStr !== '' && oldHeightStr !== 'auto') {
-            animateBoxHeight(document.getElementById('img-modal-box'), () => {
+            animateBoxHeight(modalBox, () => {
                 imgCaptionTextarea.style.overflowY = newOverflowY;
                 imgCaptionTextarea.style.height = newHeightStr;
             });
@@ -8958,18 +9310,66 @@ let isBuilderOverrideActive = false;
 
     const imgViewModalEl = document.getElementById('img-view-modal');
     const imgViewModalImg = document.getElementById('img-view-modal-img');
+    const imgViewModalPreviewArea = document.getElementById('img-view-modal-preview-area');
 
-    function openImgViewModal(src) {
-        imgViewModalImg.src = src;
-        imgViewModalEl.classList.add('active');
-        document.body.style.overflow = 'hidden';
+    if (imgViewModalPreviewArea && imgViewModalImg) {
+        imgViewModalPreviewArea.addEventListener('mousemove', function(e) {
+            const rect = imgViewModalPreviewArea.getBoundingClientRect();
+            const xPos = e.clientX - rect.left;
+            const yPos = e.clientY - rect.top;
+            
+            let xRatio = xPos / rect.width;
+            let yRatio = yPos / rect.height;
+            
+            // Make panning more sensitive to reach edges easily
+            const sensitivity = 2.0;
+            xRatio = (xRatio - 0.5) * sensitivity + 0.5;
+            yRatio = (yRatio - 0.5) * sensitivity + 0.5;
+            
+            xRatio = Math.max(0, Math.min(1, xRatio));
+            yRatio = Math.max(0, Math.min(1, yRatio));
+            
+            const xPercent = xRatio * 100;
+            const yPercent = yRatio * 100;
+            
+            imgViewModalImg.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+        });
+        
+        imgViewModalPreviewArea.addEventListener('mouseleave', function() {
+            setTimeout(() => {
+                imgViewModalImg.style.transformOrigin = `50% 50%`;
+            }, 200); // delay so it doesn't jump during zoom-out transition
+        });
     }
 
-    function closeImgViewModal() {
+    window.openImgViewModal = function(src, captionText = '', title = 'Preview Question Image') {
+        imgViewModalImg.src = src;
+        
+        const modalCaptionEl = document.getElementById('img-view-modal-caption');
+        if (modalCaptionEl) {
+            if (captionText && captionText.trim() !== '') {
+                modalCaptionEl.innerText = captionText;
+                modalCaptionEl.style.display = 'block';
+            } else {
+                modalCaptionEl.innerText = '';
+                modalCaptionEl.style.display = 'none';
+            }
+        }
+        
+        const modalTitleEl = document.getElementById('img-view-modal-title');
+        if (modalTitleEl) {
+            modalTitleEl.innerText = title;
+        }
+        
+        imgViewModalEl.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeImgViewModal = function() {
         imgViewModalEl.classList.remove('active');
         document.body.style.overflow = '';
         setTimeout(() => { imgViewModalImg.src = ''; }, 200);
-    }
+    };
 
     function removeModalImage() {
         animateBoxHeight(document.getElementById('img-modal-box'), () => {
@@ -9012,7 +9412,46 @@ let isBuilderOverrideActive = false;
         }, 150);
     }
 
-    function resetBuilder() {
+    function optimizeBounds(scale) {
+        let ids = [];
+        let prefix = '';
+        if (scale === 'letter') {
+            ids = ['a', 'b', 'c', 'd', 'f'];
+            prefix = 'bounds-letter-';
+        } else if (scale === '5point') {
+            ids = ['5', '4', '3', '2', '1'];
+            prefix = 'bounds-5p-';
+        } else if (scale === '10point') {
+            ids = ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
+            prefix = 'bounds-10p-';
+        } else if (scale === '4point') {
+            ids = ['4', '3', '2', '1'];
+            prefix = 'bounds-4p-';
+        }
+
+        let prev = 101; 
+        for (let i = 0; i < ids.length; i++) {
+            let el = document.getElementById(prefix + ids[i]);
+            if (!el) continue;
+            
+            let val = parseInt(el.value, 10);
+            if (isNaN(val)) val = 0;
+            
+            if (val > 100) val = 100;
+            if (val < 0) val = 0;
+            
+            if (val >= prev) {
+                val = prev - 1;
+            }
+            if (val < 0) val = 0;
+            
+            el.value = val;
+            prev = val;
+        }
+        saveBuilderState();
+    }
+
+    async function resetBuilder() {
         builderQuestions = [];
         builderIdCounter = 0;
         builderViewMode = 'customize';
@@ -9022,15 +9461,15 @@ let isBuilderOverrideActive = false;
         builderQuestionListEl.innerHTML = '';
         builderSuccessEl.style.display = 'none';
         
-        localStorage.removeItem('builder_session');
-        localStorage.removeItem('builder_is_edit');
-        localStorage.removeItem('app_mode');
+        await QuizDB.removeItem('builder_session');
+        await QuizDB.removeItem('builder_is_edit');
+        await QuizDB.removeItem('app_mode');
     }
 
     function backToModeSelectFromBuilder() {
         builderSection.classList.add('anim-zoom-fade-out-reverse');
         
-        setTimeout(() => {
+        setTimeout(async () => {
             builderSection.style.display = 'none';
             builderSection.classList.remove('anim-zoom-fade-out-reverse');
             
@@ -9038,7 +9477,7 @@ let isBuilderOverrideActive = false;
             setTopBar(null);
             
             modeSelectSection.style.display = 'block';
-            updateContinueEditingBadge();
+            await updateContinueEditingBadge();
             modeSelectSection.classList.add('anim-zoom-fade-in-reverse');
             
             if (window.activeExplodedCanvas && window.activeExplodedCanvas.particleAnim) {
@@ -9197,7 +9636,7 @@ let isBuilderOverrideActive = false;
                     const qImg = document.createElement('img');
                     qImg.src = qImgUrl;
                     qImg.className = 'review-q-img';
-                    qImg.onclick = () => openLightbox(qImgUrl);
+                    qImg.onclick = () => window.openImgViewModal(qImgUrl, q.questionImageCaption || '');
                     itemDiv.appendChild(qImg);
                 }
             }
