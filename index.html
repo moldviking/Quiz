@@ -894,7 +894,14 @@
         .topic-grid-1 { display: grid; grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr; gap: 8px; margin-bottom: 12px; }
         .topic-grid-2 { display: grid; grid-template-columns: 2fr 3fr 1fr; gap: 8px; }
         .calendar-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; }
+        .access-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; padding-top: 16px; }
+        .access-sidebar { display: flex; flex-direction: column; gap: 4px; padding-right: 16px; border-right: 1px solid var(--border-color); }
+        .access-separator { height: 1px; background: var(--border-color); margin: 8px 0; }
         @media (max-width: 600px) {
+            .access-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+            .access-sidebar { flex-direction: row !important; flex-wrap: wrap !important; padding-right: 0 !important; border-right: none !important; border-bottom: 1px solid var(--border-color) !important; padding-bottom: 12px !important; }
+            .access-sidebar .grading-sidebar-btn { width: auto !important; padding: 8px 14px !important; flex-grow: 1; text-align: center; justify-content: center !important; gap: 6px; }
+            .access-separator { display: none; }
             .topic-grid-1 { grid-template-columns: 1fr 1fr !important; }
             .topic-grid-2 { grid-template-columns: 1fr !important; }
             .calendar-header-flex { flex-direction: column !important; gap: 12px !important; align-items: stretch !important; }
@@ -2109,15 +2116,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 
                 <div class="island-accordion">
                 <div class="island-accordion-inner">
-                    <div style="padding-top: 16px; display: grid; grid-template-columns: 1fr 2fr; gap: 16px;">
+                    <div class="access-grid">
                         
                         <!-- Sidebar -->
-                        <div style="display: flex; flex-direction: column; gap: 4px; padding-right: 16px; border-right: 1px solid var(--border-color);">
+                        <div class="access-sidebar">
                             <button class="grading-sidebar-btn active" id="access-btn-indefinite" onclick="selectAccessMode('indefinite')">Indefinite</button>
                             <button class="grading-sidebar-btn" id="access-btn-deadline" onclick="selectAccessMode('deadline')">Deadline</button>
                             <button class="grading-sidebar-btn" id="access-btn-exam" onclick="selectAccessMode('exam')">Quiz Date</button>
                             
-                            <div style="height: 1px; background: var(--border-color); margin: 8px 0;"></div>
+                            <div class="access-separator"></div>
                             
                             <button class="grading-sidebar-btn" id="access-btn-time-limit" onclick="showAccessRightPanel('time_limit')" style="display:flex; justify-content:space-between; align-items:center;">
                                 <span>Time Limit</span>
