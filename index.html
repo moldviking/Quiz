@@ -7,6 +7,15 @@
     
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    
+    <script>
+        if (localStorage.getItem('appModeSync') === 'builder' || localStorage.getItem('appModeSync') === 'play') {
+            document.documentElement.classList.add('hide-home-initially');
+        }
+    </script>
+    <style>
+        .hide-home-initially #mode-select-view { display: none !important; }
+    </style>
 
     <style>
         /* LIGHT MODE (Default) */
@@ -700,20 +709,15 @@
             transform: rotate(90deg);
         }
         .options-content-grid {
-            display: grid;
-            grid-template-rows: 0fr;
-            transition: grid-template-rows 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .builder-meta-card.options-card.expanded .options-content-grid {
-            grid-template-rows: 1fr;
+            display: block;
         }
         .options-content-wrapper {
             overflow: hidden;
         }
         .options-content {
-            padding-top: 16px;
-            border-top: 1px solid var(--builder-question-separator);
-            margin-top: 16px;
+            padding-top: 0;
+            border-top: none;
+            margin-top: 0;
         }
         .option-row {
             display: flex;
@@ -1009,6 +1013,14 @@
         .grouped-scale-option:last-child { margin-bottom: 0; }
         .grouped-scale-option:active { transform: scale(0.98); }
         .grouped-scale-option.active { border-color: var(--apple-blue); background-color: var(--option-selected-bg); }
+
+        .stepper-control { display: flex; align-items: center; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; height: 36px; }
+        .stepper-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; user-select: none; -webkit-user-select: none; padding: 0; }
+        .stepper-btn:hover { background-color: rgba(0,0,0,0.05); color: var(--text-main); }
+        .stepper-btn:active { background-color: rgba(0,0,0,0.1); }
+        .stepper-btn svg { width: 16px; height: 16px; }
+        .stepper-val-text { font-size: 14px; font-weight: 600; color: var(--text-main); min-width: 48px; text-align: center; user-select: none; -webkit-user-select: none; }
+
         .options-island-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
         .island-icon-box { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .island-icon-box svg { width: 18px; height: 18px; }
@@ -1020,6 +1032,7 @@
         .island-hidden-horizontal { width: 0 !important; padding: 0 !important; margin: 0 !important; border: 0 !important; opacity: 0 !important; overflow: hidden !important; min-height: 0 !important; max-height: 0 !important; }
         .island-accordion { display: grid; grid-template-rows: 0fr; opacity: 0; overflow: hidden; margin-top: 0; transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1); align-items: start; }
         .island-accordion.open-summary { grid-template-rows: 1fr; opacity: 1; margin-top: 16px; }
+        .options-island.expanded #timer-collapsed-summary:not(.open-summary) { grid-template-rows: 0fr; opacity: 0; margin-top: 0; }
         .island-accordion.open-fields { grid-template-rows: 1fr; opacity: 1; margin-top: 16px; }
         .island-accordion-inner { min-height: 0; width: 100%; }
         .options-island-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
@@ -1027,21 +1040,45 @@
         .options-island .text-input, .options-island .custom-select-button { background-color: var(--bg-card); }
         .grading-sidebar-button { background: transparent; border: none; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; }
         .grading-sidebar-button:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
-        .grading-sidebar-button.active { background: var(--apple-blue); color: #fff; font-weight: 600; }
-        .grading-sidebar-button.active #sidebar-time-limit-val { background: rgba(255, 255, 255, 0.25) !important; color: #fff !important; }
+        .grading-sidebar-button.active { color: var(--apple-blue); font-weight: 600; background: rgba(0, 122, 255, 0.08); }
         .grading-sub-button { background: transparent; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; }
         .grading-sub-button:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
-        .grading-sub-button.active { color: var(--apple-blue); font-weight: 600; background: rgba(0, 122, 255, 0.08); }
+        .grading-sub-button.active { color: var(--text-main); font-weight: 600; background: rgba(0,0,0,0.04); }
         .options-island .grouped-scale-option { background-color: var(--bg-card); }
-        .slider-hidden { max-width: 0 !important; padding-left: 0 !important; padding-right: 0 !important; border-width: 0 !important; margin: 0 !important; opacity: 0 !important; pointer-events: none !important; }
-        #timer-done-button { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-width: 100px; overflow: hidden; white-space: nowrap; }
-        .timer-badge { background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 15px; color: #fff; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-width: 600px; overflow: hidden; }
+        
+        .timer-badge { background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 15px; color: #fff; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; transform-origin: right center; }
         .timer-badge.badge-indefinite { color: rgba(255,255,255,0.7); font-weight: 500; background: rgba(0,0,0,0.2); }
         #island-timer { cursor: pointer; }
-        @media (max-width: 680px) { .options-island { width: 100% !important; } }
+        @media (max-width: 680px) { 
+            .options-island { width: 100% !important; } 
+        }
+        @container (max-width: 460px) {
+            .topic-grid-1 { grid-template-columns: 1fr 1fr !important; }
+            .topic-grid-2 { grid-template-columns: 1fr !important; }
+        }
         .topic-grid-1 { display: grid; grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr; gap: 8px; margin-bottom: 12px; }
         .topic-grid-2 { display: grid; grid-template-columns: 2fr 3fr 1fr; gap: 8px; }
         .topic-grid-1 > div, .topic-grid-2 > div { min-width: 0; }
+        
+        #meta-school { view-transition-name: vt-school; }
+        #meta-classroom { view-transition-name: vt-classroom; }
+        #meta-grade { view-transition-name: vt-grade; }
+        #meta-section { view-transition-name: vt-section; }
+        #meta-subject { view-transition-name: vt-subject; }
+        #meta-topic { view-transition-name: vt-topic; }
+        #meta-subtopic { view-transition-name: vt-subtopic; }
+        
+        ::view-transition-group(vt-school),
+        ::view-transition-group(vt-classroom),
+        ::view-transition-group(vt-grade),
+        ::view-transition-group(vt-section),
+        ::view-transition-group(vt-subject),
+        ::view-transition-group(vt-topic),
+        ::view-transition-group(vt-subtopic) {
+            animation-duration: 0.4s;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .calendar-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; }
         .calendar-grid-header > div, #calendar-grid > div { min-width: 0; }
         .access-wrapper { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; padding-top: 16px; }
@@ -1071,8 +1108,6 @@
             .access-slider-inner { display: flex; position: absolute; top: 0; left: 0; bottom: 0; width: 300%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateX(calc(-100% / 3 * var(--idx, 0))); }
             .access-slider.dragging, .access-slider.dragging .access-slider-inner { transition: none; }
             .access-slider-text { flex: 1; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; }
-            .topic-grid-1 { grid-template-columns: 1fr 1fr !important; }
-            .topic-grid-2 { grid-template-columns: 1fr !important; }
             .calendar-header-flex { flex-direction: column !important; gap: 12px !important; align-items: stretch !important; }
             .calendar-header-flex > div:first-child { justify-content: space-between; width: 100%; }
             #calendar-time-selectors { width: 100%; justify-content: center; }
@@ -1783,6 +1818,12 @@
             0% { opacity: 0; transform: scale(5); filter: blur(12px); }
             100% { opacity: 1; transform: scale(1); filter: blur(0px); }
         }
+        
+        @keyframes cardLoadPulse {
+            0% { transform: scale(1) translateY(0); }
+            40% { transform: scale(0.97) translateY(-4px); }
+            100% { transform: scale(1) translateY(0); }
+        }
 
         .anim-zoom-fade-out {
             animation: viewZoomFadeOutIntoCard 0.6s cubic-bezier(0.7, 0, 0.3, 1) forwards !important;
@@ -1876,6 +1917,7 @@ const QuizDB = {
         });
     },
     setItem: async function(key, value) {
+        if (key === 'appMode') localStorage.setItem('appModeSync', value);
         await this.init();
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction([this.storeName], "readwrite");
@@ -1896,6 +1938,7 @@ const QuizDB = {
         });
     },
     removeItem: async function(key) {
+        if (key === 'appMode') localStorage.removeItem('appModeSync');
         await this.init();
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction([this.storeName], "readwrite");
@@ -2091,12 +2134,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         </div>
 
         <div class="builder-meta-card options-card" id="builder-options-card">
-            <div class="options-header" onclick="toggleOptionionsCard()">
-                <span class="options-title">Options</span>
-                <span class="options-chevron">
-                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </span>
-            </div>
+
             <div class="options-content-grid">
                 <div class="options-content-wrapper">
                     <div class="options-content" id="options-content">
@@ -2113,7 +2151,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <button id="class-topic-done-button" onclick="collapseClassTopic(event)" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
                                 </div>
                                 
-                                <div id="class-topic-collapsed-summary" class="island-accordion open-summary">
+                                <div class="island-accordion-wrapper" style="display: grid; grid-template-columns: 1fr;">
+                                <div id="class-topic-collapsed-summary" class="island-accordion open-summary" style="grid-column: 1; grid-row: 1;">
                                     <div class="island-accordion-inner" style="display: flex; flex-direction: column; gap: 12px;">
                                         <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
                                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Class</span>
@@ -2126,20 +2165,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     </div>
                                 </div>
 
-                                <div id="class-topic-fields" class="island-accordion">
+                                <div id="class-topic-fields" class="island-accordion" style="grid-column: 1; grid-row: 1;">
                                     <div class="island-accordion-inner">
                                     <div class="topic-grid-1">
                                         <div>
                                             <input type="text" id="meta-school" class="text-input" placeholder="School" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
                                         </div>
                                         <div>
+                                            <input type="text" id="meta-classroom" class="text-input" placeholder="Room" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
+                                        </div>
+                                        <div>
                                             <input type="text" id="meta-grade" class="text-input" placeholder="Grade" oninput="saveBuilderState(); updateClassTopicSummary();" style="margin-bottom: 0; padding: 10px 10px;">
                                         </div>
                                         <div>
                                             <input type="text" id="meta-section" class="text-input" placeholder="Section" oninput="saveBuilderState(); updateClassTopicSummary();" style="margin-bottom: 0; padding: 10px 10px;">
-                                        </div>
-                                        <div>
-                                            <input type="text" id="meta-classroom" class="text-input" placeholder="Room" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
                                         </div>
                                     </div>
                                     <div class="topic-grid-2">
@@ -2156,6 +2195,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     </div>
                                 </div>
                                 </div>
+                                </div>
                             </div>
                             <div class="options-island" id="island-grading" onclick="handleGradingClick(event)" style="cursor: pointer; overflow: visible; min-height: 172px;">
                                 <div class="island-content-wrapper" style="width: 100%; display: flex; flex-direction: column;">
@@ -2169,7 +2209,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <button id="grading-done-button" onclick="collapseGrading(event)" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
                                 </div>
 
-                                <div id="grading-collapsed-summary" class="island-accordion open-summary">
+                                <div class="island-accordion-wrapper" style="display: grid; grid-template-columns: 1fr;">
+                                <div id="grading-collapsed-summary" class="island-accordion open-summary" style="grid-column: 1; grid-row: 1;">
                                     <div class="island-accordion-inner" style="display: flex; flex-direction: column; gap: 12px;">
                                         <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
                                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Grading Type</span>
@@ -2182,7 +2223,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     </div>
                                 </div>
 
-                                <div id="grading-fields" class="island-accordion">
+                                <div id="grading-fields" class="island-accordion" style="grid-column: 1; grid-row: 1;">
                                     <div class="island-accordion-inner">
                                     <div style="padding-top: 16px; display: grid; grid-template-columns: 1fr 2fr; gap: 16px;">
                                         <div style="display: flex; flex-direction: column; gap: 4px; padding-right: 16px; border-right: 1px solid var(--border-color); min-width: 0;">
@@ -2196,7 +2237,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                             </div>
                                             <button class="grading-sidebar-button" id="sidebar-button-percentage" onclick="selectGradingType('percentage')">Percentage</button>
                                         </div>
-                                        
                                         <div style="min-width: 0;">
                                             <div id="grade-slider-wrapper" style="margin-bottom: 0;">
                                                 <label class="field-label" id="grade-label">Passing Score</label>
@@ -2211,11 +2251,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <div id="scale-config-letter" class="scale-config-container" style="display: block;">
                         <label class="field-label">Letter Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">A</span><input type="number" id="bounds-letter-a" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">B</span><input type="number" id="bounds-letter-b" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">C</span><input type="number" id="bounds-letter-c" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">D</span><input type="number" id="bounds-letter-d" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">F</span><input type="number" id="bounds-letter-f" class="text-input" value="50" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('letter')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">A</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'a', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'a', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-a" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('letter', 'a', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'a', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">B</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'b', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'b', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-b" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('letter', 'b', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'b', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">C</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'c', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'c', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-c" data-val="70">70%</div><button class="stepper-btn" onmousedown="startStep('letter', 'c', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'c', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">D</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'd', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'd', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-d" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('letter', 'd', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'd', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">F</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'f', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'f', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-f" data-val="50">50%</div><button class="stepper-btn" onmousedown="startStep('letter', 'f', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'f', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                         </div>
                         <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Letters represent grouped percentage ranges (e.g., A = 90–100%).</p>
                     </div>
@@ -2223,11 +2263,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <div id="scale-config-5point" class="scale-config-container" style="display: none;">
                         <label class="field-label">5-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">5</span><input type="number" id="bounds-5p-5" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><input type="number" id="bounds-5p-4" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><input type="number" id="bounds-5p-3" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><input type="number" id="bounds-5p-2" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-5p-1" class="text-input" value="50" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('5point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">5</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '5', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '5', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-5" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('5point', '5', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '5', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '4', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '4', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-4" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('5point', '4', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '4', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '3', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '3', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-3" data-val="70">70%</div><button class="stepper-btn" onmousedown="startStep('5point', '3', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '3', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-2" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('5point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-1" data-val="50">50%</div><button class="stepper-btn" onmousedown="startStep('5point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                         </div>
                         <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Often 5 is the highest (excellent) and 1 is the lowest (fail).</p>
                     </div>
@@ -2235,16 +2275,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <div id="scale-config-10point" class="scale-config-container" style="display: none;">
                         <label class="field-label">10-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">10</span><input type="number" id="bounds-10p-10" class="text-input" value="95" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">9</span><input type="number" id="bounds-10p-9" class="text-input" value="85" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">8</span><input type="number" id="bounds-10p-8" class="text-input" value="75" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">7</span><input type="number" id="bounds-10p-7" class="text-input" value="65" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">6</span><input type="number" id="bounds-10p-6" class="text-input" value="55" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">5</span><input type="number" id="bounds-10p-5" class="text-input" value="45" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">4</span><input type="number" id="bounds-10p-4" class="text-input" value="35" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">3</span><input type="number" id="bounds-10p-3" class="text-input" value="25" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">2</span><input type="number" id="bounds-10p-2" class="text-input" value="15" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-10p-1" class="text-input" value="5" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('10point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">10</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '10', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '10', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-10" data-val="95">95%</div><button class="stepper-btn" onmousedown="startStep('10point', '10', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '10', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">9</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '9', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '9', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-9" data-val="85">85%</div><button class="stepper-btn" onmousedown="startStep('10point', '9', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '9', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">8</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '8', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '8', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-8" data-val="75">75%</div><button class="stepper-btn" onmousedown="startStep('10point', '8', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '8', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">7</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '7', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '7', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-7" data-val="65">65%</div><button class="stepper-btn" onmousedown="startStep('10point', '7', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '7', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">6</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '6', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '6', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-6" data-val="55">55%</div><button class="stepper-btn" onmousedown="startStep('10point', '6', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '6', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">5</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '5', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '5', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-5" data-val="45">45%</div><button class="stepper-btn" onmousedown="startStep('10point', '5', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '5', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">4</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '4', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '4', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-4" data-val="35">35%</div><button class="stepper-btn" onmousedown="startStep('10point', '4', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '4', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">3</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '3', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '3', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-3" data-val="25">25%</div><button class="stepper-btn" onmousedown="startStep('10point', '3', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '3', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-2" data-val="15">15%</div><button class="stepper-btn" onmousedown="startStep('10point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-1" data-val="5">5%</div><button class="stepper-btn" onmousedown="startStep('10point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                         </div>
                         <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">A highly precise numerical scale where 10 is perfect.</p>
                     </div>
@@ -2252,10 +2292,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <div id="scale-config-4point" class="scale-config-container" style="display: none;">
                         <label class="field-label">4-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><input type="number" id="bounds-4p-4" class="text-input" value="90" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('4point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><input type="number" id="bounds-4p-3" class="text-input" value="80" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('4point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><input type="number" id="bounds-4p-2" class="text-input" value="70" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('4point')"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><input type="number" id="bounds-4p-1" class="text-input" value="60" style="margin-bottom: 0; padding: 10px 14px;" oninput="saveBuilderState()" onchange="optimizeBounds('4point')"></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '4', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '4', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-4" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('4point', '4', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '4', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '3', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '3', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-3" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('4point', '3', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '3', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-2" data-val="70">70%</div><button class="stepper-btn" onmousedown="startStep('4point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-1" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('4point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                         </div>
                         <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Used to measure mastery of specific skills rather than overall percentages.</p>
                     </div>
@@ -2266,25 +2306,30 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     </div>
                                 </div>
                                 </div>
+                                </div>
                             </div>
                             <div class="options-island full-width" id="island-timer" onclick="toggleOptionionsIsland('island-timer', event)">
-                                <div class="options-island-row" style="gap: 16px; flex-wrap: wrap;">
-                                    <div class="options-island-title" style="margin-bottom: 0;">
+                                <div class="options-island-title" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
                                         <div class="island-icon-box" style="background-color: #5856D6; color: #fff;">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                         </div>
-                                        Time & Access
+                                        <span>Time & Access</span>
                                     </div>
-                                    <div style="display: flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; justify-content: flex-end; position: relative;">
+                                    <button id="timer-done-button" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
+                                </div>
+                                
+                                <div class="island-accordion-wrapper" style="display: grid; grid-template-columns: 1fr;">
+                                <div id="timer-collapsed-summary" class="island-accordion open-summary" style="grid-column: 1; grid-row: 1;">
+                                    <div class="island-accordion-inner" style="display: flex; justify-content: flex-end;">
                                         <div class="timer-badge badge-indefinite" id="timer-badge">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                             <span id="timer-badge-text" style="display: inline-flex; white-space: nowrap; justify-content: flex-end; gap: 4px; text-align: right;">Indefinite</span>
                                         </div>
-                                        <button id="timer-done-button" class="slider-hidden" style="background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
                                     </div>
                                 </div>
                 
-                <div class="island-accordion">
+                <div id="timer-fields" class="island-accordion" style="grid-column: 1; grid-row: 1;">
                 <div class="island-accordion-inner">
                     <div class="access-wrapper">
                         
@@ -2416,7 +2461,39 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     </div>
                 </div>
                 </div>
-                
+                </div>
+                            </div>
+                            <div class="options-island" id="island-random-questions">
+                                <div class="options-island-row" style="gap: 16px;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
+                                        <div class="options-island-title" style="margin-bottom: 0;">
+                                            <div class="island-icon-box" style="background-color: var(--apple-blue); color: #fff;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                                            </div>
+                                            Randomize Questions
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; display: block;">Allow shuffling the order of questions.</span>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" id="random-questions-toggle" class="ios-toggle" onchange="saveBuilderState();">
+                                </div>
+                            </div>
+                            <div class="options-island" id="island-random-answers">
+                                <div class="options-island-row" style="gap: 16px;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
+                                        <div class="options-island-title" style="margin-bottom: 0;">
+                                            <div class="island-icon-box" style="background-color: #AF52DE; color: #fff;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
+                                            </div>
+                                            Randomize Answers
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; display: block;">Allow shuffling the order of answers.</span>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" id="random-answers-toggle" class="ios-toggle" onchange="saveBuilderState();">
+                                </div>
                             </div>
                             <div class="options-island full-width" id="island-later">
                                 <div class="options-island-row" style="gap: 16px;">
@@ -2857,26 +2934,32 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             actionFn();
             return;
         }
-        if (box.animTimeout) {
-            clearTimeout(box.animTimeout);
-        }
-        const currentHeight = box.getBoundingClientRect().height;
-        box.style.height = currentHeight + 'px';
-        box.offsetHeight; // reflow
+        
+        const oldHeight = box.offsetHeight;
         actionFn();
+        
         box.style.height = 'auto';
-        const newHeight = box.getBoundingClientRect().height;
-        if (currentHeight === newHeight) {
-            box.style.height = 'auto';
-            return;
-        }
-        box.style.height = currentHeight + 'px';
-        box.offsetHeight; // reflow
+        const newHeight = box.offsetHeight;
+        
+        if (oldHeight === newHeight) return;
+        
+        box.style.transition = 'none';
         box.style.height = newHeight + 'px';
-        box.animTimeout = setTimeout(() => {
-            box.style.height = 'auto';
-            box.animTimeout = null;
-        }, 300);
+        box.style.overflow = 'hidden';
+        
+        const animation = box.animate([
+            { height: oldHeight + 'px' },
+            { height: newHeight + 'px' }
+        ], {
+            duration: 350,
+            easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+        });
+        
+        animation.onfinish = () => {
+            box.style.transition = '';
+            box.style.height = '';
+            box.style.overflow = '';
+        };
     }
 var EYE_OPEN_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
 var EYE_CLOSED_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
@@ -3837,6 +3920,7 @@ let isBuilderOverrideActive = false;
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+        if (typeof renderTimerPicker === 'function') renderTimerPicker();
         initializeAppState();
         builderQuizNameEl.addEventListener('input', saveBuilderState);
         builderQuizDescEl.addEventListener('input', () => {
@@ -3860,6 +3944,14 @@ let isBuilderOverrideActive = false;
         if (typeof updateContinueEditingBadge === 'function') {
             await updateContinueEditingBadge();
         }
+        if (mode) {
+            localStorage.setItem('appModeSync', mode);
+        } else if (await QuizDB.getItem('builderSession')) {
+            localStorage.setItem('appModeSync', 'builder');
+        } else {
+            localStorage.removeItem('appModeSync');
+        }
+        document.documentElement.classList.remove('hide-home-initially');
     }
 
     async function saveProgressToStorage() {
@@ -3958,8 +4050,17 @@ let isBuilderOverrideActive = false;
     }
 
     function goToBuilderFresh(isRestore = false) {
+        if (isRestore) {
+            modeSelectSection.style.display = 'none';
+            mainContainerEl.classList.add('builder-wide');
+            setTopBar('builder-back');
+            builderSection.style.display = 'block';
+            saveBuilderState();
+            return;
+        }
+
         const createButtonCanvas = document.querySelector('.button-create .card-canvas-bg');
-        if (!isRestore && createButtonCanvas && createButtonCanvas.particleAnim) {
+        if (createButtonCanvas && createButtonCanvas.particleAnim) {
             const rect = createButtonCanvas.parentElement.getBoundingClientRect();
             const modeRect = modeSelectSection.getBoundingClientRect();
             const originX = ((rect.left + rect.width / 2 - modeRect.left) / modeRect.width) * 100;
@@ -3983,7 +4084,7 @@ let isBuilderOverrideActive = false;
             builderSection.style.display = 'block';
             builderSection.classList.add('anim-zoom-fade-in');
             
-            if (!isRestore && builderQuestions.length === 0) {
+            if (builderQuestions.length === 0) {
                 addBuilderQuestion();
                 await QuizDB.removeItem('builderIsEdit');
             }
@@ -4224,7 +4325,7 @@ let isBuilderOverrideActive = false;
                 quizMetadata.mode = mode;
                 quizMetadata.classTopic = rawData.meta?.classTopic || "";
                 quizMetadata.rsaPublicKey = rawData.playProfile?.rsaPublicKey || null;
-                quizMetadata.options = rawData.options || {};
+                quizMetadata.options = rawData.options || (rawData.playProfile && rawData.playProfile.options) || {};
 
                 let examStartsInFuture = false;
                 let upcomingExamDate = null;
@@ -4337,13 +4438,7 @@ let isBuilderOverrideActive = false;
                     return;
                 }
 
-                if (isExam) {
-                    selectMode('seq');
-                    startQuiz();
-                } else {
-                    showPlaySetupStep('step-config');
-                    selectMode('seq');
-                }
+                applyQuizConfigAndStart(rawData, isExam);
                 
             } catch (err) {
                 showErrorModal('Cannot Open Quiz', err.message);
@@ -4416,6 +4511,12 @@ let isBuilderOverrideActive = false;
             }
             if (document.getElementById('later-toggle')) {
                 document.getElementById('later-toggle').checked = !!option.laterEnabled;
+            }
+            if (document.getElementById('random-questions-toggle')) {
+                document.getElementById('random-questions-toggle').checked = !!option.randomizeQuestions;
+            }
+            if (document.getElementById('random-answers-toggle')) {
+                document.getElementById('random-answers-toggle').checked = !!option.randomizeAnswers;
             }
         }
 
@@ -4589,9 +4690,9 @@ let isBuilderOverrideActive = false;
 
     let randomExpanded = false;
 
-    function selectMode(mode) {
+    function selectMode(mode, forceExpand = false) {
         if (mode === 'random') {
-            if (selectedMode === 'random') {
+            if (selectedMode === 'random' && !forceExpand) {
                 randomExpanded = !randomExpanded;
             } else {
                 selectedMode = 'random';
@@ -4681,6 +4782,41 @@ let isBuilderOverrideActive = false;
         }
     }
 
+    function applyQuizConfigAndStart(rawDataObj, isExamMode) {
+        let rQ = true;
+        let rA = true;
+        let explicit = false;
+
+        const quizOptions = rawDataObj.options || (rawDataObj.playProfile && rawDataObj.playProfile.options) || null;
+
+        if (quizOptions && (quizOptions.randomizeQuestions !== undefined || quizOptions.randomizeAnswers !== undefined)) {
+            rQ = !!quizOptions.randomizeQuestions;
+            rA = !!quizOptions.randomizeAnswers;
+            explicit = true;
+        }
+        
+        const qToggle = document.getElementById('toggle-random-questions');
+        const aToggle = document.getElementById('toggle-random-answers');
+        if (qToggle) qToggle.checked = rQ;
+        if (aToggle) aToggle.checked = rA;
+        
+        if (isExamMode) {
+            if (explicit && (rQ || rA)) {
+                selectMode('random', true);
+            } else {
+                selectMode('seq');
+            }
+            startQuiz();
+        } else {
+            showPlaySetupStep('step-config');
+            if (explicit && (rQ || rA)) {
+                selectMode('random', true);
+            } else {
+                selectMode('seq');
+            }
+        }
+    }
+
     function startQuiz() {
         quizData = JSON.parse(JSON.stringify(loadedQuizData));
 
@@ -4688,13 +4824,15 @@ let isBuilderOverrideActive = false;
             const qToggle = document.getElementById('toggle-random-questions');
             const aToggle = document.getElementById('toggle-random-answers');
             
-            if (aToggle.checked) {
+            if (aToggle && aToggle.checked) {
                 quizData.forEach(q => {
-                    q.options = shuffleArray(q.options);
-                    q.correctIndexes = q.options.map((option, i) => option.isCorrect ? i : -1).filter(i => i !== -1);
+                    if (q && q.options && Array.isArray(q.options)) {
+                        q.options = shuffleArray(q.options);
+                        q.correctIndexes = q.options.map((option, i) => option.isCorrect ? i : -1).filter(i => i !== -1);
+                    }
                 });
             }
-            if (qToggle.checked) {
+            if (qToggle && qToggle.checked) {
                 quizData = shuffleArray(quizData);
             }
         }
@@ -4901,6 +5039,18 @@ let isBuilderOverrideActive = false;
                 // If explicit trueFalseState exists, or it's a newly created empty one, or text matches
                 if (hasExplanationicitTrueFalseState || isTrueFalseText || (!currentDecryptedQuestion.uiType && currentDecryptedQuestion.options.some(o => ((o.trueFalseState || o.tfState) || o.tfState) === 'none'))) {
                     currentDecryptedQuestion.uiType = 'true_false';
+                }
+            }
+
+            // Apply answer shuffling for encrypted mode here since startQuiz cannot shuffle the encrypted block directly
+            // Do not shuffle True/False options to maintain logical Yes/No order
+            if (rawItem.encryptedBlock && sessionCryptoKey && selectedMode === 'random' && currentDecryptedQuestion.uiType !== 'true_false') {
+                const aToggle = document.getElementById('toggle-random-answers');
+                if (aToggle && aToggle.checked && Array.isArray(currentDecryptedQuestion.options)) {
+                    currentDecryptedQuestion.options.forEach((opt, idx) => {
+                        if (opt.originalIndex === undefined) opt.originalIndex = idx;
+                    });
+                    currentDecryptedQuestion.options = shuffleArray(currentDecryptedQuestion.options);
                 }
             }
 
@@ -5472,9 +5622,19 @@ let isBuilderOverrideActive = false;
 
         if (quizMetadata.mode === 'exam') {
             // Exam Mode: No review phase. Record answer, score, clean up, and advance immediately.
+            const rawItem = quizData[currentQuestionIndex];
+            const globalIndex = loadedQuizData.indexOf(rawItem);
+            
             const chosen = isTF ? [...trueFalsePlayStates] : [...selectedOptionionIndexes].sort((a, b) => a - b);
-            userAnswers.push(chosen);
-            userTimings.push(Date.now() - currentQuestionStartTime);
+            
+            const originalChosen = isTF ? chosen : chosen.map(c => {
+                return (currentData.options && currentData.options[c] && currentData.options[c].originalIndex !== undefined) 
+                    ? currentData.options[c].originalIndex 
+                    : c;
+            });
+            
+            userAnswers[globalIndex] = originalChosen;
+            userTimings[globalIndex] = Date.now() - currentQuestionStartTime;
 
             let isFullyCorrect = false;
             if (isTF) {
@@ -5510,9 +5670,20 @@ let isBuilderOverrideActive = false;
             // Practice / Open Mode
             if (!isQuestionReviewed) {
                 isQuestionReviewed = true;
+                
+                const rawItem = quizData[currentQuestionIndex];
+                const globalIndex = loadedQuizData.indexOf(rawItem);
+                
                 const chosen = isTF ? [...trueFalsePlayStates] : [...selectedOptionionIndexes].sort((a, b) => a - b);
-                userAnswers.push(chosen);
-                userTimings.push(Date.now() - currentQuestionStartTime);
+                
+                const originalChosen = isTF ? chosen : chosen.map(c => {
+                    return (currentData.options && currentData.options[c] && currentData.options[c].originalIndex !== undefined) 
+                        ? currentData.options[c].originalIndex 
+                        : c;
+                });
+                
+                userAnswers[globalIndex] = originalChosen;
+                userTimings[globalIndex] = Date.now() - currentQuestionStartTime;
 
                 let isFullyCorrect = false;
                 let correctIndexes = [];
@@ -6293,7 +6464,7 @@ let isBuilderOverrideActive = false;
             else el.classList.remove('active');
         });
         
-        animateIslandHeight('grading-fields', () => {
+        animateIslandHeight('#grading-fields', () => {
             document.querySelectorAll('.scale-config-container').forEach(el => el.style.display = 'none');
             const activeConfig = document.getElementById('scale-config-' + scaleType);
             if (activeConfig) activeConfig.style.display = 'block';
@@ -6303,11 +6474,6 @@ let isBuilderOverrideActive = false;
         updateGradingSummary();
     }
 
-
-    function toggleOptionionsCard() {
-        const card = document.getElementById('builder-options-card');
-        card.classList.toggle('expanded');
-    }
 
     function handleGradingClick(event) {
         const island = document.getElementById('island-grading');
@@ -6338,44 +6504,157 @@ let isBuilderOverrideActive = false;
         setTimeout(() => { wrapper.style.minWidth = ''; }, 450);
     }
 
-    function expandGrading() {
-        lockIslandWidth('island-class-topic');
-        lockIslandWidth('island-grading');
-        const gradingIsland = document.getElementById('island-grading');
-        const classTopicIsland = document.getElementById('island-class-topic');
-        const fields = document.getElementById('grading-fields');
-        const collapsedSummary = document.getElementById('grading-collapsed-summary');
-        const doneButton = document.getElementById('grading-done-button');
+    function getScaleIds(scale) {
+        if (scale === 'letter') return { ids: ['a', 'b', 'c', 'd', 'f'], prefix: 'bounds-letter-' };
+        if (scale === '5point') return { ids: ['5', '4', '3', '2', '1'], prefix: 'bounds-5p-' };
+        if (scale === '10point') return { ids: ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'], prefix: 'bounds-10p-' };
+        if (scale === '4point') return { ids: ['4', '3', '2', '1'], prefix: 'bounds-4p-' };
+        return { ids: [], prefix: '' };
+    }
 
-        gradingIsland.classList.add('island-expanded-horizontal');
-        classTopicIsland.classList.add('island-hidden-horizontal');
+    function getBoundValue(elId) {
+        const el = document.getElementById(elId);
+        if (!el) return 0;
+        return parseInt(el.dataset.val || 0, 10);
+    }
+
+    function setBoundValue(elId, val) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        el.dataset.val = val;
+        el.innerText = val + '%';
+    }
+
+    let stepperInterval = null;
+    let stepperTimeout = null;
+
+    function startStep(scale, id, delta) {
+        if (window.event) window.event.preventDefault();
+        stepBound(scale, id, delta);
         
-        gradingIsland.style.cursor = 'default';
-        collapsedSummary.classList.remove('open-summary');
-        fields.classList.add('open-fields');
-        doneButton.style.display = 'block';
+        stepperTimeout = setTimeout(() => {
+            stepperInterval = setInterval(() => {
+                stepBound(scale, id, delta);
+            }, 50);
+        }, 400);
+    }
+
+    function stopStep() {
+        if (stepperTimeout) clearTimeout(stepperTimeout);
+        if (stepperInterval) clearInterval(stepperInterval);
+        stepperTimeout = null;
+        stepperInterval = null;
+        saveBuilderState();
+    }
+
+    function stepBound(scale, id, delta) {
+        const { ids, prefix } = getScaleIds(scale);
+        const index = ids.indexOf(id);
+        if (index === -1) return;
+
+        let values = ids.map(x => getBoundValue(prefix + x));
+        let newValues = [...values];
+        
+        let newVal = newValues[index] + delta;
+        if (newVal > 100) newVal = 100;
+        if (newVal < 0) newVal = 0;
+        newValues[index] = newVal;
+
+        if (delta > 0) {
+            for (let i = index - 1; i >= 0; i--) {
+                if (newValues[i] <= newValues[i + 1]) {
+                    newValues[i] = newValues[i + 1] + 1;
+                    if (newValues[i] > 100) return; // Prevent shift if hits ceiling
+                } else {
+                    break;
+                }
+            }
+        } else if (delta < 0) {
+            for (let i = index + 1; i < ids.length; i++) {
+                if (newValues[i] >= newValues[i - 1]) {
+                    newValues[i] = newValues[i - 1] - 1;
+                    if (newValues[i] < 0) return; // Prevent shift if hits floor
+                } else {
+                    break;
+                }
+            }
+        }
+
+        let changed = false;
+        for (let i = 0; i < ids.length; i++) {
+            if (values[i] !== newValues[i]) {
+                setBoundValue(prefix + ids[i], newValues[i]);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            updateGradingSummary();
+        }
+    }
+
+    function performSmoothLayoutTransition(actionCallback) {
+        if (!document.startViewTransition) {
+            actionCallback(true);
+            return;
+        }
+        const islands = document.querySelectorAll('.options-island');
+        islands.forEach(island => island.style.transition = 'none');
+        
+        document.startViewTransition(() => {
+            actionCallback(false);
+            document.body.offsetHeight;
+        }).finished.finally(() => {
+            islands.forEach(island => island.style.transition = '');
+        });
+    }
+
+    function expandGrading() {
+        performSmoothLayoutTransition((useFallback) => {
+            if (useFallback) {
+                lockIslandWidth('island-class-topic');
+                lockIslandWidth('island-grading');
+            }
+            const gradingIsland = document.getElementById('island-grading');
+            const classTopicIsland = document.getElementById('island-class-topic');
+            const fields = document.getElementById('grading-fields');
+            const collapsedSummary = document.getElementById('grading-collapsed-summary');
+            const doneButton = document.getElementById('grading-done-button');
+
+            gradingIsland.classList.add('island-expanded-horizontal');
+            classTopicIsland.classList.add('island-hidden-horizontal');
+            
+            gradingIsland.style.cursor = 'default';
+            collapsedSummary.classList.remove('open-summary');
+            fields.classList.add('open-fields');
+            doneButton.style.display = 'block';
+        });
     }
 
     function collapseGrading(event) {
         if (event) event.stopPropagation();
         
-        lockIslandWidth('island-class-topic');
-        lockIslandWidth('island-grading');
-        const gradingIsland = document.getElementById('island-grading');
-        const classTopicIsland = document.getElementById('island-class-topic');
-        const fields = document.getElementById('grading-fields');
-        const collapsedSummary = document.getElementById('grading-collapsed-summary');
-        const doneButton = document.getElementById('grading-done-button');
+        performSmoothLayoutTransition((useFallback) => {
+            if (useFallback) {
+                lockIslandWidth('island-class-topic');
+                lockIslandWidth('island-grading');
+            }
+            const gradingIsland = document.getElementById('island-grading');
+            const classTopicIsland = document.getElementById('island-class-topic');
+            const fields = document.getElementById('grading-fields');
+            const collapsedSummary = document.getElementById('grading-collapsed-summary');
+            const doneButton = document.getElementById('grading-done-button');
 
-        gradingIsland.classList.remove('island-expanded-horizontal');
-        classTopicIsland.classList.remove('island-hidden-horizontal');
-        
-        gradingIsland.style.cursor = 'pointer';
-        fields.classList.remove('open-fields');
-        collapsedSummary.classList.add('open-summary');
-        doneButton.style.display = 'none';
-        
-        updateGradingSummary();
+            gradingIsland.classList.remove('island-expanded-horizontal');
+            classTopicIsland.classList.remove('island-hidden-horizontal');
+            
+            gradingIsland.style.cursor = 'pointer';
+            fields.classList.remove('open-fields');
+            collapsedSummary.classList.add('open-summary');
+            doneButton.style.display = 'none';
+            
+            updateGradingSummary();
+        });
     }
 
     function updateGradingSummary() {
@@ -6424,43 +6703,51 @@ let isBuilderOverrideActive = false;
     }
 
     function expandClassTopic() {
-        lockIslandWidth('island-class-topic');
-        lockIslandWidth('island-grading');
-        const island = document.getElementById('island-class-topic');
-        const gradingIsland = document.getElementById('island-grading');
-        const fields = document.getElementById('class-topic-fields');
-        const collapsedSummary = document.getElementById('class-topic-collapsed-summary');
-        const doneButton = document.getElementById('class-topic-done-button');
+        performSmoothLayoutTransition((useFallback) => {
+            if (useFallback) {
+                lockIslandWidth('island-class-topic');
+                lockIslandWidth('island-grading');
+            }
+            const island = document.getElementById('island-class-topic');
+            const gradingIsland = document.getElementById('island-grading');
+            const fields = document.getElementById('class-topic-fields');
+            const collapsedSummary = document.getElementById('class-topic-collapsed-summary');
+            const doneButton = document.getElementById('class-topic-done-button');
 
-        island.classList.add('island-expanded-horizontal');
-        gradingIsland.classList.add('island-hidden-horizontal');
-        
-        island.style.cursor = 'default';
-        collapsedSummary.classList.remove('open-summary');
-        fields.classList.add('open-fields');
-        doneButton.style.display = 'block';
+            island.classList.add('island-expanded-horizontal');
+            gradingIsland.classList.add('island-hidden-horizontal');
+            
+            island.style.cursor = 'default';
+            collapsedSummary.classList.remove('open-summary');
+            fields.classList.add('open-fields');
+            doneButton.style.display = 'block';
+        });
     }
 
     function collapseClassTopic(event) {
         if (event) event.stopPropagation();
         
-        lockIslandWidth('island-class-topic');
-        lockIslandWidth('island-grading');
-        const island = document.getElementById('island-class-topic');
-        const gradingIsland = document.getElementById('island-grading');
-        const fields = document.getElementById('class-topic-fields');
-        const collapsedSummary = document.getElementById('class-topic-collapsed-summary');
-        const doneButton = document.getElementById('class-topic-done-button');
+        performSmoothLayoutTransition((useFallback) => {
+            if (useFallback) {
+                lockIslandWidth('island-class-topic');
+                lockIslandWidth('island-grading');
+            }
+            const island = document.getElementById('island-class-topic');
+            const gradingIsland = document.getElementById('island-grading');
+            const fields = document.getElementById('class-topic-fields');
+            const collapsedSummary = document.getElementById('class-topic-collapsed-summary');
+            const doneButton = document.getElementById('class-topic-done-button');
 
-        island.classList.remove('island-expanded-horizontal');
-        gradingIsland.classList.remove('island-hidden-horizontal');
-        
-        island.style.cursor = 'pointer';
-        fields.classList.remove('open-fields');
-        collapsedSummary.classList.add('open-summary');
-        doneButton.style.display = 'none';
-        
-        updateClassTopicSummary();
+            island.classList.remove('island-expanded-horizontal');
+            gradingIsland.classList.remove('island-hidden-horizontal');
+            
+            island.style.cursor = 'pointer';
+            fields.classList.remove('open-fields');
+            collapsedSummary.classList.add('open-summary');
+            doneButton.style.display = 'none';
+            
+            updateClassTopicSummary();
+        });
     }
 
     function updateClassTopicSummary() {
@@ -6493,12 +6780,14 @@ let isBuilderOverrideActive = false;
     }
 
     function toggleOptionionsIsland(islandId, event) {
-        if (event && (event.target.closest('.island-accordion') || event.target.closest('.ios-toggle') || event.target.closest('.explanation-popover') || event.target.closest('.custom-select-button'))) {
+        const targetIsland = document.getElementById(islandId);
+        const isCurrentlyExpanded = targetIsland && targetIsland.classList.contains('expanded');
+        
+        if (isCurrentlyExpanded && event && (event.target.closest('.island-accordion') || event.target.closest('.ios-toggle') || event.target.closest('.explanation-popover') || event.target.closest('.custom-select-button'))) {
             return;
         }
         
-        const targetIsland = document.getElementById(islandId);
-        if (targetIsland && targetIsland.id === 'island-timer' && targetIsland.classList.contains('expanded')) {
+        if (targetIsland && targetIsland.id === 'island-timer' && isCurrentlyExpanded) {
             if (event && !event.target.closest('#timer-done-button')) {
                 return;
             }
@@ -6544,14 +6833,16 @@ let isBuilderOverrideActive = false;
                 const isNowExpanded = island.classList.contains('expanded');
                 const timerBadge = document.getElementById('timer-badge');
                 const timerDoneButton = document.getElementById('timer-done-button');
+                const timerSummary = document.getElementById('timer-collapsed-summary');
                 
-                if (timerBadge && timerDoneButton) {
+                if (timerDoneButton) {
                     if (isNowExpanded) {
-                        timerBadge.classList.add('slider-hidden');
-                        timerDoneButton.classList.remove('slider-hidden');
+                        timerDoneButton.style.display = 'block';
+                        if (timerSummary) timerSummary.classList.remove('open-summary');
                     } else {
-                        timerDoneButton.classList.add('slider-hidden');
-                        timerBadge.classList.remove('slider-hidden');
+                        timerDoneButton.style.display = 'none';
+                        if (timerSummary) timerSummary.classList.add('open-summary');
+                        updateTimerBadge();
                     }
                 }
                 
@@ -6619,6 +6910,11 @@ let isBuilderOverrideActive = false;
         }
         
         if (!badgeContainer) return;
+        
+        const timerIsland = document.getElementById('island-timer');
+        if (timerIsland && timerIsland.classList.contains('expanded')) {
+            return;
+        }
         
         const indefiniteSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>';
         const deadlineSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v4"/><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M3 10h5"/><path d="M8 2v4"/><circle cx="16" cy="16" r="6"/></svg>';
@@ -6768,7 +7064,7 @@ let isBuilderOverrideActive = false;
     }
 
     function selectAccessMode(mode) {
-        animateIslandHeight('#island-timer .island-accordion-inner', () => {
+        animateIslandHeight('#timer-fields', () => {
             accessSettings.mode = mode;
             showAccessRightPanel(mode);
             saveBuilderState();
@@ -6776,7 +7072,7 @@ let isBuilderOverrideActive = false;
         });
     }
     function changeCalendarMonth(delta) {
-        animateIslandHeight('#island-timer .island-accordion-inner', () => {
+        animateIslandHeight('#timer-fields', () => {
             calendarDate.setMonth(calendarDate.getMonth() + delta);
             renderCustomCalendar();
         });
@@ -7584,16 +7880,11 @@ let isBuilderOverrideActive = false;
         loadedQuizData = upcomingExamData.loadedQuizData;
         quizMetadata = upcomingExamData.quizMetadata;
         sessionStudentName = upcomingExamData.sessionStudentName;
+        const rawData = upcomingExamData.rawData;
         
         upcomingExamData = null;
         
-        if (quizMetadata.mode === 'exam') {
-            selectMode('seq');
-            startQuiz();
-        } else {
-            showPlaySetupStep('step-config');
-            selectMode('seq');
-        }
+        applyQuizConfigAndStart(rawData, quizMetadata.mode === 'exam');
     }
     
     function goToToday(e) {
@@ -7740,26 +8031,22 @@ let isBuilderOverrideActive = false;
         ['h', 'm', 's'].forEach(unit => {
             const col = document.getElementById('timer-' + unit);
             if (!col) return;
-            const item = col.querySelector(`.timer-item[data-val="${timerSettings[unit]}"]`);
-            if (item) {
-                setTimeout(() => {
-                    const topTarget = item.offsetTop - col.children[0].offsetTop - (col.clientHeight / 2) + (item.offsetHeight / 2);
-                    if (smooth) {
-                        col.scrollTo({ top: topTarget, behavior: 'smooth' });
-                    } else {
-                        col.scrollTop = topTarget;
-                        handleTimerScroll(col, unit);
-                    }
-                }, 10);
-            }
+            const topTarget = timerSettings[unit] * 36;
+            setTimeout(() => {
+                if (smooth) {
+                    col.scrollTo({ top: topTarget, behavior: 'smooth' });
+                } else {
+                    col.scrollTop = topTarget;
+                    const fgCol = document.getElementById('timer-' + unit + '-fg');
+                    if (fgCol) fgCol.style.transform = `translateY(-${82 + topTarget}px)`;
+                }
+            }, 10);
         });
     }
 
 
-    // Call render once to populate DOM
+    // Add drag-to-scroll logic
     document.addEventListener('DOMContentLoaded', () => {
-        renderTimerPicker();
-        
         // Add drag-to-scroll logic
         document.querySelectorAll('.timer-column').forEach(col => {
             let isDown = false;
@@ -7823,36 +8110,36 @@ let isBuilderOverrideActive = false;
                 groupedScale: document.querySelector('.grading-sub-button.active') ? document.querySelector('.grading-sub-button.active').id.replace('sub-button-', '') : 'letter',
                 groupedBounds: {
                     letter: {
-                        a: document.getElementById('bounds-letter-a') ? parseInt(document.getElementById('bounds-letter-a').value, 10) : 90,
-                        b: document.getElementById('bounds-letter-b') ? parseInt(document.getElementById('bounds-letter-b').value, 10) : 80,
-                        c: document.getElementById('bounds-letter-c') ? parseInt(document.getElementById('bounds-letter-c').value, 10) : 70,
-                        d: document.getElementById('bounds-letter-d') ? parseInt(document.getElementById('bounds-letter-d').value, 10) : 60,
-                        f: document.getElementById('bounds-letter-f') ? parseInt(document.getElementById('bounds-letter-f').value, 10) : 50
+                        a: getBoundValue('bounds-letter-a') || 90,
+                        b: getBoundValue('bounds-letter-b') || 80,
+                        c: getBoundValue('bounds-letter-c') || 70,
+                        d: getBoundValue('bounds-letter-d') || 60,
+                        f: getBoundValue('bounds-letter-f') || 50
                     },
                     '5point': {
-                        5: document.getElementById('bounds-5p-5') ? parseInt(document.getElementById('bounds-5p-5').value, 10) : 90,
-                        4: document.getElementById('bounds-5p-4') ? parseInt(document.getElementById('bounds-5p-4').value, 10) : 80,
-                        3: document.getElementById('bounds-5p-3') ? parseInt(document.getElementById('bounds-5p-3').value, 10) : 70,
-                        2: document.getElementById('bounds-5p-2') ? parseInt(document.getElementById('bounds-5p-2').value, 10) : 60,
-                        1: document.getElementById('bounds-5p-1') ? parseInt(document.getElementById('bounds-5p-1').value, 10) : 50
+                        5: getBoundValue('bounds-5p-5') || 90,
+                        4: getBoundValue('bounds-5p-4') || 80,
+                        3: getBoundValue('bounds-5p-3') || 70,
+                        2: getBoundValue('bounds-5p-2') || 60,
+                        1: getBoundValue('bounds-5p-1') || 50
                     },
                     '10point': {
-                        10: document.getElementById('bounds-10p-10') ? parseInt(document.getElementById('bounds-10p-10').value, 10) : 95,
-                        9: document.getElementById('bounds-10p-9') ? parseInt(document.getElementById('bounds-10p-9').value, 10) : 85,
-                        8: document.getElementById('bounds-10p-8') ? parseInt(document.getElementById('bounds-10p-8').value, 10) : 75,
-                        7: document.getElementById('bounds-10p-7') ? parseInt(document.getElementById('bounds-10p-7').value, 10) : 65,
-                        6: document.getElementById('bounds-10p-6') ? parseInt(document.getElementById('bounds-10p-6').value, 10) : 55,
-                        5: document.getElementById('bounds-10p-5') ? parseInt(document.getElementById('bounds-10p-5').value, 10) : 45,
-                        4: document.getElementById('bounds-10p-4') ? parseInt(document.getElementById('bounds-10p-4').value, 10) : 35,
-                        3: document.getElementById('bounds-10p-3') ? parseInt(document.getElementById('bounds-10p-3').value, 10) : 25,
-                        2: document.getElementById('bounds-10p-2') ? parseInt(document.getElementById('bounds-10p-2').value, 10) : 15,
-                        1: document.getElementById('bounds-10p-1') ? parseInt(document.getElementById('bounds-10p-1').value, 10) : 5
+                        10: getBoundValue('bounds-10p-10') || 95,
+                        9: getBoundValue('bounds-10p-9') || 85,
+                        8: getBoundValue('bounds-10p-8') || 75,
+                        7: getBoundValue('bounds-10p-7') || 65,
+                        6: getBoundValue('bounds-10p-6') || 55,
+                        5: getBoundValue('bounds-10p-5') || 45,
+                        4: getBoundValue('bounds-10p-4') || 35,
+                        3: getBoundValue('bounds-10p-3') || 25,
+                        2: getBoundValue('bounds-10p-2') || 15,
+                        1: getBoundValue('bounds-10p-1') || 5
                     },
                     '4point': {
-                        4: document.getElementById('bounds-4p-4') ? parseInt(document.getElementById('bounds-4p-4').value, 10) : 90,
-                        3: document.getElementById('bounds-4p-3') ? parseInt(document.getElementById('bounds-4p-3').value, 10) : 80,
-                        2: document.getElementById('bounds-4p-2') ? parseInt(document.getElementById('bounds-4p-2').value, 10) : 70,
-                        1: document.getElementById('bounds-4p-1') ? parseInt(document.getElementById('bounds-4p-1').value, 10) : 60
+                        4: getBoundValue('bounds-4p-4') || 90,
+                        3: getBoundValue('bounds-4p-3') || 80,
+                        2: getBoundValue('bounds-4p-2') || 70,
+                        1: getBoundValue('bounds-4p-1') || 60
                     }
                 },
                 timer: timerSettings,
@@ -7862,7 +8149,9 @@ let isBuilderOverrideActive = false;
                     examStart: accessSettings.examStart || '',
                     examEnd: accessSettings.examEnd || ''
                 },
-                laterEnabled: document.getElementById('later-toggle') ? document.getElementById('later-toggle').checked : false
+                laterEnabled: document.getElementById('later-toggle') ? document.getElementById('later-toggle').checked : false,
+                randomizeQuestions: document.getElementById('random-questions-toggle') ? document.getElementById('random-questions-toggle').checked : false,
+                randomizeAnswers: document.getElementById('random-answers-toggle') ? document.getElementById('random-answers-toggle').checked : false
             }
         };
         await QuizDB.setItem('builderSession', state);
@@ -7916,36 +8205,36 @@ let isBuilderOverrideActive = false;
                 }
                 if (option.groupedBounds) {
                     if (option.groupedBounds.letter) {
-                        if(document.getElementById('bounds-letter-a')) document.getElementById('bounds-letter-a').value = option.groupedBounds.letter.a || 90;
-                        if(document.getElementById('bounds-letter-b')) document.getElementById('bounds-letter-b').value = option.groupedBounds.letter.b || 80;
-                        if(document.getElementById('bounds-letter-c')) document.getElementById('bounds-letter-c').value = option.groupedBounds.letter.c || 70;
-                        if(document.getElementById('bounds-letter-d')) document.getElementById('bounds-letter-d').value = option.groupedBounds.letter.d || 60;
-                        if(document.getElementById('bounds-letter-f')) document.getElementById('bounds-letter-f').value = option.groupedBounds.letter.f || 50;
+                        if(document.getElementById('bounds-letter-a')) setBoundValue('bounds-letter-a', option.groupedBounds.letter.a || 90);
+                        if(document.getElementById('bounds-letter-b')) setBoundValue('bounds-letter-b', option.groupedBounds.letter.b || 80);
+                        if(document.getElementById('bounds-letter-c')) setBoundValue('bounds-letter-c', option.groupedBounds.letter.c || 70);
+                        if(document.getElementById('bounds-letter-d')) setBoundValue('bounds-letter-d', option.groupedBounds.letter.d || 60);
+                        if(document.getElementById('bounds-letter-f')) setBoundValue('bounds-letter-f', option.groupedBounds.letter.f || 50);
                     }
                     if (option.groupedBounds['5point']) {
-                        if(document.getElementById('bounds-5p-5')) document.getElementById('bounds-5p-5').value = option.groupedBounds['5point']['5'] || 90;
-                        if(document.getElementById('bounds-5p-4')) document.getElementById('bounds-5p-4').value = option.groupedBounds['5point']['4'] || 80;
-                        if(document.getElementById('bounds-5p-3')) document.getElementById('bounds-5p-3').value = option.groupedBounds['5point']['3'] || 70;
-                        if(document.getElementById('bounds-5p-2')) document.getElementById('bounds-5p-2').value = option.groupedBounds['5point']['2'] || 60;
-                        if(document.getElementById('bounds-5p-1')) document.getElementById('bounds-5p-1').value = option.groupedBounds['5point']['1'] || 50;
+                        if(document.getElementById('bounds-5p-5')) setBoundValue('bounds-5p-5', option.groupedBounds['5point']['5'] || 90);
+                        if(document.getElementById('bounds-5p-4')) setBoundValue('bounds-5p-4', option.groupedBounds['5point']['4'] || 80);
+                        if(document.getElementById('bounds-5p-3')) setBoundValue('bounds-5p-3', option.groupedBounds['5point']['3'] || 70);
+                        if(document.getElementById('bounds-5p-2')) setBoundValue('bounds-5p-2', option.groupedBounds['5point']['2'] || 60);
+                        if(document.getElementById('bounds-5p-1')) setBoundValue('bounds-5p-1', option.groupedBounds['5point']['1'] || 50);
                     }
                     if (option.groupedBounds['10point']) {
-                        if(document.getElementById('bounds-10p-10')) document.getElementById('bounds-10p-10').value = option.groupedBounds['10point']['10'] || 95;
-                        if(document.getElementById('bounds-10p-9')) document.getElementById('bounds-10p-9').value = option.groupedBounds['10point']['9'] || 85;
-                        if(document.getElementById('bounds-10p-8')) document.getElementById('bounds-10p-8').value = option.groupedBounds['10point']['8'] || 75;
-                        if(document.getElementById('bounds-10p-7')) document.getElementById('bounds-10p-7').value = option.groupedBounds['10point']['7'] || 65;
-                        if(document.getElementById('bounds-10p-6')) document.getElementById('bounds-10p-6').value = option.groupedBounds['10point']['6'] || 55;
-                        if(document.getElementById('bounds-10p-5')) document.getElementById('bounds-10p-5').value = option.groupedBounds['10point']['5'] || 45;
-                        if(document.getElementById('bounds-10p-4')) document.getElementById('bounds-10p-4').value = option.groupedBounds['10point']['4'] || 35;
-                        if(document.getElementById('bounds-10p-3')) document.getElementById('bounds-10p-3').value = option.groupedBounds['10point']['3'] || 25;
-                        if(document.getElementById('bounds-10p-2')) document.getElementById('bounds-10p-2').value = option.groupedBounds['10point']['2'] || 15;
-                        if(document.getElementById('bounds-10p-1')) document.getElementById('bounds-10p-1').value = option.groupedBounds['10point']['1'] || 5;
+                        if(document.getElementById('bounds-10p-10')) setBoundValue('bounds-10p-10', option.groupedBounds['10point']['10'] || 95);
+                        if(document.getElementById('bounds-10p-9')) setBoundValue('bounds-10p-9', option.groupedBounds['10point']['9'] || 85);
+                        if(document.getElementById('bounds-10p-8')) setBoundValue('bounds-10p-8', option.groupedBounds['10point']['8'] || 75);
+                        if(document.getElementById('bounds-10p-7')) setBoundValue('bounds-10p-7', option.groupedBounds['10point']['7'] || 65);
+                        if(document.getElementById('bounds-10p-6')) setBoundValue('bounds-10p-6', option.groupedBounds['10point']['6'] || 55);
+                        if(document.getElementById('bounds-10p-5')) setBoundValue('bounds-10p-5', option.groupedBounds['10point']['5'] || 45);
+                        if(document.getElementById('bounds-10p-4')) setBoundValue('bounds-10p-4', option.groupedBounds['10point']['4'] || 35);
+                        if(document.getElementById('bounds-10p-3')) setBoundValue('bounds-10p-3', option.groupedBounds['10point']['3'] || 25);
+                        if(document.getElementById('bounds-10p-2')) setBoundValue('bounds-10p-2', option.groupedBounds['10point']['2'] || 15);
+                        if(document.getElementById('bounds-10p-1')) setBoundValue('bounds-10p-1', option.groupedBounds['10point']['1'] || 5);
                     }
                     if (option.groupedBounds['4point']) {
-                        if(document.getElementById('bounds-4p-4')) document.getElementById('bounds-4p-4').value = option.groupedBounds['4point']['4'] || 90;
-                        if(document.getElementById('bounds-4p-3')) document.getElementById('bounds-4p-3').value = option.groupedBounds['4point']['3'] || 80;
-                        if(document.getElementById('bounds-4p-2')) document.getElementById('bounds-4p-2').value = option.groupedBounds['4point']['2'] || 70;
-                        if(document.getElementById('bounds-4p-1')) document.getElementById('bounds-4p-1').value = option.groupedBounds['4point']['1'] || 60;
+                        if(document.getElementById('bounds-4p-4')) setBoundValue('bounds-4p-4', option.groupedBounds['4point']['4'] || 90);
+                        if(document.getElementById('bounds-4p-3')) setBoundValue('bounds-4p-3', option.groupedBounds['4point']['3'] || 80);
+                        if(document.getElementById('bounds-4p-2')) setBoundValue('bounds-4p-2', option.groupedBounds['4point']['2'] || 70);
+                        if(document.getElementById('bounds-4p-1')) setBoundValue('bounds-4p-1', option.groupedBounds['4point']['1'] || 60);
                     }
                 }
                 if (option.timer) {
@@ -7958,6 +8247,12 @@ let isBuilderOverrideActive = false;
                 if (document.getElementById('later-toggle')) {
                     document.getElementById('later-toggle').checked = !!option.laterEnabled;
                 }
+                if (document.getElementById('random-questions-toggle')) {
+                    document.getElementById('random-questions-toggle').checked = !!option.randomizeQuestions;
+                }
+                if (document.getElementById('random-answers-toggle')) {
+                    document.getElementById('random-answers-toggle').checked = !!option.randomizeAnswers;
+                }
             }
             
             updateGradingSummary();
@@ -7966,6 +8261,15 @@ let isBuilderOverrideActive = false;
                 goToBuilderFresh(true);
             }
             renderBuilderQuestions();
+            
+            // Animate cards on initial load
+            if (!silent) {
+                const cards = document.querySelectorAll('.builder-meta-card, .builder-card');
+                cards.forEach((c, i) => {
+                    c.style.animation = `cardLoadPulse 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards ${i * 0.04}s`;
+                });
+            }
+            
             requestAnimationFrame(() => autoGrow(builderQuizDescEl));
         } catch (e) {
             await QuizDB.removeItem('builderSession');
@@ -8737,7 +9041,7 @@ let isBuilderOverrideActive = false;
                 saveBuilderState();
                 
                 // Update DOM manually without full re-render
-                const row = document.querySelector(`.builder-card[data-q-id="${qId}"] .builder-option-row[data-option-id="${optId}"]`);
+                const row = document.querySelector(`.builder-card[data-q-id="${qId}"] .builder-option-row[data-opt-id="${optId}"]`);
                 if (row) {
                     row.classList.remove('trueFalse-state-true', 'trueFalse-state-false', 'trueFalse-state-none', 'trueFalse-state-empty');
                     row.classList.add('trueFalse-state-' + (state || 'empty'));
@@ -8807,9 +9111,11 @@ let isBuilderOverrideActive = false;
                 timerIsland.classList.remove('expanded');
                 const timerBadge = document.getElementById('timer-badge');
                 const timerDoneButton = document.getElementById('timer-done-button');
-                if (timerBadge && timerDoneButton) {
-                    timerDoneButton.classList.add('slider-hidden');
-                    timerBadge.classList.remove('slider-hidden');
+                const timerSummary = document.getElementById('timer-collapsed-summary');
+                if (timerDoneButton) {
+                    timerDoneButton.style.display = 'none';
+                    if (timerSummary) timerSummary.classList.add('open-summary');
+                    updateTimerBadge();
                 }
             }
         }
@@ -9017,7 +9323,7 @@ let isBuilderOverrideActive = false;
                     card.style.paddingTop = '0';
                     card.style.paddingBottom = '0';
                     card.style.marginTop = '0';
-                    card.style.marginBottom = '0';
+                    card.style.marginBottom = '-20px';
                     
                     setTimeout(() => {
                         card.remove();
@@ -9780,36 +10086,36 @@ let isBuilderOverrideActive = false;
                 groupedScale: document.querySelector('.grading-sub-button.active') ? document.querySelector('.grading-sub-button.active').id.replace('sub-button-', '') : 'letter',
                 groupedBounds: {
                     letter: {
-                        a: document.getElementById('bounds-letter-a') ? parseInt(document.getElementById('bounds-letter-a').value, 10) : 90,
-                        b: document.getElementById('bounds-letter-b') ? parseInt(document.getElementById('bounds-letter-b').value, 10) : 80,
-                        c: document.getElementById('bounds-letter-c') ? parseInt(document.getElementById('bounds-letter-c').value, 10) : 70,
-                        d: document.getElementById('bounds-letter-d') ? parseInt(document.getElementById('bounds-letter-d').value, 10) : 60,
-                        f: document.getElementById('bounds-letter-f') ? parseInt(document.getElementById('bounds-letter-f').value, 10) : 50
+                        a: getBoundValue('bounds-letter-a') || 90,
+                        b: getBoundValue('bounds-letter-b') || 80,
+                        c: getBoundValue('bounds-letter-c') || 70,
+                        d: getBoundValue('bounds-letter-d') || 60,
+                        f: getBoundValue('bounds-letter-f') || 50
                     },
                     '5point': {
-                        5: document.getElementById('bounds-5p-5') ? parseInt(document.getElementById('bounds-5p-5').value, 10) : 90,
-                        4: document.getElementById('bounds-5p-4') ? parseInt(document.getElementById('bounds-5p-4').value, 10) : 80,
-                        3: document.getElementById('bounds-5p-3') ? parseInt(document.getElementById('bounds-5p-3').value, 10) : 70,
-                        2: document.getElementById('bounds-5p-2') ? parseInt(document.getElementById('bounds-5p-2').value, 10) : 60,
-                        1: document.getElementById('bounds-5p-1') ? parseInt(document.getElementById('bounds-5p-1').value, 10) : 50
+                        5: getBoundValue('bounds-5p-5') || 90,
+                        4: getBoundValue('bounds-5p-4') || 80,
+                        3: getBoundValue('bounds-5p-3') || 70,
+                        2: getBoundValue('bounds-5p-2') || 60,
+                        1: getBoundValue('bounds-5p-1') || 50
                     },
                     '10point': {
-                        10: document.getElementById('bounds-10p-10') ? parseInt(document.getElementById('bounds-10p-10').value, 10) : 95,
-                        9: document.getElementById('bounds-10p-9') ? parseInt(document.getElementById('bounds-10p-9').value, 10) : 85,
-                        8: document.getElementById('bounds-10p-8') ? parseInt(document.getElementById('bounds-10p-8').value, 10) : 75,
-                        7: document.getElementById('bounds-10p-7') ? parseInt(document.getElementById('bounds-10p-7').value, 10) : 65,
-                        6: document.getElementById('bounds-10p-6') ? parseInt(document.getElementById('bounds-10p-6').value, 10) : 55,
-                        5: document.getElementById('bounds-10p-5') ? parseInt(document.getElementById('bounds-10p-5').value, 10) : 45,
-                        4: document.getElementById('bounds-10p-4') ? parseInt(document.getElementById('bounds-10p-4').value, 10) : 35,
-                        3: document.getElementById('bounds-10p-3') ? parseInt(document.getElementById('bounds-10p-3').value, 10) : 25,
-                        2: document.getElementById('bounds-10p-2') ? parseInt(document.getElementById('bounds-10p-2').value, 10) : 15,
-                        1: document.getElementById('bounds-10p-1') ? parseInt(document.getElementById('bounds-10p-1').value, 10) : 5
+                        10: getBoundValue('bounds-10p-10') || 95,
+                        9: getBoundValue('bounds-10p-9') || 85,
+                        8: getBoundValue('bounds-10p-8') || 75,
+                        7: getBoundValue('bounds-10p-7') || 65,
+                        6: getBoundValue('bounds-10p-6') || 55,
+                        5: getBoundValue('bounds-10p-5') || 45,
+                        4: getBoundValue('bounds-10p-4') || 35,
+                        3: getBoundValue('bounds-10p-3') || 25,
+                        2: getBoundValue('bounds-10p-2') || 15,
+                        1: getBoundValue('bounds-10p-1') || 5
                     },
                     '4point': {
-                        4: document.getElementById('bounds-4p-4') ? parseInt(document.getElementById('bounds-4p-4').value, 10) : 90,
-                        3: document.getElementById('bounds-4p-3') ? parseInt(document.getElementById('bounds-4p-3').value, 10) : 80,
-                        2: document.getElementById('bounds-4p-2') ? parseInt(document.getElementById('bounds-4p-2').value, 10) : 70,
-                        1: document.getElementById('bounds-4p-1') ? parseInt(document.getElementById('bounds-4p-1').value, 10) : 60
+                        4: getBoundValue('bounds-4p-4') || 90,
+                        3: getBoundValue('bounds-4p-3') || 80,
+                        2: getBoundValue('bounds-4p-2') || 70,
+                        1: getBoundValue('bounds-4p-1') || 60
                     }
                 },
                 timer: timerSettings,
@@ -9819,7 +10125,9 @@ let isBuilderOverrideActive = false;
                     examStart: accessSettings.examStart || '',
                     examEnd: accessSettings.examEnd || ''
                 },
-                laterEnabled: document.getElementById('later-toggle') ? document.getElementById('later-toggle').checked : false
+                laterEnabled: document.getElementById('later-toggle') ? document.getElementById('later-toggle').checked : false,
+                randomizeQuestions: document.getElementById('random-questions-toggle') ? document.getElementById('random-questions-toggle').checked : false,
+                randomizeAnswers: document.getElementById('random-answers-toggle') ? document.getElementById('random-answers-toggle').checked : false
             },
             questions: builderQuestions.map(q => {
                 const qObj = {
@@ -10348,45 +10656,6 @@ let isBuilderOverrideActive = false;
             renderBuilderQuestions();
             saveBuilderState();
         }, 150);
-    }
-
-    function optimizeBounds(scale) {
-        let ids = [];
-        let prefix = '';
-        if (scale === 'letter') {
-            ids = ['a', 'b', 'c', 'd', 'f'];
-            prefix = 'bounds-letter-';
-        } else if (scale === '5point') {
-            ids = ['5', '4', '3', '2', '1'];
-            prefix = 'bounds-5p-';
-        } else if (scale === '10point') {
-            ids = ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
-            prefix = 'bounds-10p-';
-        } else if (scale === '4point') {
-            ids = ['4', '3', '2', '1'];
-            prefix = 'bounds-4p-';
-        }
-
-        let prev = 101; 
-        for (let i = 0; i < ids.length; i++) {
-            let el = document.getElementById(prefix + ids[i]);
-            if (!el) continue;
-            
-            let val = parseInt(el.value, 10);
-            if (isNaN(val)) val = 0;
-            
-            if (val > 100) val = 100;
-            if (val < 0) val = 0;
-            
-            if (val >= prev) {
-                val = prev - 1;
-            }
-            if (val < 0) val = 0;
-            
-            el.value = val;
-            prev = val;
-        }
-        saveBuilderState();
     }
 
     async function resetBuilder() {
