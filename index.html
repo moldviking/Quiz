@@ -765,12 +765,11 @@
             border-radius: 2px;
             outline: none;
         }
-        .grade-slider {
-            background: linear-gradient(to right, var(--success-green) var(--val, 60%), rgba(120, 120, 128, 0.16) var(--val, 60%)) !important;
+        .passing-capsule .stepper-container {
+            margin: 0 !important;
         }
         @media (prefers-color-scheme: dark) { 
             .ios-slider { background: rgba(120, 120, 128, 0.32); } 
-            .grade-slider { background: linear-gradient(to right, var(--success-green) var(--val, 60%), rgba(120, 120, 128, 0.32) var(--val, 60%)) !important; }
         }
         .ios-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -785,7 +784,7 @@
         .slider-val {
             font-size: 15px;
             font-weight: 600;
-            color: var(--apple-blue);
+            color: var(--text-main);
             width: 44px;
             text-align: right;
         }
@@ -798,7 +797,8 @@
             margin: 0 0 16px 0;
             padding: 0 14px;
             border-radius: 12px;
-            overflow: hidden;
+            overflow-y: hidden;
+            overflow-x: visible;
             position: relative;
         }
         .timer-picker-container::before {
@@ -822,7 +822,7 @@
             }
         }
         .time-popover:not(.active) .timer-picker-container::before {
-            left: 50% !important;
+            left: calc(var(--clip-origin-x, 50%) - 14px) !important;
             width: var(--btn-width, 60px) !important;
             height: var(--btn-height, 24px) !important;
             margin-top: calc(var(--btn-height, 24px) / -2) !important;
@@ -1098,12 +1098,10 @@
         .access-wrapper { display: grid; grid-template-columns: minmax(110px, 1.2fr) minmax(220px, 3fr); gap: 16px; padding-top: 16px; }
         .access-sidebar-container { display: flex; flex-direction: column; gap: 8px; border-right: 1px solid var(--border-color); padding-right: 16px; min-width: 0; position: relative; z-index: 10; }
         .access-segmented-control { display: flex; flex-direction: column; width: 100%; box-sizing: border-box; gap: 4px; position: relative; }
-        .access-segmented-button { background: transparent; border: none; padding: 0 12px; height: 38px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: flex-start; z-index: 1; position: relative; }
+        .access-segmented-button { background: transparent; border: none; padding: 0 12px; height: 38px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: flex-start; z-index: 2; position: relative; }
         .access-segmented-button:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
-        .access-segmented-button.active { background: transparent; color: var(--text-secondary); }
-        .access-slider { display: block; position: absolute; top: 0; left: 0; right: 0; height: 38px; width: auto; background-color: var(--apple-blue); border-radius: 10px; z-index: 2; overflow: hidden; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateY(calc(42px * var(--idx, 0))); pointer-events: none; box-shadow: 0 2px 5px rgba(0,122,255,0.3); }
-        .access-slider-inner { display: flex; flex-direction: column; gap: 4px; position: absolute; top: 0; left: 0; right: 0; height: auto; width: 100%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateY(calc(-42px * var(--idx, 0))); }
-        .access-slider-text { display: flex; justify-content: flex-start; align-items: center; padding: 0 12px; color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; height: 38px; box-sizing: border-box; }
+        .access-segmented-button.active { background: transparent; color: #fff; font-weight: 600; }
+        .access-slider { display: block; position: absolute; top: calc(42px * var(--idx, 0)); left: 0; right: 0; height: 38px; width: auto; background-color: var(--apple-blue); border-radius: 10px; z-index: 1; overflow: hidden; transition: top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); pointer-events: none; box-shadow: 0 2px 5px rgba(0,122,255,0.3); }
         #access-button-time-limit { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease; border-radius: 16px; }
         #access-button-time-limit.time-limit-button-open { transform: scale(1.04); box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08); background-color: var(--bg-panel); z-index: 10; position: relative; }
         @media (prefers-color-scheme: dark) { #access-button-time-limit.time-limit-button-open { box-shadow: 0 12px 30px rgba(0,0,0,0.35), 0 -8px 20px rgba(0,0,0,0.2); background-color: var(--bg-alert); } }
@@ -1120,43 +1118,89 @@
         body.is-mobile-access .access-segmented-control { flex-direction: row; height: 42px; background-color: rgba(0,0,0,0.06); border-radius: 12px; padding: 4px; position: relative; gap: 0; touch-action: none; cursor: grab; }
         body.is-mobile-access .access-segmented-control:active { cursor: grabbing; }
         @media (prefers-color-scheme: dark) { body.is-mobile-access .access-segmented-control { background-color: rgba(255,255,255,0.08); } }
-        body.is-mobile-access .access-segmented-button { flex: 1; justify-content: center; padding: 0; text-align: center; border-radius: 0; font-size: 13px; font-weight: 600; color: var(--text-secondary); z-index: 1; height: 100%; }
-        body.is-mobile-access .access-segmented-button:hover { background: transparent; color: var(--text-secondary); }
-        body.is-mobile-access .access-segmented-button.active { background: transparent; color: var(--text-secondary); }
-        body.is-mobile-access .access-slider { display: block; position: absolute; top: 4px; bottom: 4px; left: 4px; right: auto; height: auto; width: calc((100% - 8px) / 3); background-color: var(--apple-blue); border-radius: 8px; z-index: 2; overflow: hidden; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateX(calc(100% * var(--idx, 0))); box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06); pointer-events: none; }
-        body.is-mobile-access .access-slider-inner { display: flex; flex-direction: row; position: absolute; top: 0; left: 0; bottom: 0; right: auto; width: 300%; height: 100%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateX(calc(-100% / 3 * var(--idx, 0))); }
-        body.is-mobile-access .access-slider.dragging, body.is-mobile-access .access-slider.dragging .access-slider-inner { transition: none; }
-        body.is-mobile-access .access-slider-text { flex: 1; display: flex; justify-content: center; align-items: center; padding: 0; color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; height: 100%; }
+        body.is-mobile-access .access-segmented-button { flex: 0 0 33.3333%; width: 33.3333%; min-width: 0; justify-content: center; padding: 0; text-align: center; border-radius: 0; font-size: 13px; font-weight: 500; color: var(--text-secondary); z-index: 2; height: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: relative; }
+        body.is-mobile-access .access-segmented-button:hover { background: transparent; color: var(--text-main); }
+        body.is-mobile-access .access-segmented-button.active { background: transparent; color: #fff; font-weight: 600; }
+        body.is-mobile-access .access-slider { top: 4px; bottom: 4px; left: calc(4px + (100% - 8px) / 3 * var(--idx, 0)); right: auto; height: auto; width: calc((100% - 8px) / 3); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06); }
+        body.is-mobile-access .access-slider.dragging { transition: none; }
+        html.vt-active .access-slider,
+        body.is-resizing-layout .access-slider,
+        body.is-resizing-window .access-slider {
+            transition: none !important;
+        }
         /* Mobile overrides removed for calendar-header-flex since it is centered and stacked by default now */
         body.is-mobile-access #calendar-time-selectors { width: 100%; justify-content: center; }
         body.is-mobile-access .calendar-grid-header { font-size: 10px !important; }
         
-        /* View Transition Names for Access Island Elements */
-        #access-sidebar-container { view-transition-name: vt-access-sidebar; }
-        #access-segmented-control { view-transition-name: vt-access-seg; }
-        #access-button-indefinite { view-transition-name: vt-access-btn-indef; }
-        #access-button-deadline { view-transition-name: vt-access-btn-dead; }
-        #access-button-exam { view-transition-name: vt-access-btn-exam; }
-        #access-button-time-limit { view-transition-name: vt-access-time-limit; }
+        /* View Transition Names for Access & Grading Island Elements */
+        #island-timer { view-transition-name: vt-island-timer; }
+        #island-grading { view-transition-name: vt-island-grading; }
+        #timer-fields { view-transition-name: vt-timer-fields; }
+        #grading-fields { view-transition-name: vt-grading-fields; }
+        /* Time & Access / Grading island structural names */
+        
         #access-right-panel { view-transition-name: vt-access-right; }
+        #grading-right-panel { view-transition-name: vt-grad-right; }
         #access-calendar-view { view-transition-name: vt-access-cal-view; }
         #access-calendar-header { view-transition-name: vt-access-cal-head; }
         #calendar-grid { view-transition-name: vt-access-cal-grid; }
-        .access-slider { view-transition-name: vt-access-slider; }
         
-        ::view-transition-group(vt-access-sidebar),
-        ::view-transition-group(vt-access-seg),
-        ::view-transition-group(vt-access-btn-indef),
-        ::view-transition-group(vt-access-btn-dead),
-        ::view-transition-group(vt-access-btn-exam),
-        ::view-transition-group(vt-access-time-limit),
-        ::view-transition-group(vt-access-right),
-        ::view-transition-group(vt-access-cal-view),
-        ::view-transition-group(vt-access-cal-head),
-        ::view-transition-group(vt-access-cal-grid),
-        ::view-transition-group(vt-access-slider) {
-            animation-duration: 0.5s;
+        #grade-slider-wrapper { view-transition-name: vt-grade-slider-wrap; }
+        #grade-grouped-container { view-transition-name: vt-grade-grouped; }
+        #capsule-passfail { view-transition-name: vt-cap-pf; }
+        #capsule-percentage { view-transition-name: vt-cap-perc; }
+        
+        .scale-config-container { view-transition-name: vt-scale-container; }
+        #grade-label { view-transition-name: vt-grade-label; }
+        #scale-type-label { view-transition-name: vt-scale-label; }
+        #scale-type-popover-btn { view-transition-name: vt-scale-btn; }
+        #grade-percentage-text { view-transition-name: vt-grade-perc-txt; }
+        #grade-passfail-text { view-transition-name: vt-grade-pf-txt; }
+        #grade-grouped-container > p { view-transition-name: vt-grade-helper; }
+
+        /* Time & Access layout inner elements */
+        #access-indefinite-view > div:nth-child(1) { view-transition-name: vt-acc-indef-icon; }
+        #access-indefinite-view > div:nth-child(2) { view-transition-name: vt-acc-indef-title; }
+        #access-indefinite-view > div:nth-child(3) { view-transition-name: vt-acc-indef-desc; }
+        
+        #access-calendar-view > div:nth-child(1) { view-transition-name: vt-acc-cal-header; }
+        #access-calendar-view > div:nth-child(2) { view-transition-name: vt-acc-cal-grid; }
+        #access-calendar-view > div:nth-child(3) { view-transition-name: vt-acc-cal-footer; }
+        #access-calendar-view .calendar-controls { view-transition-name: vt-acc-cal-controls; }
+
+        /* Unified scale config names for morphing */
+        .scale-config-container > div > div:nth-child(1) { view-transition-name: vt-grade-cap-1; }
+        .scale-config-container > div > div:nth-child(2) { view-transition-name: vt-grade-cap-2; }
+        .scale-config-container > div > div:nth-child(3) { view-transition-name: vt-grade-cap-3; }
+        .scale-config-container > div > div:nth-child(4) { view-transition-name: vt-grade-cap-4; }
+        .scale-config-container > div > div:nth-child(5) { view-transition-name: vt-grade-cap-5; }
+        .scale-config-container > div > div:nth-child(6) { view-transition-name: vt-grade-cap-6; }
+        .scale-config-container > div > div:nth-child(7) { view-transition-name: vt-grade-cap-7; }
+        .scale-config-container > div > div:nth-child(8) { view-transition-name: vt-grade-cap-8; }
+        .scale-config-container > div > div:nth-child(9) { view-transition-name: vt-grade-cap-9; }
+        .scale-config-container > div > div:nth-child(10) { view-transition-name: vt-grade-cap-10; }
+
+        
+        ::view-transition-group(*) {
+            animation-duration: 0.4s;
             animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        /* Smooth fade-in for right panel contents during tab switches */
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #grade-slider-wrapper,
+        #grade-grouped-container,
+        #capsule-passfail,
+        #capsule-percentage,
+        .scale-config-container,
+        #access-indefinite-view,
+        #access-calendar-view,
+        #grade-percentage-text,
+        #grade-passfail-text {
+            animation: fadeInSlide 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .grouped-scale-option .scale-check { display: none; color: var(--apple-blue); }
         .grouped-scale-option.active .scale-check { display: block; }
@@ -2285,13 +2329,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <div class="access-wrapper">
                                         <div class="access-sidebar-container">
                                             <div class="access-segmented-control" id="grading-segmented-control" style="--idx: 0;">
-                                                <div class="access-slider" id="grading-slider">
-                                                    <div class="access-slider-inner" id="grading-slider-inner">
-                                                        <div class="access-slider-text">Pass or Fail</div>
-                                                        <div class="access-slider-text">Grouped</div>
-                                                        <div class="access-slider-text">Percentage</div>
-                                                    </div>
-                                                </div>
+                                                <div class="access-slider" id="grading-slider"></div>
                                                 <button class="access-segmented-button active" id="grading-button-pass_fail" onclick="selectGradingType('pass_fail')">Pass or Fail</button>
                                                 <button class="access-segmented-button" id="grading-button-grouped_grades" onclick="selectGradingType('grouped_grades')">Grouped</button>
                                                 <button class="access-segmented-button" id="grading-button-percentage" onclick="selectGradingType('percentage')">Percentage</button>
@@ -2300,9 +2338,21 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                         <div id="grading-right-panel" style="position: relative; height: 100%; min-width: 0;">
                                             <div id="grade-slider-wrapper" style="margin-bottom: 0;">
                                                 <label class="field-label" id="grade-label">Passing Score</label>
-                                                <div class="ios-slider-container">
-                                                    <input type="range" id="grade-slider" min="0" max="100" value="60" class="ios-slider grade-slider" oninput="document.getElementById('grade-val').innerText = this.value + '%'; this.style.setProperty('--val', this.value + '%'); saveBuilderState(); updateGradingSummary();" style="--val: 60%;">
-                                                    <span id="grade-val" class="slider-val">60%</span>
+                                                <div style="margin-top: 8px;">
+                                                    <div class="grade-capsule grade-success passing-capsule" id="capsule-passfail" onclick="openScaleStepperPopover('passing', 'pass', event)" style="padding: 0 16px; gap: 8px;">
+                                                        <span style="font-size: 15px; font-weight: 500; color: var(--text-main);">Score at least</span>
+                                                        <div style="width: 96px; display: flex; justify-content: center; height: 100%; align-items: center;">
+                                                            <span class="grade-capsule-val" id="bounds-passing-pass" data-val="60">60%</span>
+                                                        </div>
+                                                        <span style="font-size: 15px; font-weight: 500; color: var(--text-main);">to pass.</span>
+                                                    </div>
+                                                    <div class="grade-capsule grade-success passing-capsule" id="capsule-percentage" onclick="openScaleStepperPopover('percentage', 'pass', event)" style="padding: 0 16px; gap: 8px; display: none;">
+                                                        <span style="font-size: 15px; font-weight: 500; color: var(--text-main);">Score at least</span>
+                                                        <div style="width: 96px; display: flex; justify-content: center; height: 100%; align-items: center;">
+                                                            <span class="grade-capsule-val" id="bounds-percentage-pass" data-val="50">50%</span>
+                                                        </div>
+                                                        <span style="font-size: 15px; font-weight: 500; color: var(--text-main);">to pass.</span>
+                                                    </div>
                                                 </div>
                                                 <p id="grade-percentage-text" style="display: none; font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Students receive their percentage score.</p>
                                                 <p id="grade-passfail-text" style="display: none; font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Students receive their Pass or Fail status only.</p>
@@ -2549,13 +2599,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             
                             <!-- Segmented Control -->
                             <div class="access-segmented-control" id="access-segmented-control" style="--idx: 0;">
-                                <div class="access-slider" id="access-slider">
-                                    <div class="access-slider-inner" id="access-slider-inner">
-                                        <div class="access-slider-text">Indefinite</div>
-                                        <div class="access-slider-text">Deadline</div>
-                                        <div class="access-slider-text">Scheduled</div>
-                                    </div>
-                                </div>
+                                <div class="access-slider" id="access-slider"></div>
                                 <button class="access-segmented-button active" id="access-button-indefinite" onclick="selectAccessMode('indefinite')">Indefinite</button>
                                 <button class="access-segmented-button" id="access-button-deadline" onclick="selectAccessMode('deadline')">Deadline</button>
                                 <button class="access-segmented-button" id="access-button-exam" onclick="selectAccessMode('exam')">Scheduled</button>
@@ -4655,10 +4699,11 @@ let isBuilderOverrideActive = false;
 
         if (rawData.options) {
             const option = rawData.options;
-            if (document.getElementById('grade-slider')) {
-                document.getElementById('grade-slider').value = option.grade || 60;
-                if (document.getElementById('grade-val')) document.getElementById('grade-val').innerText = (option.grade || 60) + '%';
-                if (document.getElementById('grade-slider').style.setProperty) document.getElementById('grade-slider').style.setProperty('--val', (option.grade || 60) + '%');
+            if (document.getElementById('bounds-passing-pass')) {
+                setBoundValue('bounds-passing-pass', option.grade || 60);
+            }
+            if (document.getElementById('bounds-percentage-pass')) {
+                setBoundValue('bounds-percentage-pass', option.gradePercentage || 50);
             }
             if (option.gradingType) {
                 selectGradingType(option.gradingType);
@@ -6113,11 +6158,13 @@ let isBuilderOverrideActive = false;
             scoreCircleEl.innerText = `${percentage}%`;
         }
 
-        const requiredGrade = quizMetadata.options?.grade ?? 40;
+        const requiredGradePassFail = quizMetadata.options?.grade ?? 60;
+        const requiredGradePercentage = quizMetadata.options?.gradePercentage ?? 50;
         const gradingType = quizMetadata.options?.gradingType || 'pass_fail';
         
         if (gradingType === 'pass_fail' || gradingType === 'percentage') {
-            const isPass = percentage >= requiredGrade;
+            const req = gradingType === 'percentage' ? requiredGradePercentage : requiredGradePassFail;
+            const isPass = percentage >= req;
             resultStatusEl.innerText = isPass ? "Passed" : "Did Not Pass";
             scoreCircleEl.style.backgroundColor = isPass ? "var(--success-bg)" : "var(--error-bg)";
             scoreCircleEl.style.color = isPass ? "var(--success-green)" : "var(--error-red)";
@@ -6677,13 +6724,26 @@ let isBuilderOverrideActive = false;
         else if (type === 'grouped_grades') segmentedControl.style.setProperty('--idx', '1');
         else if (type === 'percentage') segmentedControl.style.setProperty('--idx', '2');
         
-        animateIslandHeight('#grading-fields', () => {
+        const updateFn = () => {
             document.getElementById('grade-slider-wrapper').style.display = (type === 'pass_fail' || type === 'percentage') ? 'block' : 'none';
+            if (document.getElementById('capsule-passfail')) {
+                document.getElementById('capsule-passfail').style.display = type === 'pass_fail' ? 'inline-flex' : 'none';
+            }
+            if (document.getElementById('capsule-percentage')) {
+                document.getElementById('capsule-percentage').style.display = type === 'percentage' ? 'inline-flex' : 'none';
+            }
             document.getElementById('grade-grouped-container').style.display = type === 'grouped_grades' ? 'block' : 'none';
             document.getElementById('grade-percentage-text').style.display = type === 'percentage' ? 'block' : 'none';
             if (document.getElementById('grade-passfail-text')) {
                 document.getElementById('grade-passfail-text').style.display = type === 'pass_fail' ? 'block' : 'none';
             }
+        };
+
+
+        performPanelFadeTransition('grading-right-panel', '#grading-fields', () => {
+            updateFn();
+            updateGradingSummary();
+            saveBuilderState();
         });
         
         updateGradingSummary();
@@ -6705,7 +6765,7 @@ let isBuilderOverrideActive = false;
         if (delayUpdate) {
             setTimeout(updateDom, 400);
         } else {
-            animateIslandHeight('#grading-fields', updateDom);
+            performPanelFadeTransition('grade-grouped-container', '#grading-fields', updateDom);
         }
         
         saveBuilderState();
@@ -6731,6 +6791,8 @@ let isBuilderOverrideActive = false;
             const id = match[2];
             
             const valSpan = capsule.querySelector('.grade-capsule-val');
+            const parent = valSpan.parentNode;
+            const nextNode = valSpan.nextSibling;
             valSpan.style.minWidth = '36px';
             valSpan.style.textAlign = 'center';
             
@@ -6753,7 +6815,11 @@ let isBuilderOverrideActive = false;
             stepperContainer.appendChild(valSpan);
             stepperContainer.appendChild(btnPlus);
             
-            capsule.appendChild(stepperContainer);
+            if (nextNode) {
+                parent.insertBefore(stepperContainer, nextNode);
+            } else {
+                parent.appendChild(stepperContainer);
+            }
         });
         updateCapsuleColors();
     })();
@@ -6863,38 +6929,38 @@ let isBuilderOverrideActive = false;
         
         const button = document.getElementById('scale-type-popover-btn');
         
-        if (!isCancel) {
-            const scaleCol = document.getElementById('timer-scale');
-            const items = scaleCol.querySelectorAll('.timer-item');
-            const centerPos = scaleCol.scrollTop + scaleCol.offsetHeight / 2;
-            let selectedItem = null;
-            let minDiff = Infinity;
-            items.forEach(item => {
-                const itemCenter = item.offsetTop + item.offsetHeight / 2;
-                const diff = Math.abs(itemCenter - centerPos);
-                if (diff < minDiff) { minDiff = diff; selectedItem = item; }
-            });
-            if (selectedItem) {
-                const scaleType = selectedItem.getAttribute('data-val');
-                selectGroupedScale(scaleType, fadeOnly);
-                if (button) {
-                    const transitionLabel = document.getElementById('scale-popover-transition-label');
-                    if (transitionLabel) {
-                        transitionLabel.innerText = selectedItem.innerText;
-                    }
+        // Always save the selection, even when clicking outside (like iOS pickers)
+        const scaleCol = document.getElementById('timer-scale');
+        const items = scaleCol.querySelectorAll('.timer-item');
+        const centerPos = scaleCol.scrollTop + scaleCol.offsetHeight / 2;
+        let selectedItem = null;
+        let minDiff = Infinity;
+        items.forEach(item => {
+            const itemCenter = item.offsetTop + item.offsetHeight / 2;
+            const diff = Math.abs(itemCenter - centerPos);
+            if (diff < minDiff) { minDiff = diff; selectedItem = item; }
+        });
+        if (selectedItem) {
+            const scaleType = selectedItem.getAttribute('data-val');
+            selectGroupedScale(scaleType, fadeOnly);
+            if (button) {
+                const transitionLabel = document.getElementById('scale-popover-transition-label');
+                if (transitionLabel) {
+                    transitionLabel.innerText = selectedItem.innerText;
                 }
             }
-        } else if (button) {
-            const transitionLabel = document.getElementById('scale-popover-transition-label');
-            if (transitionLabel) transitionLabel.innerText = button.innerText;
         }
         
         if (button) {
-            const transitionLabel = document.getElementById('scale-popover-transition-label');
-            if (transitionLabel) {
-                const newBtnRect = button.getBoundingClientRect();
-                popover.style.setProperty('--btn-width', newBtnRect.width + 'px');
-                popover.style.setProperty('--btn-height', newBtnRect.height + 'px');
+            const newBtnRect = button.getBoundingClientRect();
+            if (newBtnRect.width === 0 || newBtnRect.height === 0) {
+                fadeOnly = true;
+            } else {
+                const transitionLabel = document.getElementById('scale-popover-transition-label');
+                if (transitionLabel) {
+                    popover.style.setProperty('--btn-width', newBtnRect.width + 'px');
+                    popover.style.setProperty('--btn-height', newBtnRect.height + 'px');
+                }
             }
         }
         
@@ -6954,6 +7020,8 @@ let isBuilderOverrideActive = false;
         if (scale === '5point') return { ids: ['5', '4', '3', '2', '1'], prefix: 'bounds-5p-' };
         if (scale === '10point') return { ids: ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'], prefix: 'bounds-10p-' };
         if (scale === '4point') return { ids: ['4', '3', '2', '1'], prefix: 'bounds-4p-' };
+        if (scale === 'passing') return { ids: ['pass'], prefix: 'bounds-passing-' };
+        if (scale === 'percentage') return { ids: ['pass'], prefix: 'bounds-percentage-' };
         return { ids: [], prefix: '' };
     }
 
@@ -6962,6 +7030,8 @@ let isBuilderOverrideActive = false;
         if (!el) return 0;
         return parseInt(el.dataset.val || 0, 10);
     }
+
+    // updateGradeSlider is no longer needed
 
     function updateCapsuleColors() {
         document.querySelectorAll('.grade-capsule').forEach(capsule => {
@@ -7064,24 +7134,29 @@ let isBuilderOverrideActive = false;
         }
 
         if (changed) {
+            updateCapsuleColors();
             updateGradingSummary();
         }
     }
 
     function performSmoothLayoutTransition(actionCallback) {
-        if (!document.startViewTransition) {
-            actionCallback(true);
+        // Fallback for any other usages
+        actionCallback(false);
+    }
+
+    function performPanelFadeTransition(panelId, islandSelector, updateFn) {
+        const panel = document.getElementById(panelId);
+        if (!panel || !panel.animate) {
+            animateIslandHeight(islandSelector, updateFn);
             return;
         }
-        const islands = document.querySelectorAll('.options-island');
-        islands.forEach(island => island.style.transition = 'none');
-        
-        document.startViewTransition(() => {
-            actionCallback(false);
-            document.body.offsetHeight;
-        }).finished.finally(() => {
-            islands.forEach(island => island.style.transition = '');
-        });
+        const animOut = panel.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards', easing: 'ease-out' });
+        animOut.onfinish = () => {
+            animateIslandHeight(islandSelector, updateFn);
+            panel.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150, fill: 'forwards', easing: 'ease-in' }).onfinish = () => {
+                panel.style.opacity = '';
+            };
+        };
     }
 
     function expandGrading() {
@@ -7134,7 +7209,7 @@ let isBuilderOverrideActive = false;
         
         if (typeId === 'pass_fail') {
             typeStr = "Pass or Fail";
-            const val = document.getElementById('grade-slider').value;
+            const val = getBoundValue('bounds-passing-pass');
             settingsStr = val + "% Passing Score";
         } else if (typeId === 'grouped_grades') {
             typeStr = "Grouped";
@@ -7480,6 +7555,7 @@ let isBuilderOverrideActive = false;
     }
 
     function animateIslandHeight(containerSelector, updateFn) {
+
         const container = document.querySelector(containerSelector);
         if (!container) {
             updateFn();
@@ -7522,9 +7598,14 @@ let isBuilderOverrideActive = false;
         });
         
         animation.onfinish = () => {
+            container.style.height = 'auto';
+            container.style.overflow = 'visible';
             container.style.transition = '';
-            container.style.height = '';
-            container.style.overflow = '';
+        };
+        animation.oncancel = () => {
+            container.style.height = 'auto';
+            container.style.overflow = 'visible';
+            container.style.transition = '';
         };
     }
 
@@ -7545,15 +7626,33 @@ let isBuilderOverrideActive = false;
     }
     
     function executeSelectAccessMode(mode) {
-        animateIslandHeight('#timer-fields', () => {
+        const segControl = document.getElementById('access-segmented-control');
+        if (segControl) {
+            segControl.querySelectorAll('.access-segmented-button').forEach(btn => btn.classList.remove('active'));
+            if (mode === 'indefinite') {
+                segControl.style.setProperty('--idx', '0');
+                document.getElementById('access-button-indefinite')?.classList.add('active');
+            }
+            else if (mode === 'deadline') {
+                segControl.style.setProperty('--idx', '1');
+                document.getElementById('access-button-deadline')?.classList.add('active');
+            }
+            else if (mode === 'exam') {
+                segControl.style.setProperty('--idx', '2');
+                document.getElementById('access-button-exam')?.classList.add('active');
+            }
+        }
+
+        performPanelFadeTransition('access-right-panel', '#timer-fields', () => {
             accessSettings.mode = mode;
             showAccessRightPanel(mode);
             saveBuilderState();
             updateTimerBadge();
         });
     }
+    
     function changeCalendarMonth(delta) {
-        animateIslandHeight('#timer-fields', () => {
+        performPanelFadeTransition('calendar-grid', '#timer-fields', () => {
             calendarDate.setMonth(calendarDate.getMonth() + delta);
             renderCustomCalendar();
         });
@@ -7666,7 +7765,7 @@ let isBuilderOverrideActive = false;
         if (fadeOnly) {
             document.querySelectorAll('.time-popover.active, .time-popover.closing').forEach(p => p.classList.add('fade-out-only'));
         }
-        closeScaleTypePopover(false, fadeOnly);
+        closeScaleTypePopover(true, fadeOnly);
         closeTimeLimitPopover(fadeOnly);
         closeTimePopover(fadeOnly);
         document.querySelectorAll('.trueFalse-popover.open, .score-popover.open, .explanation-popover.active, .image-popover.active').forEach(p => { 
@@ -7683,9 +7782,9 @@ let isBuilderOverrideActive = false;
         if (!e.target || !e.target.closest) return;
         if (e.target.closest('.time-limit-popover-container, .trueFalse-popover, .score-popover, .explanation-popover, .time-popover, .image-popover, .add-question-popover')) return;
         if (e.target.closest('#access-button-time-limit, .true-false-btn, .score-btn, .explanation-btn, .image-btn, #calendar-time-button, #calendar-time-button-end, .add-question-btn, #timer-done-button')) return;
-        
         const isInsideExpandedIsland = !!e.target.closest('.options-island.expanded, .options-island.island-expanded-horizontal');
-        closeAllPopovers(!isInsideExpandedIsland);
+        const isMenuSwitch = !!e.target.closest('.access-segmented-button');
+        closeAllPopovers(!isInsideExpandedIsland || isMenuSwitch);
     }, true);
 
     // Aggressive scroll listeners removed to prevent bounce closures
@@ -7758,8 +7857,7 @@ let isBuilderOverrideActive = false;
         let startSliderPos = 0;
         let currentSliderOffset = 0;
         
-        function getSegmentedIndexByOffset(offset, totalSize) {
-            const segSize = totalSize / 3;
+        function getSegmentedIndexByOffset(offset, segSize) {
             let idx = Math.round(offset / segSize);
             if (idx < 0) idx = 0;
             if (idx > 2) idx = 2;
@@ -7780,7 +7878,7 @@ let isBuilderOverrideActive = false;
             
             const rect = accessSegControl.getBoundingClientRect();
             const currentIdx = parseInt(accessSegControl.style.getPropertyValue('--idx') || 0);
-            const segSize = rect.width / 3;
+            const segSize = accessSlider.offsetWidth;
             currentSliderOffset = currentIdx * segSize;
             // Capture is set later if dragging actually occurs, so native click isn't blocked!
         });
@@ -7799,8 +7897,7 @@ let isBuilderOverrideActive = false;
             }
             
             if (isDraggingSlider) {
-                const rect = accessSegControl.getBoundingClientRect();
-                const segSize = rect.width / 3;
+                const segSize = accessSlider.offsetWidth;
                 const maxOffset = segSize * 2;
                 
                 let newOffset = currentSliderOffset + deltaX;
@@ -7808,8 +7905,6 @@ let isBuilderOverrideActive = false;
                 if (newOffset > maxOffset) newOffset = maxOffset;
                 
                 accessSlider.style.transform = `translateX(${newOffset}px)`;
-                const inner = document.getElementById('access-slider-inner');
-                if (inner) inner.style.transform = `translateX(${-newOffset}px)`;
             }
         });
 
@@ -7824,14 +7919,11 @@ let isBuilderOverrideActive = false;
                 
                 const isHorizontal = window.innerWidth <= 800;
                 if (isHorizontal) {
-                    const rect = accessSegControl.getBoundingClientRect();
                     const deltaX = e.clientX - startX;
                     const finalOffset = currentSliderOffset + deltaX;
-                    const targetIdx = getSegmentedIndexByOffset(finalOffset, rect.width);
+                    const targetIdx = getSegmentedIndexByOffset(finalOffset, accessSlider.offsetWidth);
                     
                     accessSlider.style.transform = ''; 
-                    const inner = document.getElementById('access-slider-inner');
-                    if (inner) inner.style.transform = ''; 
                     
                     const modes = ['indefinite', 'deadline', 'exam'];
                     selectAccessMode(modes[targetIdx]);
@@ -8088,13 +8180,15 @@ let isBuilderOverrideActive = false;
             
             if (button && popover.dataset.initialBtnDocX && popover.dataset.initialBtnDocY) {
                     const btnRect = button.getBoundingClientRect();
-                    const currentDocX = btnRect.left + window.scrollX;
-                    const currentDocY = btnRect.top + window.scrollY;
-                    
-                    const dx = currentDocX - parseFloat(popover.dataset.initialBtnDocX);
-                    const dy = currentDocY - parseFloat(popover.dataset.initialBtnDocY);
+                    if (btnRect.width > 0 && btnRect.height > 0 && !isClosing) {
+                        const currentDocX = btnRect.left + window.scrollX;
+                        const currentDocY = btnRect.top + window.scrollY;
+                        
+                        const dx = currentDocX - parseFloat(popover.dataset.initialBtnDocX);
+                        const dy = currentDocY - parseFloat(popover.dataset.initialBtnDocY);
 
-                    popover.style.transform = `translate(${dx}px, ${dy}px)`;
+                        popover.style.transform = `translate(${dx}px, ${dy}px)`;
+                    }
 
                     if (isClosing) {
                         const elapsed = Date.now() - parseInt(popover.dataset.closingStartTime);
@@ -8845,7 +8939,8 @@ let isBuilderOverrideActive = false;
             idCounter: builderIdCounter,
             options: {
                 gradingType: document.querySelector('#grading-segmented-control .access-segmented-button.active') ? document.querySelector('#grading-segmented-control .access-segmented-button.active').id.replace('grading-button-', '') : 'pass_fail',
-                grade: document.getElementById('grade-slider') ? document.getElementById('grade-slider').value : 60,
+                grade: document.getElementById('bounds-passing-pass') ? getBoundValue('bounds-passing-pass') : 60,
+                gradePercentage: document.getElementById('bounds-percentage-pass') ? getBoundValue('bounds-percentage-pass') : 50,
                 groupedScale: document.getElementById('current-scale-type-val') ? (document.getElementById('current-scale-type-val').getAttribute('data-val') || 'letter') : 'letter',
                 groupedBounds: {
                     letter: {
@@ -8931,10 +9026,11 @@ let isBuilderOverrideActive = false;
             
             if (state.options) {
                 const option = state.options;
-                if (document.getElementById('grade-slider')) {
-                    document.getElementById('grade-slider').value = option.grade || 60;
-                    document.getElementById('grade-val').innerText = (option.grade || 60) + '%';
-                    if (document.getElementById('grade-slider').style.setProperty) document.getElementById('grade-slider').style.setProperty('--val', (option.grade || 60) + '%');
+                if (document.getElementById('bounds-passing-pass')) {
+                    setBoundValue('bounds-passing-pass', option.grade || 60);
+                }
+                if (document.getElementById('bounds-percentage-pass')) {
+                    setBoundValue('bounds-percentage-pass', option.gradePercentage || 50);
                 }
                 if (option.gradingType) {
                     selectGradingType(option.gradingType);
@@ -8993,8 +9089,8 @@ let isBuilderOverrideActive = false;
                     document.getElementById('random-answers-toggle').checked = !!option.randomizeAnswers;
                 }
             }
-            
             updateGradingSummary();
+            updateCapsuleColors();
             
             if (!silent) {
                 goToBuilderFresh(true);
@@ -10837,7 +10933,8 @@ let isBuilderOverrideActive = false;
             description: builderQuizDescEl.value.trim() || '',
             options: {
                 gradingType: document.querySelector('#grading-segmented-control .access-segmented-button.active') ? document.querySelector('#grading-segmented-control .access-segmented-button.active').id.replace('grading-button-', '') : 'pass_fail',
-                grade: document.getElementById('grade-slider') ? parseInt(document.getElementById('grade-slider').value, 10) : 60,
+                grade: document.getElementById('bounds-passing-pass') ? getBoundValue('bounds-passing-pass') : 60,
+                gradePercentage: document.getElementById('bounds-percentage-pass') ? getBoundValue('bounds-percentage-pass') : 50,
                 groupedScale: document.getElementById('current-scale-type-val') ? (document.getElementById('current-scale-type-val').getAttribute('data-val') || 'letter') : 'letter',
                 groupedBounds: {
                     letter: {
@@ -11749,11 +11846,13 @@ let isBuilderOverrideActive = false;
         
         scoreCircleEl.innerText = `${percentage}%`;
         
+        const requiredGradePassFail = originalData.options?.grade ?? 60;
+        const requiredGradePercentage = originalData.options?.gradePercentage ?? 50;
         const gradingType = originalData.options?.gradingType || 'pass_fail';
-        const requiredGrade = originalData.options?.grade ?? 60;
         
         if (gradingType === 'pass_fail' || gradingType === 'percentage') {
-            const isPass = percentage >= requiredGrade;
+            const req = gradingType === 'percentage' ? requiredGradePercentage : requiredGradePassFail;
+            const isPass = percentage >= req;
             resultStatusEl.innerText = isPass ? "Passed" : "Did Not Pass";
             scoreCircleEl.style.backgroundColor = isPass ? "var(--success-bg)" : "var(--error-bg)";
             scoreCircleEl.style.color = isPass ? "var(--success-green)" : "var(--error-red)";
@@ -12152,127 +12251,170 @@ let isBuilderOverrideActive = false;
         
         function triggerAccessLayoutSwap(e) {
             const shouldBeMobile = e.matches;
-            const accessIsland = document.getElementById('island-timer');
-            const container = document.getElementById('timer-fields');
             
-            // Only animate if the island is currently expanded and visible
-            if (!accessIsland || !container || !accessIsland.classList.contains('expanded')) {
+            const islandConfigs = [
+                {
+                    islandId: 'island-timer',
+                    containerId: 'timer-fields',
+                    getElementsToAnimate: () => [
+                        ...document.querySelectorAll('#access-segmented-control .access-segmented-button'),
+                        document.getElementById('access-segmented-control').querySelector('.access-slider'),
+                        document.getElementById('access-button-time-limit'),
+                        document.querySelector('#access-time-limit-view > p'),
+                        document.getElementById('access-calendar-header'),
+                        document.getElementById('calendar-time-selectors'),
+                        document.getElementById('calendar-time-button-end-container'),
+                        ...document.querySelectorAll('.calendar-grid-header > div'),
+                        ...document.querySelectorAll('#calendar-grid > div'),
+                        document.getElementById('calendar-hint-text'),
+                        document.querySelector('#access-indefinite-view > svg'),
+                        document.querySelector('#access-indefinite-view > p')
+                    ].filter(Boolean)
+                },
+                {
+                    islandId: 'island-grading',
+                    containerId: 'grading-fields',
+                    getElementsToAnimate: () => [
+                        ...document.querySelectorAll('#grading-segmented-control .access-segmented-button'),
+                        document.getElementById('grading-segmented-control').querySelector('.access-slider'),
+                        document.getElementById('grade-label'),
+                        document.getElementById('scale-type-label'),
+                        document.getElementById('scale-type-popover-btn'),
+                        document.getElementById('grade-percentage-text'),
+                        document.getElementById('grade-passfail-text'),
+                        document.querySelector('#grade-grouped-container > p'),
+                        document.getElementById('capsule-passfail'),
+                        document.getElementById('capsule-percentage'),
+                        ...document.querySelectorAll('.scale-config-container > div > div')
+                    ].filter(Boolean)
+                }
+            ];
+
+            const activeConfigs = islandConfigs.filter(config => {
+                const island = document.getElementById(config.islandId);
+                const container = document.getElementById(config.containerId);
+                if (!island || !container) return false;
+                
+                if (config.islandId === 'island-grading') {
+                    return container.classList.contains('open-fields');
+                } else {
+                    return island.classList.contains('expanded');
+                }
+            });
+
+            if (activeConfigs.length === 0) {
                 document.body.classList.toggle('is-mobile-access', shouldBeMobile);
                 return;
             }
-            
-            const elementsToAnimate = [
-                // FLIP animate the calendar components and time limit button
-                document.getElementById('access-button-time-limit'),
-                document.getElementById('access-calendar-header'),
-                document.getElementById('calendar-time-selectors'),
-                ...document.querySelectorAll('#calendar-grid > div')
-            ].filter(Boolean);
-            
-            // 1. FIRST: Capture bounding rects and old height
-            const firstRects = new Map();
-            elementsToAnimate.forEach(el => {
-                firstRects.set(el, el.getBoundingClientRect());
+
+            const animStates = activeConfigs.map(config => {
+                const container = document.getElementById(config.containerId);
+                const elements = config.getElementsToAnimate();
+                
+                const firstRects = new Map();
+                elements.forEach(el => {
+                    firstRects.set(el, el.getBoundingClientRect());
+                });
+                return { container, elements, firstRects, oldHeight: container.offsetHeight };
             });
-            const oldHeight = container.offsetHeight;
-            
-            // 2. TOGGLE: Apply new layout instantly without CSS transitions interfering
+
             const disableTransitions = document.createElement('style');
             disableTransitions.innerHTML = '* { transition: none !important; }';
             document.head.appendChild(disableTransitions);
             
             document.body.classList.toggle('is-mobile-access', shouldBeMobile);
             
-            // Force synchronous layout recalculation
-            const newHeight = container.offsetHeight;
-            
-            // Now that layout is snapped to final state, read the final computed transforms
-            const finalTransforms = new Map();
-            elementsToAnimate.forEach(el => {
-                const comp = window.getComputedStyle(el).transform;
-                finalTransforms.set(el, comp !== 'none' ? comp : '');
+            animStates.forEach(state => {
+                state.elements.forEach(el => {
+                    if (el.flipAnim) {
+                        el.flipAnim.cancel();
+                        el.flipAnim = null;
+                    }
+                });
+            });
+
+            animStates.forEach(state => {
+                state.newHeight = state.container.offsetHeight;
+                
+                state.finalTransforms = new Map();
+                state.elements.forEach(el => {
+                    const comp = window.getComputedStyle(el).transform;
+                    state.finalTransforms.set(el, comp !== 'none' ? comp : '');
+                });
             });
             
-            // Remove the transition blocker so normal CSS transitions can work later
             document.head.removeChild(disableTransitions);
             
-            // 3. LAST & INVERT: Animate container height (accordion) and element positions (FLIP)
-            if (oldHeight !== newHeight) {
-                container.style.transition = 'none';
-                container.style.overflow = 'hidden';
+            animStates.forEach(state => {
+                const { container, elements, firstRects, oldHeight, newHeight, finalTransforms } = state;
                 
-                if (container.layoutAnim) container.layoutAnim.cancel();
-                
-                const anim = container.animate([
-                    { height: oldHeight + 'px' },
-                    { height: newHeight + 'px' }
-                ], {
-                    duration: 400,
-                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
-                });
-                container.layoutAnim = anim;
-                
-                const accessWrapper = container.querySelector('.access-wrapper');
-                let ro;
-                if (accessWrapper) {
-                    ro = new ResizeObserver(() => {
-                        if (anim.playState !== 'running') {
-                            ro.disconnect();
-                            return;
-                        }
-                        // accessWrapper.offsetHeight represents the exact true intrinsic height needed
-                        const targetHeight = accessWrapper.offsetHeight;
-                        const effect = anim.effect;
-                        if (effect) {
-                            const keyframes = effect.getKeyframes();
-                            if (keyframes && keyframes.length > 1) {
-                                keyframes[1].height = targetHeight + 'px';
-                                effect.setKeyframes(keyframes);
-                            }
-                        }
-                    });
-                    ro.observe(accessWrapper);
-                }
-                
-                anim.onfinish = () => {
-                    container.style.transition = '';
-                    container.style.height = '';
-                    container.style.overflow = '';
-                    container.layoutAnim = null;
-                    if (ro) ro.disconnect();
-                };
-                anim.oncancel = () => {
-                    container.style.height = '';
-                    container.style.overflow = '';
-                    if (ro) ro.disconnect();
-                };
-            } else {
-                container.style.height = 'auto';
-            }
-            
-            elementsToAnimate.forEach(el => {
-                const first = firstRects.get(el);
-                const last = el.getBoundingClientRect();
-                
-                if (first.width === 0 || last.width === 0) return;
-                
-                const deltaX = first.left - last.left;
-                const deltaY = first.top - last.top;
-                
-                if (deltaX !== 0 || deltaY !== 0) {
-                    const baseTransform = finalTransforms.get(el);
-                    const startTransform = `translate(${deltaX}px, ${deltaY}px) ${baseTransform}`.trim();
-                    const endTransform = baseTransform || 'translate(0, 0)';
+                if (oldHeight !== newHeight) {
+                    container.style.transition = 'none';
+                    container.style.overflow = 'hidden';
+                    if (container.layoutAnim) container.layoutAnim.cancel();
                     
-                    el.animate([
-                        { transform: startTransform },
-                        { transform: endTransform }
+                    document.body.classList.add('is-resizing-layout');
+                    
+                    const anim = container.animate([
+                        { height: oldHeight + 'px' },
+                        { height: newHeight + 'px' }
                     ], {
                         duration: 400,
-                        easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
-                        fill: 'auto'
+                        easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
                     });
+                    container.layoutAnim = anim;
+                    
+                    anim.onfinish = () => {
+                        container.style.transition = '';
+                        container.style.height = '';
+                        container.style.overflow = '';
+                        container.layoutAnim = null;
+                        document.body.classList.remove('is-resizing-layout');
+                    };
+                    anim.oncancel = () => {
+                        container.style.height = '';
+                        container.style.overflow = '';
+                        document.body.classList.remove('is-resizing-layout');
+                    };
+                } else {
+                    container.style.height = 'auto';
                 }
+                
+                elements.forEach(el => {
+                    const first = firstRects.get(el);
+                    const last = el.getBoundingClientRect();
+                    
+                    if (first.width === 0 || last.width === 0) return;
+                    
+                    const deltaX = first.left - last.left;
+                    const deltaY = first.top - last.top;
+                    const scaleX = first.width / last.width;
+                    const scaleY = first.height / last.height;
+                    
+                    if (deltaX !== 0 || deltaY !== 0 || scaleX !== 1 || scaleY !== 1) {
+                        const baseTransform = finalTransforms.get(el);
+                        const startTransform = baseTransform ? `${baseTransform} translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})` : `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
+                        const endTransform = baseTransform ? `${baseTransform} scale(1, 1)` : 'translate(0, 0) scale(1, 1)';
+                        
+                        const originalOrigin = el.style.transformOrigin;
+                        el.style.transformOrigin = 'top left';
+                        el.style.transition = 'none';
+                        
+                        const anim = el.animate([
+                            { transform: startTransform },
+                            { transform: endTransform }
+                        ], {
+                            duration: 400,
+                            easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                            fill: 'auto'
+                        });
+                        
+                        el.flipAnim = anim;
+                        
+                        anim.onfinish = () => { el.style.transformOrigin = originalOrigin; el.style.transition = ''; el.flipAnim = null; };
+                        anim.oncancel = () => { el.style.transformOrigin = originalOrigin; el.style.transition = ''; el.flipAnim = null; };
+                    }
+                });
             });
         }
 
@@ -12280,6 +12422,15 @@ let isBuilderOverrideActive = false;
             document.body.classList.add('is-mobile-access');
         }
         accessMql.addEventListener('change', triggerAccessLayoutSwap);
+        
+        let globalResizeTimer;
+        window.addEventListener('resize', () => {
+            document.body.classList.add('is-resizing-window');
+            clearTimeout(globalResizeTimer);
+            globalResizeTimer = setTimeout(() => {
+                document.body.classList.remove('is-resizing-window');
+            }, 100);
+        });
 
         document.querySelectorAll('.card-canvas-bg').forEach(canvas => {
             canvas.particleAnim = new ParticleCardAnimation(canvas);
