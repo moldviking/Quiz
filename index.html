@@ -258,7 +258,7 @@
         .quiz-description { font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.4; }
         .quiz-description:not(:empty) { margin-top: 6px; }
         .quiz-description:empty { display: none; }
-        h2 { font-size: 26px; font-weight: 700; margin-top: 0; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); letter-spacing: -0.5px; }
+        h2 { font-size: 26px; font-weight: 600; margin-top: 0; margin-bottom: 24px; line-height: 1.3; color: var(--text-main); letter-spacing: -0.5px; }
         #mode-select-view h2 { font-size: 34px; margin-bottom: 12px; letter-spacing: -0.8px; }
 
         @media (max-width: 500px) {
@@ -340,7 +340,7 @@
         .cancel-text-button:active { opacity: 0.6; }
 
         .summary-card { text-align: center; }
-        .score-circle { width: 120px; height: 120px; background-color: var(--score-bg); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 700; color: var(--apple-blue); margin: 0 auto 24px; transition: all 0.3s ease; }
+        .score-circle { width: 120px; height: 120px; background-color: var(--score-bg); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 600; color: var(--apple-blue); margin: 0 auto 24px; transition: all 0.3s ease; }
 
         .review-area { margin-top: 32px; border-top: 1px solid var(--border-color); text-align: left; }
         .review-item { padding: 24px 0; border-bottom: 1px solid var(--border-color); }
@@ -509,8 +509,8 @@
         .alert-title { font-size: 19px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-main); letter-spacing: -0.5px; }
         .time-popover {
             position: absolute;
-            background-color: transparent;
-            border-color: transparent;
+            background-color: var(--bg-alert);
+            border-color: var(--alert-border);
             box-shadow: none;
             clip-path: inset(var(--clip-top, 50%) var(--clip-right, 50%) var(--clip-bottom, 50%) var(--clip-left, 50%) round 6px);
             transition: clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, opacity 0s linear 0.35s, visibility 0s linear 0.35s;
@@ -581,7 +581,7 @@
             background: rgba(120, 120, 128, 0.16);
             border-radius: 6px;
             z-index: -1;
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @media (prefers-color-scheme: dark) {
             #calendar-time-button::before, #calendar-time-button-end::before, #scale-type-popover-btn::before {
@@ -624,26 +624,20 @@
             opacity: 1;
             transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease 0.05s;
         }
-             #popover-transition-label, #scale-popover-transition-label {
+        #popover-transition-label, #scale-popover-transition-label {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             font-size: 13px; font-weight: 600; color: var(--text-main);
+            background: transparent; border: none; font-family: inherit;
+            padding: 4px 10px; margin: 0;
+            font-variant-numeric: tabular-nums;
+            -webkit-font-smoothing: subpixel-antialiased;
+            -moz-osx-font-smoothing: grayscale;
             opacity: 0; pointer-events: none;
             transition: transform 0s, opacity 0.1s ease;
             box-sizing: border-box;
-            font-variant-numeric: tabular-nums;
-            padding: 4px 10px;
-            border: none;
-            background: transparent;
-            margin: 0;
             white-space: nowrap;
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
         .time-popover.active #popover-transition-label, .time-popover.active #scale-popover-transition-label {
             transform: translate(-50%, -50%) scale(1.69);
@@ -661,7 +655,7 @@
             height: var(--btn-height, auto) !important;
             transition: transform 0.35s cubic-bezier(0.333, 1, 0.666, 1), opacity 0.1s ease 0s, left 0.35s cubic-bezier(0.333, 1, 0.666, 1), top 0.35s cubic-bezier(0.333, 1, 0.666, 1), width 0.35s cubic-bezier(0.333, 1, 0.666, 1), height 0.35s cubic-bezier(0.333, 1, 0.666, 1);
         }
-        .alert-message { font-size: 14px; font-weight: 400; margin: 0; color: var(--text-main); line-height: 1.4; }
+        .alert-message { font-size: 14px; font-weight: 600; margin: 0; color: var(--text-main); line-height: 1.4; }
 
         .alert-buttons { display: flex; gap: 12px; padding: 0 20px 20px 20px; }
         .alert-button { flex: 1; padding: 12px 10px; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 999px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
@@ -822,10 +816,11 @@
             }
         }
         .time-popover:not(.active) .timer-picker-container::before {
-            left: calc(var(--clip-origin-x, 50%) - 14px) !important;
+            left: calc(var(--clip-origin-x, 50%) - 15px) !important;
+            top: 50% !important;
             width: var(--btn-width, 60px) !important;
             height: var(--btn-height, 24px) !important;
-            margin-top: calc(var(--btn-height, 24px) / -2) !important;
+            margin-top: calc(var(--btn-height, 24px) / -2 + var(--pill-margin-top-offset, 0px)) !important;
             border-radius: 6px !important;
             transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1), width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -846,7 +841,7 @@
             overflow: hidden;
         }
         .colon-dial {
-            font-size: 20px; font-weight: bold; margin-top: -6px; margin: 0 2px; color: var(--text-main);
+            font-size: 20px; font-weight: 600; margin-top: -6px; margin: 0 2px; color: var(--text-main);
         }
         .timer-column {
             height: 100%;
@@ -900,7 +895,7 @@
             height: 36px;
             line-height: 36px;
             font-size: 22px;
-            font-weight: 700;
+            font-weight: 400;
             color: var(--text-main);
             font-variant-numeric: tabular-nums;
         }
@@ -1001,7 +996,7 @@
         .mode-choice-header { display: flex; align-items: center; gap: 8px; }
         .mode-icon-container { flex-shrink: 0; color: #fff; display: flex; align-items: center; justify-content: center; }
         .mode-icon-container svg { width: 28px; height: 28px; fill: currentColor; }
-        .mode-choice-button .mode-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; line-height: 1; }
+        .mode-choice-button .mode-title { font-size: 17px; font-weight: 600; color: #fff; letter-spacing: -0.3px; line-height: 1; }
         .mode-choice-button .mode-sub { font-size: 13px; color: rgba(255, 255, 255, 0.9); font-weight: 500; line-height: 1.25; width: 100%; }
 
         .section-header { text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; margin: 0 0 8px 2px; display: block; }
@@ -1032,8 +1027,8 @@
             .builder-meta-card .builder-meta-input:focus:not(:placeholder-shown) { background-color: rgb(47, 47, 49); color: rgb(254, 254, 254); }
         }
 
-        .builder-meta-card .builder-meta-textarea { margin-bottom: 0; width: 100%; box-sizing: border-box; min-width: 0; background-color: transparent; color: var(--text-main); font-size: 15px; font-weight: 400; line-height: 1.4; padding: 7px 8px; border-radius: 10px; border: none; min-height: 36px; resize: none; overflow: hidden; font-family: inherit; outline: none; }
-        .builder-meta-card .builder-meta-textarea::placeholder { color: var(--builder-empty-answer-text); font-weight: 400; }
+        .builder-meta-card .builder-meta-textarea { margin-bottom: 0; width: 100%; box-sizing: border-box; min-width: 0; background-color: transparent; color: var(--text-main); font-size: 15px; font-weight: 600; line-height: 1.4; padding: 7px 8px; border-radius: 10px; border: none; min-height: 36px; resize: none; overflow: hidden; font-family: inherit; outline: none; }
+        .builder-meta-card .builder-meta-textarea::placeholder { color: var(--builder-empty-answer-text); font-weight: 600; }
         .builder-meta-card .builder-meta-textarea:focus { background-color: transparent; outline: none; }
 
         .text-input, .textarea-input { width: 100%; box-sizing: border-box; min-width: 0; background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; border-radius: 14px; padding: 14px 16px; font-size: 15px; font-family: inherit; line-height: 1.4; margin-bottom: 20px; transition: border-color 0.2s ease, background-color 0.2s ease; }
@@ -1067,23 +1062,31 @@
         .options-island.expanded #timer-collapsed-summary:not(.open-summary) { grid-template-rows: 0fr; opacity: 0; visibility: hidden; margin-top: 0; transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.4s; }
         .island-accordion.open-fields { grid-template-rows: 1fr; opacity: 1; visibility: visible; margin-top: 16px; transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0s; }
         .island-accordion-inner { min-height: 0; width: 100%; white-space: nowrap; }
-        .options-island-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .options-island-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; white-space: nowrap; min-width: 0; }
+        
+        /* Ensure text in side-by-side islands truncates properly */
+        #island-class-topic .options-island-title > div, #island-grading .options-island-title > div { min-width: 0; }
+        #class-topic-collapsed-summary > div > div, #grading-collapsed-summary > div > div { min-width: 0; }
+        #island-class-topic .options-island-title span, #island-grading .options-island-title span,
+        #class-topic-collapsed-summary span, #grading-collapsed-summary span {
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
+        }
         .options-island-row { display: flex; justify-content: space-between; align-items: flex-start; }
         .options-island .text-input, .options-island .custom-select-button { background-color: var(--bg-card); }
         .grading-sidebar-button { background: transparent; border: none; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; }
         .grading-sidebar-button:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
-        .grading-sidebar-button.active { color: var(--apple-blue); font-weight: 600; background: rgba(0, 122, 255, 0.08); }
+        .grading-sidebar-button.active { color: var(--apple-blue); font-weight: 400; background: rgba(0, 122, 255, 0.08); }
         
         .grading-sub-button { background: transparent; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; box-sizing: border-box; width: auto; }
         .grading-sub-button:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
-        .grading-sub-button.active { color: var(--text-main); font-weight: 600; background: rgba(0,0,0,0.04); border-color: #a0a0a0; }
+        .grading-sub-button.active { color: var(--text-main); font-weight: 400; background: rgba(0,0,0,0.04); border-color: #a0a0a0; }
         .options-island .grouped-scale-option { background-color: var(--bg-card); }
         
         .timer-badge { background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 15px; color: #fff; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; transform-origin: right center; }
         .timer-badge.badge-indefinite { color: rgba(255,255,255,0.7); font-weight: 500; background: rgba(0,0,0,0.2); }
         #island-timer { cursor: pointer; }
         @media (max-width: 712px) { 
-            .options-island { width: 100% !important; } 
+            .options-island:not(#island-class-topic):not(#island-grading) { width: 100% !important; } 
         }
         @media (max-width: 800px) {
             .topic-grid-1 { grid-template-columns: 1fr 1fr !important; }
@@ -1153,6 +1156,27 @@
         .scale-config-container { view-transition-name: vt-scale-container; }
         #grade-label { view-transition-name: vt-grade-label; }
         #scale-type-label { view-transition-name: vt-scale-label; }
+        #scale-configs-wrapper {
+            transition: height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+            height: 108px;
+            display: grid;
+            align-items: start;
+        }
+        .scale-config-container {
+            grid-area: 1 / 1;
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.15s ease-out 0s, visibility 0s linear 0.15s;
+        }
+        .scale-config-container.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transition: opacity 0.15s ease-in 0.15s, visibility 0s linear 0s;
+        }
         #scale-type-popover-btn { view-transition-name: vt-scale-btn; }
         #grade-percentage-text { view-transition-name: vt-grade-perc-txt; }
         #grade-passfail-text { view-transition-name: vt-grade-pf-txt; }
@@ -1211,14 +1235,14 @@
         .builder-card { padding: 0; text-align: left; box-sizing: border-box; background-color: transparent; border-radius: 20px; box-shadow: none; border: none; overflow: visible; position: relative; }
         .builder-card-top { padding: 0 0 14px 0; }
         .builder-question-input { width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; border-radius: 14px; padding: 14px 80px 14px 16px; font-size: 15px; font-weight: 600; font-family: inherit; line-height: 1.4; margin-bottom: 14px; resize: vertical; min-height: 24px; transition: border-color 0.2s ease; }
-        .builder-question-input::placeholder { color: var(--text-tertiary); font-weight: 400; }
+        .builder-question-input::placeholder { color: var(--text-tertiary); font-weight: 600; }
         .builder-question-input:focus { outline: none; border-color: var(--apple-blue); }
 
         .builder-options-group { border-radius: 0; overflow: visible; background-color: transparent; position: relative; }
         .builder-option-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; position: relative; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         .builder-option-row:not(:last-child)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background-color: var(--builder-answer-separator); transition: opacity 0.2s ease; }
-        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 7px 8px; font-size: 15px; font-weight: 400; font-family: inherit; }
-        .builder-option-input::placeholder { color: var(--builder-empty-answer-text); font-weight: 400; }
+        .builder-option-input { flex: 1; min-width: 0; box-sizing: border-box; background-color: transparent; color: var(--text-main); border: none; border-radius: 10px; padding: 7px 8px; font-size: 15px; font-weight: 600; font-family: inherit; }
+        .builder-option-input::placeholder { color: var(--builder-empty-answer-text); font-weight: 600; }
         .builder-option-input:focus { outline: none; background-color: transparent; }
         
         .correct-toggle-button { flex-shrink: 0; box-sizing: border-box; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border-color); background-color: var(--bg-panel); color: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; padding: 0; }
@@ -1248,7 +1272,7 @@
         .add-option-button .plus-icon svg { width: 12px; height: 12px; fill: currentColor; }
         .add-option-button .select-answers-icon { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background-color: var(--success-green); color: #ffffff; display: flex; align-items: center; justify-content: center; }
         .add-option-button .select-answers-icon svg { width: 13px; height: 13px; fill: none; stroke: #ffffff; stroke-width: 2.5; }
-        .add-option-button .add-option-label { font-size: 15px; font-weight: 400; color: var(--builder-add-answer-text); padding: 7px 8px; }
+        .add-option-button .add-option-label { font-size: 15px; font-weight: 600; color: var(--builder-add-answer-text); padding: 7px 8px; }
         .add-option-button:hover .plus-icon { opacity: 0.85; }
 
         /* ERROR STYLES (Light Mode) */
@@ -1400,7 +1424,7 @@
         .question-input-row { display: flex; align-items: flex-start; gap: 10px; padding: 0 0 8px 0; position: relative; }
         .question-input-row::after { content: ''; position: absolute; left: -14px; right: -14px; bottom: 0; height: 2px; background-color: var(--builder-question-separator); }
         .question-number-wrap { position: relative; width: 28px; height: 28px; flex-shrink: 0; }
-        .question-number { font-size: 15px; font-weight: 700; color: var(--text-tertiary); width: 100%; height: 100%; border-radius: 50%; background-color: var(--builder-card-bg); display: flex; align-items: center; justify-content: center; transition: opacity 0.2s ease; }
+        .question-number { font-size: 15px; font-weight: 600; color: var(--text-tertiary); width: 100%; height: 100%; border-radius: 50%; background-color: var(--builder-card-bg); display: flex; align-items: center; justify-content: center; transition: opacity 0.2s ease; }
         .question-delete-button { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; border: none; background-color: var(--error-red); color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; opacity: 0; transition: opacity 0.2s ease, transform 0.15s ease; }
         .question-delete-button svg { width: 12px; height: 12px; fill: currentColor; }
         .question-number-wrap:hover .question-number { opacity: 0; }
@@ -1534,7 +1558,7 @@
         @media (hover: hover) { .score-step-button:hover:not(:disabled) { color: var(--score-active); opacity: 0.8; } }
         .score-step-button:active:not(:disabled) { color: var(--score-active); opacity: 1; transform: scale(0.95); }
         .score-step-button:disabled { opacity: 0 !important; pointer-events: none !important; cursor: default; }
-        .score-value-label { width: 40px; text-align: center; font-size: 13px; font-weight: 700; color: var(--score-active); user-select: none; padding: 2px 0; line-height: 1.2; cursor: pointer; }
+        .score-value-label { width: 40px; text-align: center; font-size: 13px; font-weight: 600; color: var(--score-active); user-select: none; padding: 2px 0; line-height: 1.2; cursor: pointer; }
 
         .image-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: transparent; display: flex; justify-content: center; align-items: center; z-index: 10000; pointer-events: none; touch-action: none; visibility: hidden; transition: visibility 0s linear 0.15s; }
         .image-modal-overlay::before { content: ''; position: absolute; inset: 0; background-color: var(--overlay-bg); z-index: -1; opacity: 0; transition: opacity 0.15s ease-out; }
@@ -1543,7 +1567,7 @@
         .image-modal-box { background: var(--bg-alert); width: 340px; border-radius: 28px; text-align: left; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--alert-border); box-sizing: border-box; padding: 24px 20px 20px 20px; position: relative; z-index: 1; opacity: 0; transition: opacity 0.15s ease-out; }
         .image-modal-overlay.active .image-modal-box { opacity: 1; }
         @media (prefers-color-scheme: dark) { .image-modal-box { box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); } }
-        .image-modal-title { font-size: 17px; font-weight: 600; color: var(--text-main); margin: 0 0 6px 0; letter-spacing: -0.3px; }
+        .image-modal-title { font-size: 17px; font-weight: 400; color: var(--text-main); margin: 0 0 6px 0; letter-spacing: -0.3px; }
         .image-modal-sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px 0; line-height: 1.4; }
 
         .image-preview-area { width: 100%; height: 140px; border-radius: 18px; border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 14px; background-color: var(--option-bg); cursor: pointer; transition: all 0.2s ease; }
@@ -1556,7 +1580,7 @@
         .image-preview-placeholder span { font-size: 13px; font-weight: 500; }
 
         .image-modal-actions { display: flex; gap: 10px; margin-top: 4px; }
-        .image-modal-button { flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 600; cursor: pointer; -webkit-appearance: none; box-sizing: border-box; border-radius: 999px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
+        .image-modal-button { flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 400; cursor: pointer; -webkit-appearance: none; box-sizing: border-box; border-radius: 999px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
         .image-modal-button.primary { background-color: var(--apple-blue); color: #ffffff; }
         .image-modal-button.secondary { background-color: rgba(0,0,0,0.05); color: var(--text-main); }
         .image-modal-button.danger { background-color: rgba(0,0,0,0.05); color: var(--error-red); }
@@ -1586,19 +1610,19 @@
         .explanation-modal-top-button.save-button { right: 14px; background-color: var(--apple-blue); color: #ffffff; }
         .explanation-modal-top-button.save-button svg.lucide-check, .icon-button svg.lucide-check { transform: translate(-0.5px, 1px); }
         @media (prefers-color-scheme: dark) { .explanation-modal-top-button.close-button { background-color: rgba(255,255,255,0.1); } }
-        .explanation-modal-title { font-size: 17px; font-weight: 600; color: var(--text-main); margin: 0 0 16px 0; padding-right: 14px; letter-spacing: -0.3px; text-align: left; overflow-wrap: break-word; word-break: break-word; line-height: 1.4; max-height: 119px; overflow-y: auto; }
-        .explanation-modal-answer-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 14px 0; }
+        .explanation-modal-title { font-size: 17px; font-weight: 400; color: var(--text-main); margin: 0 0 16px 0; padding-right: 14px; letter-spacing: -0.3px; text-align: left; overflow-wrap: break-word; word-break: break-word; line-height: 1.4; max-height: 119px; overflow-y: auto; }
+        .explanation-modal-answer-label { font-size: 12px; font-weight: 400; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 14px 0; }
         .explanation-modal-textarea { width: 100%; box-sizing: border-box; background-color: var(--option-bg); color: var(--text-main); border: 2px solid transparent; border-radius: 14px; padding: 12px 14px; font-size: 15px; font-family: inherit; line-height: 1.5; resize: none; overflow-y: hidden; max-height: 141px; transition: border-color 0.2s ease; margin-bottom: 14px; }
         .explanation-modal-textarea::placeholder { color: var(--text-tertiary); }
         .explanation-modal-textarea:focus { outline: none; border-color: var(--apple-blue); }
         .explanation-modal-textarea.read-only { pointer-events: none; background-color: var(--option-bg); border-color: transparent; color: var(--text-main); resize: none; }
         .explanation-modal-actions { display: flex; gap: 10px; }
-        .explanation-modal-button { flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 600; cursor: pointer; -webkit-appearance: none; box-sizing: border-box; border-radius: 999px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
+        .explanation-modal-button { flex: 1; padding: 11px 10px; font-size: 15px; font-weight: 400; cursor: pointer; -webkit-appearance: none; box-sizing: border-box; border-radius: 999px; border: none; transition: transform 0.15s ease, opacity 0.2s ease; }
         .explanation-modal-button.primary { background-color: var(--apple-blue); color: #ffffff; }
         .explanation-popover { display: flex; position: absolute; top: 14px; left: 14px; flex-direction: column; gap: 6px; background-color: var(--bg-alert); box-shadow: 0 12px 30px rgba(0,0,0,0.12), inset 0 0 0 0.5px rgba(255, 255, 255, 0.05); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-radius: 18px; padding: 6px; z-index: 1000; transform-origin: 16px 16px; opacity: 0; visibility: hidden; transform: scale(0.9); transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), visibility 0s linear 0.25s; }
         @media (prefers-color-scheme: dark) { .explanation-popover { box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 0 0 0.5px rgba(255, 255, 255, 0.05); } }
         .explanation-popover.active { opacity: 1; visibility: visible; transform: scale(1); transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), visibility 0s linear 0s; }
-        .explanation-popover-button { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: none; background-color: rgba(0, 0, 0, 0.05); font-size: 15px; font-weight: 600; color: var(--text-main); cursor: pointer; transition: transform 0.15s ease, opacity 0.2s, background-color 0.2s; text-align: left; white-space: nowrap; }
+        .explanation-popover-button { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: none; background-color: rgba(0, 0, 0, 0.05); font-size: 15px; font-weight: 400; color: var(--text-main); cursor: pointer; transition: transform 0.15s ease, opacity 0.2s, background-color 0.2s; text-align: left; white-space: nowrap; }
         @media (prefers-color-scheme: dark) { .explanation-popover-button { background-color: rgba(255, 255, 255, 0.1); } }
         .explanation-popover-button:active { transform: scale(0.97); }
         .explanation-popover-button.danger { color: var(--error-red); background-color: rgba(255, 59, 48, 0.12); }
@@ -1981,7 +2005,7 @@
         }
         .exam-pill-timer {
             font-variant-numeric: tabular-nums;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 14px;
             color: var(--apple-blue);
             background: rgba(0, 122, 255, 0.1);
@@ -2118,7 +2142,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 </div>
             </button>
             <button class="mode-choice-button button-check" onclick="triggerCheckAnswers()">
-                <div id="continue-checking-badge" onclick="resumeSession(event, 'check_answers')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Checking</div>
+                <div id="continue-checking-badge" onclick="resumeSession(event, 'check_answers')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Checking</div>
                 <canvas class="card-canvas-bg" data-svg-path="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></canvas>
                 <div class="mode-bottom-content">
                     <div class="mode-choice-header">
@@ -2131,7 +2155,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 </div>
             </button>
             <button class="mode-choice-button button-create" onclick="triggerCreateQuiz()">
-                <div id="continue-editing-badge" onclick="resumeSession(event, 'builder')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Editing</div>
+                <div id="continue-editing-badge" onclick="resumeSession(event, 'builder')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Editing</div>
                 <canvas class="card-canvas-bg" data-svg-path="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></canvas>
                 <div class="mode-bottom-content">
                     <div class="mode-choice-header">
@@ -2144,7 +2168,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 </div>
             </button>
             <button class="mode-choice-button button-edit" onclick="triggerBuilderUpload()">
-                <div id="continue-editing-edit-badge" onclick="resumeSession(event, 'builder')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Editing</div>
+                <div id="continue-editing-edit-badge" onclick="resumeSession(event, 'builder')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Editing</div>
                 <canvas class="card-canvas-bg" data-svg-path="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></canvas>
                 <div class="mode-bottom-content">
                     <div class="mode-choice-header">
@@ -2247,7 +2271,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                         <div class="island-icon-box" style="background-color: var(--apple-blue); color: #fff;">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v8l3-3 3 3V2"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
                                         </div>
-                                        <span>Class and Topic</span>
+                                        <span>Overview</span>
                                     </div>
                                     <button id="class-topic-done-button" onclick="collapseClassTopic(event)" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
                                 </div>
@@ -2460,47 +2484,49 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         </button>
                     </div>
                     
-                    <div id="scale-config-letter" class="scale-config-container" style="display: block;">
-                        <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('letter', 'a', event)"><span class="grade-capsule-label">A</span><span class="grade-capsule-val" id="bounds-letter-a" data-val="90">90%</span></div>
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('letter', 'b', event)"><span class="grade-capsule-label">B</span><span class="grade-capsule-val" id="bounds-letter-b" data-val="80">80%</span></div>
-                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('letter', 'c', event)"><span class="grade-capsule-label">C</span><span class="grade-capsule-val" id="bounds-letter-c" data-val="70">70%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('letter', 'd', event)"><span class="grade-capsule-label">D</span><span class="grade-capsule-val" id="bounds-letter-d" data-val="60">60%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('letter', 'f', event)"><span class="grade-capsule-label">F</span><span class="grade-capsule-val" id="bounds-letter-f" data-val="50">50%</span></div>
+                    <div id="scale-configs-wrapper">
+                        <div id="scale-config-letter" class="scale-config-container active">
+                            <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('letter', 'a', event)"><span class="grade-capsule-label">A</span><span class="grade-capsule-val" id="bounds-letter-a" data-val="90">90%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('letter', 'b', event)"><span class="grade-capsule-label">B</span><span class="grade-capsule-val" id="bounds-letter-b" data-val="80">80%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('letter', 'c', event)"><span class="grade-capsule-label">C</span><span class="grade-capsule-val" id="bounds-letter-c" data-val="70">70%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('letter', 'd', event)"><span class="grade-capsule-label">D</span><span class="grade-capsule-val" id="bounds-letter-d" data-val="60">60%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('letter', 'f', event)"><span class="grade-capsule-label">F</span><span class="grade-capsule-val" id="bounds-letter-f" data-val="50">50%</span></div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div id="scale-config-5point" class="scale-config-container" style="display: none;">
-                        <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('5point', '5', event)"><span class="grade-capsule-label">5</span><span class="grade-capsule-val" id="bounds-5p-5" data-val="90">90%</span></div>
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('5point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-5p-4" data-val="80">80%</span></div>
-                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('5point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-5p-3" data-val="70">70%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('5point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-5p-2" data-val="60">60%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('5point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-5p-1" data-val="50">50%</span></div>
+                        <div id="scale-config-5point" class="scale-config-container">
+                            <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('5point', '5', event)"><span class="grade-capsule-label">5</span><span class="grade-capsule-val" id="bounds-5p-5" data-val="90">90%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('5point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-5p-4" data-val="80">80%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('5point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-5p-3" data-val="70">70%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('5point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-5p-2" data-val="60">60%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('5point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-5p-1" data-val="50">50%</span></div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div id="scale-config-10point" class="scale-config-container" style="display: none;">
-                        <div style="display: grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '10', event)"><span class="grade-capsule-label">10</span><span class="grade-capsule-val" id="bounds-10p-10" data-val="95">95%</span></div>
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '9', event)"><span class="grade-capsule-label">9</span><span class="grade-capsule-val" id="bounds-10p-9" data-val="85">85%</span></div>
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '8', event)"><span class="grade-capsule-label">8</span><span class="grade-capsule-val" id="bounds-10p-8" data-val="75">75%</span></div>
-                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '7', event)"><span class="grade-capsule-label">7</span><span class="grade-capsule-val" id="bounds-10p-7" data-val="65">65%</span></div>
-                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '6', event)"><span class="grade-capsule-label">6</span><span class="grade-capsule-val" id="bounds-10p-6" data-val="55">55%</span></div>
-                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '5', event)"><span class="grade-capsule-label">5</span><span class="grade-capsule-val" id="bounds-10p-5" data-val="45">45%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-10p-4" data-val="35">35%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-10p-3" data-val="25">25%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-10p-2" data-val="15">15%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-10p-1" data-val="5">5%</span></div>
+                        <div id="scale-config-10point" class="scale-config-container">
+                            <div style="display: grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '10', event)"><span class="grade-capsule-label">10</span><span class="grade-capsule-val" id="bounds-10p-10" data-val="95">95%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '9', event)"><span class="grade-capsule-label">9</span><span class="grade-capsule-val" id="bounds-10p-9" data-val="85">85%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '8', event)"><span class="grade-capsule-label">8</span><span class="grade-capsule-val" id="bounds-10p-8" data-val="75">75%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '7', event)"><span class="grade-capsule-label">7</span><span class="grade-capsule-val" id="bounds-10p-7" data-val="65">65%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '6', event)"><span class="grade-capsule-label">6</span><span class="grade-capsule-val" id="bounds-10p-6" data-val="55">55%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '5', event)"><span class="grade-capsule-label">5</span><span class="grade-capsule-val" id="bounds-10p-5" data-val="45">45%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-10p-4" data-val="35">35%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-10p-3" data-val="25">25%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-10p-2" data-val="15">15%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-10p-1" data-val="5">5%</span></div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div id="scale-config-4point" class="scale-config-container" style="display: none;">
-                        <div style="display: grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('4point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-4p-4" data-val="90">90%</span></div>
-                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('4point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-4p-3" data-val="80">80%</span></div>
-                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('4point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-4p-2" data-val="70">70%</span></div>
-                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('4point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-4p-1" data-val="60">60%</span></div>
+                        <div id="scale-config-4point" class="scale-config-container">
+                            <div style="display: grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('4point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-4p-4" data-val="90">90%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('4point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-4p-3" data-val="80">80%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('4point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-4p-2" data-val="70">70%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('4point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-4p-1" data-val="60">60%</span></div>
+                            </div>
                         </div>
                     </div>
                     <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Set the minimum score required for each level.</p>
@@ -2553,8 +2579,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                              onmouseover="document.getElementById('duration-label-text').style.opacity='0'; document.getElementById('duration-indefinite-button').style.opacity='1';"
                                              onmouseout="document.getElementById('duration-label-text').style.opacity='1'; document.getElementById('duration-indefinite-button').style.opacity='0';"
                                              onclick="resetDurationToIndefinite(event)">
-                                            <span id="duration-label-text" style="position: relative; transition: opacity 0.2s; font-size: 16px; font-weight: 600; color: var(--text-main); pointer-events: none; white-space: nowrap;">Duration</span>
-                                            <span id="duration-indefinite-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; border-radius: 14px; pointer-events: none;">Indefinite</span>
+                                            <span id="duration-label-text" style="position: relative; transition: opacity 0.2s; font-size: 16px; font-weight: 400; color: var(--text-main); pointer-events: none; white-space: nowrap;">Duration</span>
+                                            <span id="duration-indefinite-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 400; border-radius: 14px; pointer-events: none;">Indefinite</span>
                                         </div>
                                         <button class="icon-button" onclick="closeTimeLimitPopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
@@ -2618,8 +2644,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                              onmouseover="document.getElementById('calendar-month-year').style.opacity='0'; document.getElementById('calendar-today-button').style.opacity='1';"
                                              onmouseout="document.getElementById('calendar-month-year').style.opacity='1'; document.getElementById('calendar-today-button').style.opacity='0';"
                                              onclick="goToToday(event)">
-                                            <span id="calendar-month-year" style="position: relative; transition: opacity 0.2s; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; color: var(--text-main); pointer-events: none;">Month 2026</span>
-                                            <span id="calendar-today-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border-radius: 12px; pointer-events: none;">Today</span>
+                                            <span id="calendar-month-year" style="position: relative; transition: opacity 0.2s; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; color: var(--text-main); pointer-events: none;">Month 2026</span>
+                                            <span id="calendar-today-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 400; border-radius: 12px; pointer-events: none;">Today</span>
                                         </div>
                                         <button class="icon-button" onclick="changeCalendarMonth(1)" style="padding: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-main);">
                                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -2961,7 +2987,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             </div>
             <div class="alert-buttons">
                 <button class="alert-button secondary" onclick="dismissUpcomingExam()">Dismiss</button>
-                <button class="alert-button primary" onclick="confirmRegisterUpcomingExam()" style="font-weight: bold;">Register</button>
+                <button class="alert-button primary" onclick="confirmRegisterUpcomingExam()" style="font-weight: 600;">Register</button>
             </div>
         </div>
 
@@ -2972,7 +2998,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             </div>
             <div class="alert-buttons">
                 <button class="alert-button secondary" onclick="dismissUpcomingExam()">Dismiss</button>
-                <button id="button-join-exam-modal" class="alert-button primary" onclick="joinUpcomingExam()" style="font-weight: bold;">Join</button>
+                <button id="button-join-exam-modal" class="alert-button primary" onclick="joinUpcomingExam()" style="font-weight: 600;">Join</button>
             </div>
         </div>
 
@@ -2984,7 +3010,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         #timer-scale .timer-item, #timer-scale-fg .timer-item-fg { text-align: left; padding-left: 20px; box-sizing: border-box; }
     </style>
     <div class="time-popover-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <div style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-left: 10px;">Scale Type</div>
+        <div style="font-size: 16px; font-weight: 400; color: var(--text-main); margin-left: 10px;">Scale Type</div>
         <button class="icon-button" onclick="closeScaleTypePopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
         </button>
@@ -3012,8 +3038,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
              onmouseover="document.getElementById('time-picker-title-text').style.opacity='0'; document.getElementById('time-picker-now-button').style.opacity='1';"
              onmouseout="document.getElementById('time-picker-title-text').style.opacity='1'; document.getElementById('time-picker-now-button').style.opacity='0';"
              onclick="goToNow()">
-            <span id="time-picker-title-text" style="position: relative; transition: opacity 0.2s; font-size: 16px; font-weight: 600; color: var(--text-main); pointer-events: none; white-space: nowrap;">Select Time</span>
-            <span id="time-picker-now-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; border-radius: 14px; pointer-events: none;">Now</span>
+            <span id="time-picker-title-text" style="position: relative; transition: opacity 0.2s; font-size: 16px; font-weight: 400; color: var(--text-main); pointer-events: none; white-space: nowrap;">Select Time</span>
+            <span id="time-picker-now-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 400; border-radius: 14px; pointer-events: none;">Now</span>
         </div>
         <button class="icon-button" onclick="closeTimePopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
@@ -6733,6 +6759,12 @@ let isBuilderOverrideActive = false;
                 document.getElementById('capsule-percentage').style.display = type === 'percentage' ? 'inline-flex' : 'none';
             }
             document.getElementById('grade-grouped-container').style.display = type === 'grouped_grades' ? 'block' : 'none';
+            if (type === 'grouped_grades') {
+                const activeConfig = document.querySelector('.scale-config-container.active');
+                if (activeConfig) {
+                    document.getElementById('scale-configs-wrapper').style.height = activeConfig.offsetHeight + 'px';
+                }
+            }
             document.getElementById('grade-percentage-text').style.display = type === 'percentage' ? 'block' : 'none';
             if (document.getElementById('grade-passfail-text')) {
                 document.getElementById('grade-passfail-text').style.display = type === 'pass_fail' ? 'block' : 'none';
@@ -6751,21 +6783,43 @@ let isBuilderOverrideActive = false;
     }
 
     function selectGroupedScale(scaleType, delayUpdate = false) {
+        const currentValElem = document.getElementById('current-scale-type-val');
+        if (currentValElem.getAttribute('data-val') === scaleType) return;
+
         const namesMap = { 'letter': 'Letter', '5point': '5-Point', '10point': '10-Point', '4point': '4-Point' };
         
-        document.getElementById('current-scale-type-val').innerText = namesMap[scaleType] || 'Letter';
-        document.getElementById('current-scale-type-val').setAttribute('data-val', scaleType);
+        currentValElem.innerText = namesMap[scaleType] || 'Letter';
+        currentValElem.setAttribute('data-val', scaleType);
         
         const updateDom = () => {
-            document.querySelectorAll('.scale-config-container').forEach(el => el.style.display = 'none');
-            const activeConfig = document.getElementById('scale-config-' + scaleType);
-            if (activeConfig) activeConfig.style.display = 'block';
+            const wrapper = document.getElementById('scale-configs-wrapper');
+            const newConfig = document.getElementById('scale-config-' + scaleType);
+            const oldConfig = document.querySelector('.scale-config-container.active');
+            
+            if (oldConfig === newConfig) return;
+            
+            const newHeight = newConfig ? newConfig.offsetHeight : 0;
+            
+            if (oldConfig) {
+                oldConfig.classList.remove('active');
+            }
+            
+            if (newConfig) {
+                newConfig.classList.add('active');
+                if (wrapper) {
+                    if (newHeight > 0) {
+                        wrapper.style.height = newHeight + 'px';
+                    } else {
+                        wrapper.style.height = ''; // Prevent squashing to 0px if measured while hidden
+                    }
+                }
+            }
         };
         
         if (delayUpdate) {
-            setTimeout(updateDom, 400);
+            setTimeout(updateDom, 250); // Give time for popover fade
         } else {
-            performPanelFadeTransition('grade-grouped-container', '#grading-fields', updateDom);
+            updateDom();
         }
         
         saveBuilderState();
@@ -6901,9 +6955,19 @@ let isBuilderOverrideActive = false;
             void popover.offsetWidth; // force reflow
             
             popover.style.transition = ''; // restore css transitions
+            popover.style.clipPath = '';
             
             requestAnimationFrame(() => {
                 popover.classList.add('active');
+                
+                // When opening animation finishes, remove clip-path entirely so it doesn't clip the box shadow
+                popover.addEventListener('transitionend', function handler(e) {
+                    if (e.propertyName === 'clip-path' && popover.classList.contains('active')) {
+                        popover.style.clipPath = 'none';
+                        popover.removeEventListener('transitionend', handler);
+                    }
+                });
+
                 if (typeof timePopoverSyncRAF !== 'undefined' && !timePopoverSyncRAF) {
                     timePopoverSyncRAF = requestAnimationFrame(syncTimePopover);
                 }
@@ -6929,7 +6993,6 @@ let isBuilderOverrideActive = false;
         
         const button = document.getElementById('scale-type-popover-btn');
         
-        // Always save the selection, even when clicking outside (like iOS pickers)
         const scaleCol = document.getElementById('timer-scale');
         const items = scaleCol.querySelectorAll('.timer-item');
         const centerPos = scaleCol.scrollTop + scaleCol.offsetHeight / 2;
@@ -6955,34 +7018,22 @@ let isBuilderOverrideActive = false;
             const newBtnRect = button.getBoundingClientRect();
             if (newBtnRect.width === 0 || newBtnRect.height === 0) {
                 fadeOnly = true;
-            } else {
-                const transitionLabel = document.getElementById('scale-popover-transition-label');
-                if (transitionLabel) {
-                    popover.style.setProperty('--btn-width', newBtnRect.width + 'px');
-                    popover.style.setProperty('--btn-height', newBtnRect.height + 'px');
-                }
             }
         }
         
-        void popover.offsetWidth; // Force reflow to commit variables before transition
-        
-        if (fadeOnly) popover.classList.add('fade-out-only');
-        popover.classList.remove('active');
         popover.classList.add('closing');
+        closePopoverWithFlip(popover, button, 'active', fadeOnly, () => {
+            popover.classList.remove('closing');
+            popover.style.display = 'none';
+            if (button) button.classList.remove('closing-hide-text');
+        });
         
         if (button) {
             button.classList.remove('active-time-btn');
             if (!fadeOnly) {
                 button.classList.add('closing-hide-text');
-                setTimeout(() => { button.classList.remove('closing-hide-text'); }, 380);
             }
         }
-        
-        setTimeout(() => { 
-            popover.classList.remove('closing'); 
-            popover.classList.remove('fade-out-only'); 
-            popover.style.display = 'none'; 
-        }, fadeOnly ? 150 : 400);
     }
 
 
@@ -7740,18 +7791,164 @@ let isBuilderOverrideActive = false;
 
     // Aggressive scroll listeners removed to prevent bounce closures
 
+    function closePopoverWithFlip(popover, button, classToRemove, fadeOnly, onComplete) {
+        if (!popover || !button || fadeOnly) {
+            if (fadeOnly && popover) {
+                popover.classList.add('fade-out-only');
+                popover.classList.remove(classToRemove);
+                setTimeout(() => { 
+                    popover.classList.remove('fade-out-only'); 
+                    if (onComplete) onComplete();
+                }, 150);
+            } else {
+                if (popover) popover.classList.remove(classToRemove);
+                if (onComplete) onComplete();
+            }
+            return;
+        }
+        
+        // 1. Path for Scale Type and Time Picker (Animating the gray highlight bar specifically)
+        if (popover.classList.contains('time-popover')) {
+            const container = popover.querySelector('.timer-picker-container');
+            if (container) {
+                const containerRect = container.getBoundingClientRect();
+                const btnRect = button.getBoundingClientRect();
+                const popRect = popover.getBoundingClientRect();
+                
+                const popWidth = popRect.width || 200;
+                const popHeight = popRect.height || 272;
+                const popLeft = popRect.left;
+                const popTop = popRect.top;
+                
+                const btnCenterX = btnRect.left + btnRect.width / 2;
+                const btnCenterY = btnRect.top + btnRect.height / 2;
+                
+                // Calculate precise offset so it shrinks back exactly to the new button text size!
+                const trueBtnCenterY = btnCenterY - popTop;
+                
+                // The center of the container (where the pill naturally rests vertically)
+                const popOffsetY = (containerRect.top + containerRect.height / 2) - popTop;
+                // Add an offset to the pill's margin-top if the real button shifted vertically!
+                const yDiff = trueBtnCenterY - popOffsetY;
+                
+                const relativeBtnCenterX = btnCenterX - popLeft;
+                
+                const newClipTop = Math.max(0, trueBtnCenterY - btnRect.height / 2);
+                const newClipBottom = Math.max(0, popHeight - trueBtnCenterY - btnRect.height / 2);
+                const newClipLeft = Math.max(0, relativeBtnCenterX - btnRect.width / 2);
+                const newClipRight = Math.max(0, popWidth - relativeBtnCenterX - btnRect.width / 2);
+                
+                // Overwrite the CSS variables so the internal gray background animates to the new width!
+                popover.style.setProperty('--pill-margin-top-offset', `${yDiff}px`);
+                popover.style.setProperty('--clip-origin-x', `${relativeBtnCenterX}px`);
+                popover.style.setProperty('--clip-origin-y', `${trueBtnCenterY}px`);
+                popover.style.setProperty('--clip-top', `${newClipTop}px`);
+                popover.style.setProperty('--clip-bottom', `${newClipBottom}px`);
+                popover.style.setProperty('--clip-left', `${newClipLeft}px`);
+                popover.style.setProperty('--clip-right', `${newClipRight}px`);
+                popover.style.setProperty('--btn-width', `${btnRect.width}px`);
+                popover.style.setProperty('--btn-height', `${btnRect.height}px`);
+                
+                // Use Web Animations API to guarantee the clip-path animates smoothly,
+                // shrinking to the NEW button size and matching the button's 6px border radius.
+                const anim = popover.animate([
+                    { clipPath: 'inset(0px 0px 0px 0px round 28px)' },
+                    { clipPath: `inset(${newClipTop}px ${newClipRight}px ${newClipBottom}px ${newClipLeft}px round 6px)` }
+                ], {
+                    duration: 350,
+                    easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                    fill: 'forwards'
+                });
+                
+                // Removing active triggers the internal CSS transitions (gray background shrink & text fade)
+                popover.classList.remove(classToRemove);
+                
+                // Hide the old labels to avoid duplicates
+                const oldLabels = popover.querySelectorAll('#popover-transition-label, #scale-popover-transition-label');
+                oldLabels.forEach(l => l.style.opacity = '0');
+                
+                anim.onfinish = () => {
+                    anim.cancel(); // clean up animation
+                    popover.style.clipPath = ''; 
+                    oldLabels.forEach(l => l.style.opacity = '');
+                    if (onComplete) onComplete();
+                };
+                return;
+            }
+        }
+
+        // 2. Path for Time Limit Popover (Gentle overlay shrink)
+        const popRect = popover.getBoundingClientRect();
+        const btnRect = button.getBoundingClientRect();
+        
+        popover.style.transition = 'none';
+        
+        // Fix the popover to the viewport so it acts like a true visual snapshot overlay
+        popover.style.position = 'fixed';
+        popover.style.top = popRect.top + 'px';
+        popover.style.left = popRect.left + 'px';
+        popover.style.width = popRect.width + 'px';
+        popover.style.height = popRect.height + 'px';
+        popover.style.margin = '0';
+        popover.style.transform = 'none'; // clear any existing transform
+        popover.style.transformOrigin = 'center center';
+        
+        // Override clip-path so the base CSS doesn't cut the edges when classToRemove is removed
+        popover.style.clipPath = 'inset(-100px -100px -100px -100px round 28px)';
+        
+        // Remove active/open to disable CSS but inline width/height and animate() overrides it
+        popover.classList.remove(classToRemove);
+        
+        // Ensure it doesn't disappear when the class is removed
+        const computedDisplay = window.getComputedStyle(popover).display;
+        if (computedDisplay === 'none') {
+            popover.style.display = 'flex';
+        }
+        
+        const popCenterX = popRect.left + popRect.width / 2;
+        const popCenterY = popRect.top + popRect.height / 2;
+        
+        const btnCenterX = btnRect.left + btnRect.width / 2;
+        const btnCenterY = btnRect.top + btnRect.height / 2;
+        
+        const deltaX = btnCenterX - popCenterX;
+        const deltaY = btnCenterY - popCenterY;
+        
+        // Gently scale down towards the button without squishing it completely
+        const anim = popover.animate([
+            { 
+                transform: `translate(0px, 0px) scale(1)`,
+                opacity: 1
+            },
+            { 
+                transform: `translate(${deltaX}px, ${deltaY}px) scale(0.55)`,
+                opacity: 0
+            }
+        ], {
+            duration: 350,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+        });
+        
+        anim.onfinish = () => {
+            popover.classList.remove(classToRemove);
+            popover.style.opacity = '';
+            popover.style.transform = '';
+            popover.style.transition = '';
+            if (onComplete) onComplete();
+        };
+    }
+
     function closeTimeLimitPopover(fadeOnly = true) {
         const popover = document.getElementById('access-time-limit-view');
         if (!popover || !popover.classList.contains('open')) return;
 
-        if (fadeOnly) popover.classList.add('fade-out-only');
-        popover.classList.remove('open');
-        popover.classList.add('closing');
-        setTimeout(() => {
-            popover.classList.remove('closing');
-            popover.classList.remove('fade-out-only');
-        }, fadeOnly ? 150 : 200);
         const button = document.getElementById('access-button-time-limit');
+        
+        popover.classList.add('closing');
+        closePopoverWithFlip(popover, button, 'open', fadeOnly, () => {
+            popover.classList.remove('closing');
+        });
+        
         if (button) {
             button.classList.remove('time-limit-button-open');
             const accordion = button.closest('.island-accordion');
@@ -7761,7 +7958,18 @@ let isBuilderOverrideActive = false;
         saveBuilderState();
     }
 
-    function closeAllPopovers(fadeOnly = true) {
+    function closeAllPopovers(fadeOnly = true, skipAnimation = false) {
+        if (skipAnimation) {
+            document.querySelectorAll('.time-popover, .time-limit-popover-container, .trueFalse-popover, .score-popover, .explanation-popover, .image-popover').forEach(p => {
+                p.classList.remove('active', 'open', 'closing', 'fade-out-only');
+                p.style.display = 'none';
+            });
+            document.querySelectorAll('.active-time-btn, .closing-hide-text, .time-limit-button-open').forEach(b => {
+                b.classList.remove('active-time-btn', 'closing-hide-text', 'time-limit-button-open');
+            });
+            return;
+        }
+
         if (fadeOnly) {
             document.querySelectorAll('.time-popover.active, .time-popover.closing').forEach(p => p.classList.add('fade-out-only'));
         }
@@ -7771,10 +7979,111 @@ let isBuilderOverrideActive = false;
         document.querySelectorAll('.trueFalse-popover.open, .score-popover.open, .explanation-popover.active, .image-popover.active').forEach(p => { 
             p.classList.remove('open'); 
             p.classList.remove('active'); 
+            p.classList.add('closing');
+            setTimeout(() => p.classList.remove('closing'), 350);
         });
+        if (typeof activeAddQuestionPopover !== 'undefined' && activeAddQuestionPopover && activeAddQuestionPopover.popover) {
+            activeAddQuestionPopover.popover.classList.remove('open');
+        }
+        if (typeof activePlayTFPopover !== 'undefined' && activePlayTFPopover) {
+            activePlayTFPopover.classList.remove('open');
+        }
+    }
+
+    function repositionAllPopovers() {
+        // 1. Time Picker
+        const timePopover = document.getElementById('time-picker-popover');
+        if (timePopover && (timePopover.classList.contains('active') || timePopover.classList.contains('closing'))) {
+            const button = calendarEditingTarget === 'start' ? document.getElementById('calendar-time-button') : document.getElementById('calendar-time-button-end');
+            if (button) {
+                const targetRect = button.getBoundingClientRect();
+                timePopover.style.top = `${targetRect.top - timePopover.offsetHeight / 2 + targetRect.height / 2}px`;
+                timePopover.style.left = `${targetRect.left - timePopover.offsetWidth / 2 + targetRect.width / 2}px`;
+            }
+        }
+        
+        // 2. Scale Type Picker
+        const scalePopover = document.getElementById('scale-type-picker-popover');
+        if (scalePopover && (scalePopover.classList.contains('active') || scalePopover.classList.contains('closing'))) {
+            const button = document.getElementById('scale-type-popover-btn');
+            if (button) {
+                const btnRect = button.getBoundingClientRect();
+                const btnCenterX = btnRect.left + window.scrollX + btnRect.width / 2;
+                const btnCenterY = btnRect.top + window.scrollY + btnRect.height / 2;
+                const timerContainer = scalePopover.querySelector('.timer-picker-container');
+                const popOffsetY = timerContainer ? (timerContainer.offsetTop + timerContainer.offsetHeight / 2 + 1) : 160;
+                const popWidth = scalePopover.offsetWidth || 200;
+                let popLeft = btnCenterX - popWidth / 2;
+                const padding = 16;
+                if (popLeft + popWidth > window.innerWidth - padding) popLeft = window.innerWidth - padding - popWidth;
+                if (popLeft < padding) popLeft = padding;
+                scalePopover.style.left = `${popLeft}px`;
+                scalePopover.style.top = `${btnCenterY - popOffsetY}px`;
+            }
+        }
+        
+        // 3. Time Limit
+        const timeLimitPopover = document.getElementById('access-time-limit-view');
+        if (timeLimitPopover && (timeLimitPopover.classList.contains('open') || timeLimitPopover.classList.contains('closing'))) {
+            const button = document.getElementById('access-button-time-limit');
+            if (button) {
+                const btnRect = button.getBoundingClientRect();
+                timeLimitPopover.style.top = (btnRect.bottom + window.scrollY + 8) + 'px';
+                const isMobile = window.innerWidth <= 600 || document.body.classList.contains('is-mobile-access');
+                if (isMobile) {
+                    let leftPos = btnRect.left + btnRect.width / 2 - (248 / 2);
+                    if (leftPos + 248 > btnRect.right) leftPos = btnRect.right - 248;
+                    if (leftPos < btnRect.left) leftPos = btnRect.left;
+                    if (leftPos < 16) leftPos = 16;
+                    timeLimitPopover.style.left = leftPos + 'px';
+                } else {
+                    timeLimitPopover.style.left = btnRect.left + 'px';
+                }
+            }
+        }
+        
+        // 4. TrueFalse
+        document.querySelectorAll('.trueFalse-popover.open, .trueFalse-popover.closing').forEach(popover => {
+            if (popover._targetBtn) {
+                const rect = popover._targetBtn.getBoundingClientRect();
+                const left = rect.left + window.scrollX + rect.width / 2 - 16;
+                const anchorCenterY = rect.top + window.scrollY + rect.height / 2;
+                popover.style.left = left + 'px';
+                popover.style.top = (anchorCenterY - 16) + 'px';
+            }
+        });
+        
+        // 5. Score
+        document.querySelectorAll('.score-popover.open, .score-popover.closing').forEach(popover => {
+            if (popover._targetBtn) {
+                const w = popover.offsetWidth || 32;
+                const h = popover.offsetHeight || 29;
+                const left = popover._targetBtn.offsetLeft + popover._targetBtn.offsetWidth / 2 - w / 2;
+                const top = popover._targetBtn.offsetTop + popover._targetBtn.offsetHeight / 2 - h / 2;
+                popover.style.left = left + 'px';
+                popover.style.top = top + 'px';
+            }
+        });
+
+        // 6. Add Question
+        if (typeof activeAddQuestionPopover !== 'undefined' && activeAddQuestionPopover && activeAddQuestionPopover.popover && activeAddQuestionPopover.popover.classList.contains('open')) {
+            const btn = activeAddQuestionPopover.targetBtn;
+            if (btn) {
+                const r = btn.getBoundingClientRect();
+                const popW = activeAddQuestionPopover.popover.offsetWidth || 180;
+                const popH = activeAddQuestionPopover.popover.offsetHeight || 90;
+                let left = r.left + window.scrollX - 16;
+                let top = r.top + window.scrollY - popH - 12;
+                if (left < 10) left = 10;
+                if (left + popW > window.innerWidth - 10) left = window.innerWidth - popW - 10;
+                activeAddQuestionPopover.popover.style.top = top + 'px';
+                activeAddQuestionPopover.popover.style.left = left + 'px';
+            }
+        }
     }
 
     window.addEventListener('resize', () => {
+        repositionAllPopovers();
         closeAllPopovers(false);
     });
 
@@ -8138,11 +8447,10 @@ let isBuilderOverrideActive = false;
     let timePopoverSyncRAF = null;
 
     function syncTimePopover() {
-        const popovers = document.querySelectorAll('.time-popover.active, .time-popover.closing:not(.fade-out-only)');
+        const popovers = document.querySelectorAll('.time-popover.active');
         if (popovers.length === 0) {
             timePopoverSyncRAF = null;
             document.querySelectorAll('.time-popover').forEach(p => {
-                p.dataset.closingStartTime = "";
                 p.style.transitionProperty = '';
                 p.style.clipPath = '';
             });
@@ -8150,29 +8458,15 @@ let isBuilderOverrideActive = false;
         }
 
         popovers.forEach(popover => {
-            const isClosing = popover.classList.contains('closing');
-            if (isClosing) {
-                if (!popover.dataset.closingStartTime) {
-                    popover.dataset.closingStartTime = Date.now();
-                    // Disable CSS transition for clip-path so JS can take over seamlessly during resize layout thrashing
-                    popover.style.transitionProperty = 'background-color, border-color, box-shadow, opacity, visibility';
-                }
-            } else {
-                popover.dataset.closingStartTime = "";
-                popover.style.transitionProperty = '';
-                popover.style.clipPath = '';
-            }
+            popover.style.transitionProperty = '';
+            popover.style.clipPath = '';
 
             let button = null;
             if (popover.id === 'scale-type-picker-popover') {
                 button = document.getElementById('scale-type-popover-btn');
             } else if (typeof calendarEditingTarget !== 'undefined' && calendarEditingTarget) {
-                // If it's a clone, it remembers its original button via dataset. If not, use the current global target.
                 let target = calendarEditingTarget;
                 if (popover.id === 'time-picker-popover-clone') {
-                    // The clone should track the button it originated from, but for simplicity
-                    // the closing animation calculates clip-path directly from inline --clip-top etc.
-                    // We just need the button for translating (scrolling).
                     target = popover.dataset.originalTarget || calendarEditingTarget;
                 }
                 button = target === 'start' ? document.getElementById('calendar-time-button') : document.getElementById('calendar-time-button-end');
@@ -8180,7 +8474,7 @@ let isBuilderOverrideActive = false;
             
             if (button && popover.dataset.initialBtnDocX && popover.dataset.initialBtnDocY) {
                     const btnRect = button.getBoundingClientRect();
-                    if (btnRect.width > 0 && btnRect.height > 0 && !isClosing) {
+                    if (btnRect.width > 0 && btnRect.height > 0) {
                         const currentDocX = btnRect.left + window.scrollX;
                         const currentDocY = btnRect.top + window.scrollY;
                         
@@ -8188,27 +8482,6 @@ let isBuilderOverrideActive = false;
                         const dy = currentDocY - parseFloat(popover.dataset.initialBtnDocY);
 
                         popover.style.transform = `translate(${dx}px, ${dy}px)`;
-                    }
-
-                    if (isClosing) {
-                        const elapsed = Date.now() - parseInt(popover.dataset.closingStartTime);
-                        const progress = Math.min(1, elapsed / 350);
-                        // Standard ease-out equivalent to cubic-bezier(0.16, 1, 0.3, 1)
-                        const easeProgress = 1 - Math.pow(1 - progress, 3);
-                        
-                        const targetTop = parseFloat(popover.style.getPropertyValue('--clip-top')) || 0;
-                        const targetBottom = parseFloat(popover.style.getPropertyValue('--clip-bottom')) || 0;
-                        const targetLeft = parseFloat(popover.style.getPropertyValue('--clip-left')) || 0;
-                        const targetRight = parseFloat(popover.style.getPropertyValue('--clip-right')) || 0;
-
-                        const currentTop = targetTop * easeProgress;
-                        const currentBottom = targetBottom * easeProgress;
-                        const currentLeft = targetLeft * easeProgress;
-                        const currentRight = targetRight * easeProgress;
-                        
-                        const currentRadius = 28 - (22 * easeProgress);
-
-                        popover.style.clipPath = `inset(${currentTop}px ${currentRight}px ${currentBottom}px ${currentLeft}px round ${currentRadius}px)`;
                     }
             }
         });
@@ -8227,10 +8500,10 @@ let isBuilderOverrideActive = false;
                 closeTimePopover(false);
                 return;
             } else {
-                // 1. Read the time and start closing the REAL popover
-                closeTimePopover(false); 
+                // 1. Read the time and close the REAL popover state without animating it
+                closeTimePopover(false, true); 
                 
-                // 2. Create the clone from the REAL popover (which now has the old transition label and lost .active)
+                // 2. Create the clone from the REAL popover (which just had active removed)
                 const clone = popover.cloneNode(true);
                 clone.id = 'time-picker-popover-clone';
                 clone.style.zIndex = '99998'; // Ensure clone renders UNDER the opening real popover
@@ -8238,22 +8511,20 @@ let isBuilderOverrideActive = false;
                 // 3. Append to body (so it's AFTER the real popover, keeping getElementById safe)
                 document.body.appendChild(clone);
                 
-                // 4. Force the clone to transition from active to closed
-                clone.dataset.originalTarget = calendarEditingTarget; // Tag clone with its button
+                // 4. Force the clone to transition from active to closed using WAAPI
+                const originalTarget = calendarEditingTarget;
+                const originalButton = originalTarget === 'start' ? document.getElementById('calendar-time-button') : document.getElementById('calendar-time-button-end');
+                
                 clone.classList.add('active'); // force clone to be open
+                clone.style.display = 'flex';
                 void clone.offsetWidth; // force reflow
-                clone.classList.remove('active'); // trigger shrink transition on the clone!
                 
-                // Clean up the clone after 350ms
-                setTimeout(() => {
+                closePopoverWithFlip(clone, originalButton, 'active', false, () => {
                     clone.remove();
-                }, 400);
-                
-                // Rescue the REAL popover from the .closing state immediately,
-                // so that it doesn't animate its repositioning to the new target!
-                popover.classList.remove('closing');
-                popover.classList.remove('fade-out-only');
-                if (typeof timePopoverCloseTimeout !== 'undefined') clearTimeout(timePopoverCloseTimeout);
+                    if (originalButton) {
+                        originalButton.classList.remove('closing-hide-text');
+                    }
+                });
                 
                 // Now, the REAL popover is closed (and its transition label is clear).
                 // We just continue to let it open for the NEW target!
@@ -8396,20 +8667,28 @@ let isBuilderOverrideActive = false;
     
     let timePopoverCloseTimeout = null;
     
-    function closeTimePopover(fadeOnly = true) {
+    function closeTimePopover(fadeOnly = true, skipAnimation = false) {
         const popover = document.getElementById('time-picker-popover');
         if (!popover || !popover.classList.contains('active')) return;
         
         if (timePopoverCloseTimeout) clearTimeout(timePopoverCloseTimeout);
         
-        if (fadeOnly) popover.classList.add('fade-out-only');
-        popover.classList.remove('active');
-        popover.classList.add('closing');
-        timePopoverCloseTimeout = setTimeout(() => {
-            popover.classList.remove('closing');
-            popover.classList.remove('fade-out-only');
+        const buttonId = calendarEditingTarget === 'start' ? 'calendar-time-button' : 'calendar-time-button-end';
+        let button = document.getElementById(buttonId);
+        
+        if (!skipAnimation) {
+            popover.classList.add('closing');
+            closePopoverWithFlip(popover, button, 'active', fadeOnly, () => {
+                popover.classList.remove('closing');
+                popover.style.display = 'none';
+                const freshBtn = document.getElementById(buttonId);
+                if (freshBtn) freshBtn.classList.remove('closing-hide-text');
+            });
+        } else {
+            popover.classList.remove('active');
             popover.style.display = 'none';
-        }, fadeOnly ? 150 : 400);
+        }
+        
         document.removeEventListener('click', closeTimePopoverOutside);
         document.removeEventListener('scroll', closeTimePopoverOnScroll, true);
         
@@ -8474,16 +8753,13 @@ let isBuilderOverrideActive = false;
         
         updateCalendarTimeButtons();
         
-        const buttonId = calendarEditingTarget === 'start' ? 'calendar-time-button' : 'calendar-time-button-end';
-        const button = document.getElementById(buttonId);
+        // Re-assign button just in case updateCalendarTimeButtons re-created elements
+        button = document.getElementById(buttonId);
         
         if (button) {
             button.classList.remove('active-time-btn');
             if (!fadeOnly) {
                 button.classList.add('closing-hide-text');
-                setTimeout(() => {
-                    button.classList.remove('closing-hide-text');
-                }, 380);
             }
             
             const transitionLabel = document.getElementById('popover-transition-label');
@@ -8552,7 +8828,7 @@ let isBuilderOverrideActive = false;
                     if (isBuilderActive) {
                         descHtml += `<br><br>Your work will be saved.`;
                     }
-                    descHtml += `<br><br>Auto-joining in <span style="color: var(--apple-blue); font-weight: bold;">${countdownSeconds}s</span>...`;
+                    descHtml += `<br><br>Auto-joining in <span style="color: var(--apple-blue); font-weight: 600;">${countdownSeconds}s</span>...`;
                     
                     document.getElementById('step-exam-ready-description').innerHTML = descHtml;
                 };
