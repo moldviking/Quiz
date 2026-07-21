@@ -2288,12 +2288,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                                 <div class="access-slider" id="grading-slider">
                                                     <div class="access-slider-inner" id="grading-slider-inner">
                                                         <div class="access-slider-text">Pass or Fail</div>
-                                                        <div class="access-slider-text">Grouped Grades</div>
+                                                        <div class="access-slider-text">Grouped</div>
                                                         <div class="access-slider-text">Percentage</div>
                                                     </div>
                                                 </div>
                                                 <button class="access-segmented-button active" id="grading-button-pass_fail" onclick="selectGradingType('pass_fail')">Pass or Fail</button>
-                                                <button class="access-segmented-button" id="grading-button-grouped_grades" onclick="selectGradingType('grouped_grades')">Grouped Grades</button>
+                                                <button class="access-segmented-button" id="grading-button-grouped_grades" onclick="selectGradingType('grouped_grades')">Grouped</button>
                                                 <button class="access-segmented-button" id="grading-button-percentage" onclick="selectGradingType('percentage')">Percentage</button>
                                             </div>
                                         </div>
@@ -2304,9 +2304,104 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                                     <input type="range" id="grade-slider" min="0" max="100" value="60" class="ios-slider grade-slider" oninput="document.getElementById('grade-val').innerText = this.value + '%'; this.style.setProperty('--val', this.value + '%'); saveBuilderState(); updateGradingSummary();" style="--val: 60%;">
                                                     <span id="grade-val" class="slider-val">60%</span>
                                                 </div>
-                                                <p id="grade-percentage-text" style="display: none; font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Students receive their percentage score, and Pass or Fail status based on this minimum.</p>
+                                                <p id="grade-percentage-text" style="display: none; font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Students receive their percentage score.</p>
+                                                <p id="grade-passfail-text" style="display: none; font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Students receive their Pass or Fail status only.</p>
                                             </div>
+                                            <style>
+                    .grade-capsule {
+                        background: var(--bg-card);
+                        border-radius: 999px;
+                        padding: 0 0 0 12px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 8px;
+                        cursor: pointer;
+                        user-select: none;
+                        -webkit-user-select: none;
+                        width: fit-content;
+                        box-sizing: border-box;
+                        min-width: 86px;
+                        height: 42px;
+                        border: 1px solid var(--border-color, rgba(0,0,0,0.08));
+                    }
+                    .stepper-container {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        background: var(--sel-green, #34c759);
+                        border-radius: 999px;
+                        padding: 0 4px;
+                        height: 100%;
+                        margin: 0 -1px 0 25px; /* offset for inactive state */
+                        width: 46px; /* inactive width */
+                        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                    }
+                    .grade-capsule:hover .stepper-container,
+                    .grade-capsule.stepper-expanded .stepper-container {
+                        margin-left: 0px; /* shift left to compensate */
+                        width: 96px; /* active width (+50px) */
+                        transform: scale(1.05);
+                        box-shadow: 0 4px 12px var(--shadow-color, rgba(52, 199, 89, 0.4));
+                    }
+                    .stepper-container .grade-capsule-val {
+                        position: absolute;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        color: #ffffff;
+                        font-size: 15px;
+                        font-weight: 600;
+                        pointer-events: none;
+                    }
+                    .stepper-container .stepper-btn {
+                        border-radius: 50%;
+                        width: 0px;
+                        height: 26px;
+                        border: none;
+                        background: transparent;
+                        cursor: pointer;
+                        color: #ffffff;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 0;
+                        overflow: hidden;
+                        transform: scale(0.5);
+                        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                    }
+                    .grade-capsule:hover .stepper-btn,
+                    .grade-capsule.stepper-expanded .stepper-btn {
+                        width: 26px;
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                    .stepper-container .stepper-btn:hover,
+                    .stepper-container .stepper-btn:active {
+                        background-color: transparent !important;
+                        color: #ffffff !important;
+                    }
 
+                    .grade-capsule-label {
+                        color: var(--text-main);
+                        font-weight: 600;
+                        font-size: 15px;
+                    }
+                    .grade-capsule-val {
+                        color: var(--text-secondary);
+                        font-size: 15px;
+                        font-weight: 500;
+                    }
+                    .grade-capsule.grade-success .grade-capsule-label {
+                        color: var(--color-success);
+                    }
+                    .grade-capsule.grade-warning .grade-capsule-label {
+                        color: var(--color-warning);
+                    }
+                    .grade-capsule.grade-error .grade-capsule-label {
+                        color: var(--color-error);
+                    }
+                </style>
                 <div id="grade-grouped-container" style="margin-bottom: 0; display: none;">
                     <div style="position: relative; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;" id="grouped-scale-selector-wrapper">
                         <label class="field-label" id="scale-type-label" style="margin-bottom: 0;">Scale Type</label>
@@ -2316,48 +2411,48 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     </div>
                     
                     <div id="scale-config-letter" class="scale-config-container" style="display: block;">
-                        <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">A</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'a', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'a', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-a" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('letter', 'a', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'a', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">B</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'b', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'b', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-b" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('letter', 'b', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'b', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">C</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'c', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'c', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-c" data-val="70">70%</div><button class="stepper-btn" onmousedown="startStep('letter', 'c', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'c', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">D</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'd', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'd', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-d" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('letter', 'd', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'd', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">F</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'f', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'f', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-f" data-val="50">50%</div><button class="stepper-btn" onmousedown="startStep('letter', 'f', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'f', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                        <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('letter', 'a', event)"><span class="grade-capsule-label">A</span><span class="grade-capsule-val" id="bounds-letter-a" data-val="90">90%</span></div>
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('letter', 'b', event)"><span class="grade-capsule-label">B</span><span class="grade-capsule-val" id="bounds-letter-b" data-val="80">80%</span></div>
+                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('letter', 'c', event)"><span class="grade-capsule-label">C</span><span class="grade-capsule-val" id="bounds-letter-c" data-val="70">70%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('letter', 'd', event)"><span class="grade-capsule-label">D</span><span class="grade-capsule-val" id="bounds-letter-d" data-val="60">60%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('letter', 'f', event)"><span class="grade-capsule-label">F</span><span class="grade-capsule-val" id="bounds-letter-f" data-val="50">50%</span></div>
                         </div>
-                                            </div>
+                    </div>
 
                     <div id="scale-config-5point" class="scale-config-container" style="display: none;">
-                        <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">5</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '5', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '5', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-5" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('5point', '5', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '5', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '4', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '4', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-4" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('5point', '4', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '4', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '3', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '3', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-3" data-val="70">70%</div><button class="stepper-btn" onmousedown="startStep('5point', '3', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '3', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-2" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('5point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-1" data-val="50">50%</div><button class="stepper-btn" onmousedown="startStep('5point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                        <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('5point', '5', event)"><span class="grade-capsule-label">5</span><span class="grade-capsule-val" id="bounds-5p-5" data-val="90">90%</span></div>
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('5point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-5p-4" data-val="80">80%</span></div>
+                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('5point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-5p-3" data-val="70">70%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('5point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-5p-2" data-val="60">60%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('5point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-5p-1" data-val="50">50%</span></div>
                         </div>
-                                            </div>
+                    </div>
 
                     <div id="scale-config-10point" class="scale-config-container" style="display: none;">
-                        <div style="display: grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">10</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '10', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '10', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-10" data-val="95">95%</div><button class="stepper-btn" onmousedown="startStep('10point', '10', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '10', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">9</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '9', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '9', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-9" data-val="85">85%</div><button class="stepper-btn" onmousedown="startStep('10point', '9', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '9', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">8</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '8', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '8', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-8" data-val="75">75%</div><button class="stepper-btn" onmousedown="startStep('10point', '8', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '8', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">7</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '7', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '7', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-7" data-val="65">65%</div><button class="stepper-btn" onmousedown="startStep('10point', '7', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '7', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">6</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '6', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '6', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-6" data-val="55">55%</div><button class="stepper-btn" onmousedown="startStep('10point', '6', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '6', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">5</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '5', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '5', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-5" data-val="45">45%</div><button class="stepper-btn" onmousedown="startStep('10point', '5', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '5', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">4</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '4', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '4', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-4" data-val="35">35%</div><button class="stepper-btn" onmousedown="startStep('10point', '4', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '4', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">3</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '3', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '3', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-3" data-val="25">25%</div><button class="stepper-btn" onmousedown="startStep('10point', '3', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '3', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-2" data-val="15">15%</div><button class="stepper-btn" onmousedown="startStep('10point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-1" data-val="5">5%</div><button class="stepper-btn" onmousedown="startStep('10point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                        <div style="display: grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '10', event)"><span class="grade-capsule-label">10</span><span class="grade-capsule-val" id="bounds-10p-10" data-val="95">95%</span></div>
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '9', event)"><span class="grade-capsule-label">9</span><span class="grade-capsule-val" id="bounds-10p-9" data-val="85">85%</span></div>
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '8', event)"><span class="grade-capsule-label">8</span><span class="grade-capsule-val" id="bounds-10p-8" data-val="75">75%</span></div>
+                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '7', event)"><span class="grade-capsule-label">7</span><span class="grade-capsule-val" id="bounds-10p-7" data-val="65">65%</span></div>
+                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '6', event)"><span class="grade-capsule-label">6</span><span class="grade-capsule-val" id="bounds-10p-6" data-val="55">55%</span></div>
+                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '5', event)"><span class="grade-capsule-label">5</span><span class="grade-capsule-val" id="bounds-10p-5" data-val="45">45%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-10p-4" data-val="35">35%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-10p-3" data-val="25">25%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-10p-2" data-val="15">15%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-10p-1" data-val="5">5%</span></div>
                         </div>
-                                            </div>
+                    </div>
 
                     <div id="scale-config-4point" class="scale-config-container" style="display: none;">
-                        <div style="display: grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '4', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '4', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-4" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('4point', '4', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '4', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '3', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '3', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-3" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('4point', '3', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '3', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-2" data-val="70">70%</div><button class="stepper-btn" onmousedown="startStep('4point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-1" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('4point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+                        <div style="display: grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('4point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-4p-4" data-val="90">90%</span></div>
+                            <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('4point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-4p-3" data-val="80">80%</span></div>
+                            <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('4point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-4p-2" data-val="70">70%</span></div>
+                            <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('4point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-4p-1" data-val="60">60%</span></div>
                         </div>
-                                            </div>
+                    </div>
                     <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Set the minimum score required for each level.</p>
                 </div>
                                         </div>
@@ -3007,11 +3102,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     </div>
 </div>
 
-<div class="lightbox-overlay" id="lightbox-overlay" onclick="closeLightbox()">
-    <button class="lightbox-close" onclick="closeLightbox()">
-        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-    </button>
+<div id="lightbox-overlay" class="lightbox-overlay" onclick="closeLightbox(event)">
+    <div class="lightbox-close" onclick="closeLightbox(event)">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
     <img class="lightbox-image" id="lightbox-image" src="" alt="Zoomed" onclick="event.stopPropagation()">
+</div>
+
+<div id="media-popover" class="time-popover apple-alert" onclick="event.stopPropagation()" style="width: 280px;">
 </div>
 
 <script>
@@ -6583,6 +6681,9 @@ let isBuilderOverrideActive = false;
             document.getElementById('grade-slider-wrapper').style.display = (type === 'pass_fail' || type === 'percentage') ? 'block' : 'none';
             document.getElementById('grade-grouped-container').style.display = type === 'grouped_grades' ? 'block' : 'none';
             document.getElementById('grade-percentage-text').style.display = type === 'percentage' ? 'block' : 'none';
+            if (document.getElementById('grade-passfail-text')) {
+                document.getElementById('grade-passfail-text').style.display = type === 'pass_fail' ? 'block' : 'none';
+            }
         });
         
         updateGradingSummary();
@@ -6610,7 +6711,53 @@ let isBuilderOverrideActive = false;
         saveBuilderState();
         updateGradingSummary();
     }
-    
+    (function() {
+        document.querySelectorAll('.grade-capsule').forEach(capsule => {
+            const onclickStr = capsule.getAttribute('onclick');
+            if (!onclickStr || !onclickStr.includes('openScaleStepperPopover')) return;
+            
+            capsule.removeAttribute('onclick');
+            capsule.style.cursor = 'pointer';
+            
+            capsule.onclick = (e) => {
+                if (!e.target.closest('.stepper-btn')) {
+                    capsule.classList.toggle('stepper-expanded');
+                }
+            };
+            
+            const match = onclickStr.match(/'([^']+)',\s*'([^']+)'/);
+            if (!match) return;
+            const scale = match[1];
+            const id = match[2];
+            
+            const valSpan = capsule.querySelector('.grade-capsule-val');
+            valSpan.style.minWidth = '36px';
+            valSpan.style.textAlign = 'center';
+            
+            const stepperContainer = document.createElement('div');
+            stepperContainer.className = 'stepper-container';
+            
+            const btnMinus = document.createElement('button');
+            btnMinus.className = 'stepper-btn';
+            btnMinus.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>';
+            btnMinus.onmousedown = btnMinus.ontouchstart = (e) => { e.preventDefault(); startStep(scale, id, -1); };
+            btnMinus.onmouseup = btnMinus.onmouseleave = btnMinus.ontouchend = stopStep;
+            
+            const btnPlus = document.createElement('button');
+            btnPlus.className = 'stepper-btn';
+            btnPlus.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>';
+            btnPlus.onmousedown = btnPlus.ontouchstart = (e) => { e.preventDefault(); startStep(scale, id, 1); };
+            btnPlus.onmouseup = btnPlus.onmouseleave = btnPlus.ontouchend = stopStep;
+            
+            stepperContainer.appendChild(btnMinus);
+            stepperContainer.appendChild(valSpan);
+            stepperContainer.appendChild(btnPlus);
+            
+            capsule.appendChild(stepperContainer);
+        });
+        updateCapsuleColors();
+    })();
+
     function toggleScaleTypePopover(e) {
         if (e) e.stopPropagation();
         const popover = document.getElementById('scale-type-picker-popover');
@@ -6816,12 +6963,42 @@ let isBuilderOverrideActive = false;
         return parseInt(el.dataset.val || 0, 10);
     }
 
+    function updateCapsuleColors() {
+        document.querySelectorAll('.grade-capsule').forEach(capsule => {
+            const valSpan = capsule.querySelector('.grade-capsule-val');
+            if (!valSpan) return;
+            const percentage = parseInt(valSpan.dataset.val || valSpan.innerText.replace('%', '') || 0, 10);
+            
+            // Map 0-100% to 0-120 hue (Red to Green)
+            const hue = (percentage / 100) * 120;
+            const color = `hsl(${hue}, 85%, 45%)`;
+            const shadowColor = `hsla(${hue}, 85%, 45%, 0.4)`;
+            
+            capsule.style.setProperty('--sel-green', color);
+            capsule.style.setProperty('--shadow-color', shadowColor);
+        });
+    }
+
+    let currentScaleStepperScale = null;
+    let currentScaleStepperId = null;
+
     function setBoundValue(elId, val) {
         const el = document.getElementById(elId);
         if (!el) return;
         el.dataset.val = val;
         el.innerText = val + '%';
+        
+        if (currentScaleStepperScale) {
+            const { prefix } = getScaleIds(currentScaleStepperScale);
+            if (elId === prefix + currentScaleStepperId) {
+                const popVal = document.getElementById('scale-stepper-val');
+                if (popVal) popVal.innerText = val + '%';
+            }
+        }
+        updateCapsuleColors();
     }
+
+    // no longer used
 
     let stepperInterval = null;
     let stepperTimeout = null;
@@ -6960,7 +7137,7 @@ let isBuilderOverrideActive = false;
             const val = document.getElementById('grade-slider').value;
             settingsStr = val + "% Passing Score";
         } else if (typeId === 'grouped_grades') {
-            typeStr = "Grouped Grades";
+            typeStr = "Grouped";
             const scaleType = document.getElementById('current-scale-type-val').getAttribute('data-val');
             if (scaleType === 'letter') settingsStr = "Letter";
             else if (scaleType === '5point') settingsStr = "5-Point";
@@ -7352,6 +7529,22 @@ let isBuilderOverrideActive = false;
     }
 
     function selectAccessMode(mode) {
+        const hasOpenPopover = document.querySelector('.time-popover.active, .time-popover.closing, .trueFalse-popover.open, .score-popover.open, .explanation-popover.active, .image-popover.active');
+        
+        if (hasOpenPopover) {
+            closeAllPopovers(true);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    executeSelectAccessMode(mode);
+                });
+            });
+            return;
+        }
+        
+        executeSelectAccessMode(mode);
+    }
+    
+    function executeSelectAccessMode(mode) {
         animateIslandHeight('#timer-fields', () => {
             accessSettings.mode = mode;
             showAccessRightPanel(mode);
@@ -7470,6 +7663,9 @@ let isBuilderOverrideActive = false;
     }
 
     function closeAllPopovers(fadeOnly = true) {
+        if (fadeOnly) {
+            document.querySelectorAll('.time-popover.active, .time-popover.closing').forEach(p => p.classList.add('fade-out-only'));
+        }
         closeScaleTypePopover(false, fadeOnly);
         closeTimeLimitPopover(fadeOnly);
         closeTimePopover(fadeOnly);
