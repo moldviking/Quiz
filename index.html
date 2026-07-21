@@ -175,7 +175,7 @@
         .quiz-container.builder-wide { max-width: 680px; padding-bottom: 100px; }
 
         .sticky-action-bar {
-            position: fixed; top: max(16px, env(safe-area-inset-top)); left: 0; right: 0; margin: 0 auto; z-index: 100; display: flex; justify-content: flex-start;
+            position: fixed; top: max(16px, env(safe-area-inset-top)); left: 0; right: 0; margin: 0 auto; z-index: 999999; display: flex; justify-content: flex-start;
             align-items: center; gap: 12px; width: 100%; max-width: 600px; padding: 0 clamp(14px, 4vw, 32px); box-sizing: border-box; pointer-events: none;
         }
         body:has(.quiz-container.builder-wide) .sticky-action-bar { max-width: 680px; }
@@ -213,7 +213,7 @@
         .glass-exit-button svg.lucide { fill: none !important; stroke: currentColor; }
 
         .bottom-action-bar {
-            position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 100; display: none;
+            position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 999999; display: none;
             align-items: center; justify-content: center; gap: 12px; width: 100%; max-width: 430px; pointer-events: none; padding-left: 16px; padding-right: 22px; box-sizing: border-box;
         }
         .bottom-action-bar > * { pointer-events: auto; }
@@ -275,8 +275,14 @@
         .option-button {
             background-color: transparent; color: var(--text-main); border: 2px solid transparent; padding: 12px 14px;
             border-radius: 0; text-align: left; font-size: 15px; font-weight: 500; cursor: pointer;
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; width: 100%; display: flex; flex-direction: row;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, padding 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), margin 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); width: 100%; display: flex; flex-direction: row;
             justify-content: space-between; align-items: center; gap: 12px; box-sizing: border-box; position: relative; margin: -1px 0;
+            z-index: 1;
+        }
+        .option-button::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 0; right: 0;
+            border-radius: inherit; background-color: transparent; z-index: -1;
+            transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .options-container .option-button:first-child { margin-top: 0; border-top-left-radius: 16px; border-top-right-radius: 16px; }
         .options-container .option-button:last-child { margin-bottom: 0; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
@@ -398,11 +404,18 @@
             z-index: 9998; 
             position: relative; 
             transform: scale(1.02);
+            will-change: transform;
             transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .option-button.trueFalse-active-row { 
+            background-color: transparent !important; 
+            box-shadow: none !important; 
+        }
+        .option-button.trueFalse-active-row::before {
             background-color: var(--builder-card-bg-dark) !important; 
+            top: -5px; bottom: -5px;
             box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08); 
+            will-change: top, bottom;
         }
         .builder-option-row.trueFalse-active-row .correct-toggle-button,
         .option-button.trueFalse-active-row .correct-toggle-button {
@@ -420,8 +433,10 @@
         }
         .builder-option-row.trueFalse-active-row .row-bg { 
             background-color: var(--builder-card-bg-dark) !important; 
-            bottom: 0; 
+            top: -5px;
+            bottom: -5px; 
             box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08); 
+            will-change: top, bottom;
         }
         .builder-qa-panel:has(.trueFalse-active-row), .builder-qa-panel:has(.score-active-row) { overflow: visible; }
         .builder-option-row.trueFalse-active-row .delete-button { visibility: hidden; }
@@ -521,7 +536,7 @@
         .time-popover.fade-out-only .time-dials-wrapper {
             transform: scale(1) translateY(0) !important;
         }
-        .time-popover.fade-out-only #popover-fake-text {
+        .time-popover.fade-out-only #popover-transition-label, .time-popover.fade-out-only #scale-popover-transition-label {
             opacity: 0 !important;
         }
         .time-popover.fade-out-only .timer-picker-container::before {
@@ -550,26 +565,31 @@
             pointer-events: auto;
             transition: clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s, background-color 0.35s ease 0s, border-color 0.35s ease 0s, box-shadow 0.35s ease 0s, visibility 0s linear 0s;
         }
-        #calendar-time-button, #calendar-time-button-end {
-            transition: opacity 0.35s ease;
+        #calendar-time-button, #calendar-time-button-end, #scale-type-popover-btn {
+            transition: transform 0.1s ease, filter 0.1s ease;
+            background-color: transparent !important;
             font-variant-numeric: tabular-nums;
             position: relative;
-            background: transparent !important;
             z-index: 1;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        #calendar-time-button::before, #calendar-time-button-end::before {
+        #calendar-time-button::before, #calendar-time-button-end::before, #scale-type-popover-btn::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.05);
+            background: rgba(120, 120, 128, 0.16);
             border-radius: 6px;
             z-index: -1;
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .active-time-btn::before {
-            background: rgba(0,0,0,0.05);
+        @media (prefers-color-scheme: dark) {
+            #calendar-time-button::before, #calendar-time-button-end::before, #scale-type-popover-btn::before {
+                background: rgba(120, 120, 128, 0.32);
+            }
+        }
+        .active-time-btn::before, .closing-hide-text::before {
+            background: transparent !important;
             transform: scale(1);
             transition: none;
         }
@@ -604,14 +624,14 @@
             opacity: 1;
             transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease 0.05s;
         }
-        
-        #popover-fake-text {
+             #popover-transition-label, #scale-popover-transition-label {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             font-size: 13px; font-weight: 600; color: var(--text-main);
             opacity: 0; pointer-events: none;
             transition: transform 0s, opacity 0.1s ease;
+            box-sizing: border-box;
             font-variant-numeric: tabular-nums;
             padding: 4px 10px;
             border: none;
@@ -625,15 +645,21 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        .time-popover.active #popover-fake-text {
+        .time-popover.active #popover-transition-label, .time-popover.active #scale-popover-transition-label {
             transform: translate(-50%, -50%) scale(1.69);
             opacity: 0 !important;
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.05s ease 0s;
+            width: var(--btn-width, auto);
+            height: var(--btn-height, auto);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.05s ease 0s, left 0.35s cubic-bezier(0.16, 1, 0.3, 1), top 0.35s cubic-bezier(0.16, 1, 0.3, 1), width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .time-popover:not(.active) #popover-fake-text {
+        .time-popover:not(.active) #popover-transition-label, .time-popover:not(.active) #scale-popover-transition-label {
             transform: translate(-50%, -50%) scale(1);
             opacity: 1 !important;
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.1s ease 0s;
+            left: var(--clip-origin-x, 50%) !important;
+            top: var(--clip-origin-y, 50%) !important;
+            width: var(--btn-width, auto) !important;
+            height: var(--btn-height, auto) !important;
+            transition: transform 0.35s cubic-bezier(0.333, 1, 0.666, 1), opacity 0.1s ease 0s, left 0.35s cubic-bezier(0.333, 1, 0.666, 1), top 0.35s cubic-bezier(0.333, 1, 0.666, 1), width 0.35s cubic-bezier(0.333, 1, 0.666, 1), height 0.35s cubic-bezier(0.333, 1, 0.666, 1);
         }
         .alert-message { font-size: 14px; font-weight: 400; margin: 0; color: var(--text-main); line-height: 1.4; }
 
@@ -784,26 +810,32 @@
             width: var(--btn-width, 60px);
             height: var(--btn-height, 24px);
             margin-top: calc(var(--btn-height, 24px) / -2);
-            background: rgba(120, 120, 128, 0.15);
+            background: rgba(120, 120, 128, 0.16);
             border-radius: 6px;
             pointer-events: none;
             z-index: 1;
-            transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1), width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @media (prefers-color-scheme: dark) {
+            .timer-picker-container::before {
+                background: rgba(120, 120, 128, 0.32);
+            }
         }
         .time-popover:not(.active) .timer-picker-container::before {
+            left: 50% !important;
             width: var(--btn-width, 60px) !important;
             height: var(--btn-height, 24px) !important;
             margin-top: calc(var(--btn-height, 24px) / -2) !important;
             border-radius: 6px !important;
-            background-color: transparent !important;
-            transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s ease;
+            transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1), width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .time-popover.active .timer-picker-container::before {
+            left: 50%;
             width: 100%;
             height: 36px;
             margin-top: -18px;
             border-radius: 12px;
-            transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, height 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+            transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s, width 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, height 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
         }
         .timer-group {
             flex: 1;
@@ -1041,15 +1073,16 @@
         .grading-sidebar-button { background: transparent; border: none; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; }
         .grading-sidebar-button:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
         .grading-sidebar-button.active { color: var(--apple-blue); font-weight: 600; background: rgba(0, 122, 255, 0.08); }
-        .grading-sub-button { background: transparent; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; }
+        
+        .grading-sub-button { background: transparent; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; box-sizing: border-box; width: auto; }
         .grading-sub-button:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
-        .grading-sub-button.active { color: var(--text-main); font-weight: 600; background: rgba(0,0,0,0.04); }
+        .grading-sub-button.active { color: var(--text-main); font-weight: 600; background: rgba(0,0,0,0.04); border-color: #a0a0a0; }
         .options-island .grouped-scale-option { background-color: var(--bg-card); }
         
         .timer-badge { background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 15px; color: #fff; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px; transform-origin: right center; }
         .timer-badge.badge-indefinite { color: rgba(255,255,255,0.7); font-weight: 500; background: rgba(0,0,0,0.2); }
         #island-timer { cursor: pointer; }
-        @media (max-width: 680px) { 
+        @media (max-width: 712px) { 
             .options-island { width: 100% !important; } 
         }
         @media (max-width: 800px) {
@@ -1060,15 +1093,17 @@
         .topic-grid-2 { display: grid; grid-template-columns: 2fr 3fr 1fr; gap: 8px; }
         .topic-grid-1 > div, .topic-grid-2 > div { min-width: 0; }
 
-        .calendar-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; }
+        .calendar-header-flex { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 12px; position: relative; }
         .calendar-grid-header > div, #calendar-grid > div { min-width: 0; }
-        .access-wrapper { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; padding-top: 16px; }
-        .access-sidebar-container { display: flex; flex-direction: column; gap: 8px; border-right: 1px solid var(--border-color); padding-right: 16px; min-width: 0; }
-        .access-segmented-control { display: flex; flex-direction: column; width: 100%; box-sizing: border-box; gap: 4px; }
-        .access-segmented-button { background: transparent; border: none; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: flex-start; z-index: 2; position: relative; }
+        .access-wrapper { display: grid; grid-template-columns: minmax(110px, 1.2fr) minmax(220px, 3fr); gap: 16px; padding-top: 16px; }
+        .access-sidebar-container { display: flex; flex-direction: column; gap: 8px; border-right: 1px solid var(--border-color); padding-right: 16px; min-width: 0; position: relative; z-index: 10; }
+        .access-segmented-control { display: flex; flex-direction: column; width: 100%; box-sizing: border-box; gap: 4px; position: relative; }
+        .access-segmented-button { background: transparent; border: none; padding: 0 12px; height: 38px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: flex-start; z-index: 1; position: relative; }
         .access-segmented-button:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
-        .access-segmented-button.active { background: var(--apple-blue); color: #fff; font-weight: 600; }
-        .access-slider { display: none; }
+        .access-segmented-button.active { background: transparent; color: var(--text-secondary); }
+        .access-slider { display: block; position: absolute; top: 0; left: 0; right: 0; height: 38px; width: auto; background-color: var(--apple-blue); border-radius: 10px; z-index: 2; overflow: hidden; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateY(calc(42px * var(--idx, 0))); pointer-events: none; box-shadow: 0 2px 5px rgba(0,122,255,0.3); }
+        .access-slider-inner { display: flex; flex-direction: column; gap: 4px; position: absolute; top: 0; left: 0; right: 0; height: auto; width: 100%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateY(calc(-42px * var(--idx, 0))); }
+        .access-slider-text { display: flex; justify-content: flex-start; align-items: center; padding: 0 12px; color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; height: 38px; box-sizing: border-box; }
         #access-button-time-limit { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease; border-radius: 16px; }
         #access-button-time-limit.time-limit-button-open { transform: scale(1.04); box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08); background-color: var(--bg-panel); z-index: 10; position: relative; }
         @media (prefers-color-scheme: dark) { #access-button-time-limit.time-limit-button-open { box-shadow: 0 12px 30px rgba(0,0,0,0.35), 0 -8px 20px rgba(0,0,0,0.2); background-color: var(--bg-alert); } }
@@ -1076,27 +1111,52 @@
         .time-limit-popover-container.open { opacity: 1; visibility: visible; transform: scale(1); transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), visibility 0s linear 0s; }
         .time-limit-popover-container.fade-out-only { transform: scale(1) !important; opacity: 0 !important; transition: opacity 0.15s ease-out, visibility 0s linear 0.15s !important; }
         .time-limit-popover-container .timer-picker-container::before { width: 100%; height: 36px; margin-top: -18px; border-radius: 12px; background-color: rgba(120, 120, 128, 0.15); transition: none; }
-        @media (max-width: 600px) {
-            .access-wrapper { grid-template-columns: 1fr; }
-            .access-sidebar-container { border-right: none; border-bottom: 1px solid var(--border-color); padding-right: 0; padding-bottom: 16px; }
-        }
-        @media (max-width: 540px) {
-            .access-wrapper { display: flex; flex-direction: column; }
-            .access-sidebar-container { border-right: none; padding-right: 0; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
-            .access-segmented-control { flex-direction: row; height: 42px; background-color: rgba(0,0,0,0.06); border-radius: 12px; padding: 4px; position: relative; gap: 0; touch-action: none; cursor: grab; }
-            .access-segmented-control:active { cursor: grabbing; }
-            @media (prefers-color-scheme: dark) { .access-segmented-control { background-color: rgba(255,255,255,0.08); } }
-            .access-segmented-button { flex: 1; justify-content: center; padding: 0; text-align: center; border-radius: 0; font-size: 13px; font-weight: 600; color: var(--text-secondary); z-index: 1; }
-            .access-segmented-button:hover { background: transparent; color: var(--text-secondary); }
-            .access-segmented-button.active { background: transparent; color: var(--text-secondary); }
-            .access-slider { display: block; position: absolute; top: 4px; bottom: 4px; left: 4px; height: auto; width: calc((100% - 8px) / 3); background-color: var(--apple-blue); border-radius: 8px; z-index: 2; overflow: hidden; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateX(calc(100% * var(--idx, 0))); box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06); pointer-events: none; }
-            .access-slider-inner { display: flex; position: absolute; top: 0; left: 0; bottom: 0; width: 300%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateX(calc(-100% / 3 * var(--idx, 0))); }
-            .access-slider.dragging, .access-slider.dragging .access-slider-inner { transition: none; }
-            .access-slider-text { flex: 1; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; }
-            .calendar-header-flex { flex-direction: column !important; gap: 12px !important; align-items: stretch !important; }
-            .calendar-header-flex > div:first-child { justify-content: space-between; width: 100%; }
-            #calendar-time-selectors { width: 100%; justify-content: center; }
-            .calendar-grid-header { font-size: 10px !important; }
+        /* Time & Access Layout - toggled via JS for View Transitions */
+        body.is-mobile-access .access-wrapper { display: flex; flex-direction: column; }
+        #time-limit-btn-inner { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding: 12px 14px; width: 100%; box-sizing: border-box; }
+        body.is-mobile-access #time-limit-btn-inner { flex-direction: row; justify-content: space-between; align-items: center; }
+        body.is-mobile-access .access-sidebar-container { border-right: none; padding-right: 0; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        body.is-mobile-access .access-sidebar-container.empty-sidebar { display: none; padding: 0; border: none; }
+        body.is-mobile-access .access-segmented-control { flex-direction: row; height: 42px; background-color: rgba(0,0,0,0.06); border-radius: 12px; padding: 4px; position: relative; gap: 0; touch-action: none; cursor: grab; }
+        body.is-mobile-access .access-segmented-control:active { cursor: grabbing; }
+        @media (prefers-color-scheme: dark) { body.is-mobile-access .access-segmented-control { background-color: rgba(255,255,255,0.08); } }
+        body.is-mobile-access .access-segmented-button { flex: 1; justify-content: center; padding: 0; text-align: center; border-radius: 0; font-size: 13px; font-weight: 600; color: var(--text-secondary); z-index: 1; height: 100%; }
+        body.is-mobile-access .access-segmented-button:hover { background: transparent; color: var(--text-secondary); }
+        body.is-mobile-access .access-segmented-button.active { background: transparent; color: var(--text-secondary); }
+        body.is-mobile-access .access-slider { display: block; position: absolute; top: 4px; bottom: 4px; left: 4px; right: auto; height: auto; width: calc((100% - 8px) / 3); background-color: var(--apple-blue); border-radius: 8px; z-index: 2; overflow: hidden; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateX(calc(100% * var(--idx, 0))); box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06); pointer-events: none; }
+        body.is-mobile-access .access-slider-inner { display: flex; flex-direction: row; position: absolute; top: 0; left: 0; bottom: 0; right: auto; width: 300%; height: 100%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateX(calc(-100% / 3 * var(--idx, 0))); }
+        body.is-mobile-access .access-slider.dragging, body.is-mobile-access .access-slider.dragging .access-slider-inner { transition: none; }
+        body.is-mobile-access .access-slider-text { flex: 1; display: flex; justify-content: center; align-items: center; padding: 0; color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; height: 100%; }
+        /* Mobile overrides removed for calendar-header-flex since it is centered and stacked by default now */
+        body.is-mobile-access #calendar-time-selectors { width: 100%; justify-content: center; }
+        body.is-mobile-access .calendar-grid-header { font-size: 10px !important; }
+        
+        /* View Transition Names for Access Island Elements */
+        #access-sidebar-container { view-transition-name: vt-access-sidebar; }
+        #access-segmented-control { view-transition-name: vt-access-seg; }
+        #access-button-indefinite { view-transition-name: vt-access-btn-indef; }
+        #access-button-deadline { view-transition-name: vt-access-btn-dead; }
+        #access-button-exam { view-transition-name: vt-access-btn-exam; }
+        #access-button-time-limit { view-transition-name: vt-access-time-limit; }
+        #access-right-panel { view-transition-name: vt-access-right; }
+        #access-calendar-view { view-transition-name: vt-access-cal-view; }
+        #access-calendar-header { view-transition-name: vt-access-cal-head; }
+        #calendar-grid { view-transition-name: vt-access-cal-grid; }
+        .access-slider { view-transition-name: vt-access-slider; }
+        
+        ::view-transition-group(vt-access-sidebar),
+        ::view-transition-group(vt-access-seg),
+        ::view-transition-group(vt-access-btn-indef),
+        ::view-transition-group(vt-access-btn-dead),
+        ::view-transition-group(vt-access-btn-exam),
+        ::view-transition-group(vt-access-time-limit),
+        ::view-transition-group(vt-access-right),
+        ::view-transition-group(vt-access-cal-view),
+        ::view-transition-group(vt-access-cal-head),
+        ::view-transition-group(vt-access-cal-grid),
+        ::view-transition-group(vt-access-slider) {
+            animation-duration: 0.5s;
+            animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
         }
         .grouped-scale-option .scale-check { display: none; color: var(--apple-blue); }
         .grouped-scale-option.active .scale-check { display: block; }
@@ -1289,7 +1349,7 @@
             .builder-qa-panel.mode-select .builder-option-row.trueFalse-state-false .builder-option-input::placeholder { color: #8B1C1A; }
         }
 
-        .builder-qa-panel { background-color: var(--builder-card-bg-dark); border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; padding: 14px 14px 0 14px; }
+        .builder-qa-panel { display: flow-root; background-color: var(--builder-card-bg-dark); border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; padding: 14px 14px 0 14px; }
         body.is-dragging-active .builder-qa-panel { overflow: visible; }
         /* Deprecated delete badge width adjustment removed */
         .question-number { flex-shrink: 0; width: 24px; height: 26px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 15px; font-weight: 500; color: var(--text-tertiary); letter-spacing: -0.2px; user-select: none; }
@@ -1343,7 +1403,7 @@
             position: absolute;
             z-index: -1;
             background-color: var(--builder-card-bg-dark);
-            top: -14px; left: -14px; right: -14px; bottom: 0;
+            top: -19px; left: -14px; right: -14px; bottom: -5px;
             box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08);
             border-radius: 18px 18px 0 0;
             pointer-events: none;
@@ -1386,11 +1446,17 @@
         .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .question-drag-handle-inline { color: rgb(134, 134, 135); }
         .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .question-drag-handle-inline { color: rgb(0, 0, 0); }
 
+        .mode-select .question-input-wrap .question-drag-handle-inline { color: rgb(131, 194, 251) !important; opacity: 1 !important; }
+        .mode-select .question-input-wrap .question-drag-handle-inline:active { color: rgb(9, 124, 249) !important; opacity: 1 !important; }
+
         @media (prefers-color-scheme: dark) {
             .question-input-wrap .question-drag-handle-inline { color: rgb(24, 78, 125); }
             .question-input-wrap:has(.builder-question-input:not(:placeholder-shown):not(:focus)) .question-drag-handle-inline { color: rgb(10, 134, 249); }
             .question-input-wrap:has(.builder-question-input:focus:placeholder-shown) .question-drag-handle-inline { color: rgb(122, 122, 124); }
             .question-input-wrap:has(.builder-question-input:focus:not(:placeholder-shown)) .question-drag-handle-inline { color: rgb(254, 254, 254); }
+
+            .mode-select .question-input-wrap .question-drag-handle-inline { color: rgb(24, 78, 125) !important; opacity: 1 !important; }
+            .mode-select .question-input-wrap .question-drag-handle-inline:active { color: rgb(10, 134, 249) !important; opacity: 1 !important; }
         }
 
         .card-delete-badge-button { position: absolute; top: 14px; right: 14px; width: 26px; height: 26px; border-radius: 50%; border: none; background-color: var(--option-hover); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease; z-index: 5; display: none; /* Deprecated */ }
@@ -1474,6 +1540,7 @@
         .explanation-modal-top-button:active { transform: scale(0.9); opacity: 0.8; }
         .explanation-modal-top-button.close-button { left: 14px; background-color: rgba(0,0,0,0.05); color: var(--text-main); }
         .explanation-modal-top-button.save-button { right: 14px; background-color: var(--apple-blue); color: #ffffff; }
+        .explanation-modal-top-button.save-button svg.lucide-check, .icon-button svg.lucide-check { transform: translate(-0.5px, 1px); }
         @media (prefers-color-scheme: dark) { .explanation-modal-top-button.close-button { background-color: rgba(255,255,255,0.1); } }
         .explanation-modal-title { font-size: 17px; font-weight: 600; color: var(--text-main); margin: 0 0 16px 0; padding-right: 14px; letter-spacing: -0.3px; text-align: left; overflow-wrap: break-word; word-break: break-word; line-height: 1.4; max-height: 119px; overflow-y: auto; }
         .explanation-modal-answer-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 14px 0; }
@@ -1580,6 +1647,9 @@
         body .builder-qa-panel.mode-select .builder-option-row.dragging {
             z-index: 9999 !important;
         }
+        body .builder-qa-panel.mode-select .builder-option-row.dragging::after {
+            opacity: 0 !important;
+        }
 
         body:not(.is-dragging-active) .builder-qa-panel.mode-select .builder-option-row.trueFalse-state-false.trueFalse-active-row .row-bg {
             background-color: var(--sel-false-bg) !important;
@@ -1650,6 +1720,8 @@
         }
         
         .builder-option-row.dragging .row-bg {
+            top: -5px;
+            bottom: -5px;
             box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 -8px 20px rgba(0,0,0,0.08);
         }
         
@@ -2210,19 +2282,22 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
                                 <div id="grading-fields" class="island-accordion" style="grid-column: 1; grid-row: 1;">
                                     <div class="island-accordion-inner">
-                                    <div style="padding-top: 16px; display: grid; grid-template-columns: 1fr 2fr; gap: 16px;">
-                                        <div style="display: flex; flex-direction: column; gap: 4px; padding-right: 16px; border-right: 1px solid var(--border-color); min-width: 0;">
-                                            <button class="grading-sidebar-button active" id="sidebar-button-pass_fail" onclick="selectGradingType('pass_fail')">Pass or Fail</button>
-                                            <button class="grading-sidebar-button" id="sidebar-button-grouped_grades" onclick="selectGradingType('grouped_grades')">Grouped Grades</button>
-                                            <div id="grouped-grades-submenu" style="display: none; padding-left: 12px; margin-top: 4px; flex-direction: column; gap: 4px;">
-                                                <button class="grading-sub-button active" id="sub-button-letter" onclick="selectGroupedScale('letter')">Letter Scale</button>
-                                                <button class="grading-sub-button" id="sub-button-5point" onclick="selectGroupedScale('5point')">5-Point Scale</button>
-                                                <button class="grading-sub-button" id="sub-button-10point" onclick="selectGroupedScale('10point')">10-Point Scale</button>
-                                                <button class="grading-sub-button" id="sub-button-4point" onclick="selectGroupedScale('4point')">4-Point Scale</button>
+                                    <div class="access-wrapper">
+                                        <div class="access-sidebar-container">
+                                            <div class="access-segmented-control" id="grading-segmented-control" style="--idx: 0;">
+                                                <div class="access-slider" id="grading-slider">
+                                                    <div class="access-slider-inner" id="grading-slider-inner">
+                                                        <div class="access-slider-text">Pass or Fail</div>
+                                                        <div class="access-slider-text">Grouped Grades</div>
+                                                        <div class="access-slider-text">Percentage</div>
+                                                    </div>
+                                                </div>
+                                                <button class="access-segmented-button active" id="grading-button-pass_fail" onclick="selectGradingType('pass_fail')">Pass or Fail</button>
+                                                <button class="access-segmented-button" id="grading-button-grouped_grades" onclick="selectGradingType('grouped_grades')">Grouped Grades</button>
+                                                <button class="access-segmented-button" id="grading-button-percentage" onclick="selectGradingType('percentage')">Percentage</button>
                                             </div>
-                                            <button class="grading-sidebar-button" id="sidebar-button-percentage" onclick="selectGradingType('percentage')">Percentage</button>
                                         </div>
-                                        <div style="min-width: 0;">
+                                        <div id="grading-right-panel" style="position: relative; height: 100%; min-width: 0;">
                                             <div id="grade-slider-wrapper" style="margin-bottom: 0;">
                                                 <label class="field-label" id="grade-label">Passing Score</label>
                                                 <div class="ios-slider-container">
@@ -2233,8 +2308,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                             </div>
 
                 <div id="grade-grouped-container" style="margin-bottom: 0; display: none;">
+                    <div style="position: relative; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;" id="grouped-scale-selector-wrapper">
+                        <label class="field-label" id="scale-type-label" style="margin-bottom: 0;">Scale Type</label>
+                        <button id="scale-type-popover-btn" onclick="toggleScaleTypePopover(event)" style="border: none; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); white-space: nowrap;">
+                            <span id="current-scale-type-val" data-val="letter">Letter</span>
+                        </button>
+                    </div>
+                    
                     <div id="scale-config-letter" class="scale-config-container" style="display: block;">
-                        <label class="field-label">Letter Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">A</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'a', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'a', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-a" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('letter', 'a', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'a', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">B</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'b', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'b', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-b" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('letter', 'b', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'b', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
@@ -2242,11 +2323,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">D</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'd', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'd', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-d" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('letter', 'd', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'd', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">F</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('letter', 'f', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'f', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-letter-f" data-val="50">50%</div><button class="stepper-btn" onmousedown="startStep('letter', 'f', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('letter', 'f', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                         </div>
-                        <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Letters represent grouped percentage ranges (e.g., A = 90–100%).</p>
-                    </div>
+                                            </div>
 
                     <div id="scale-config-5point" class="scale-config-container" style="display: none;">
-                        <label class="field-label">5-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">5</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '5', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '5', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-5" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('5point', '5', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '5', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '4', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '4', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-4" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('5point', '4', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '4', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
@@ -2254,11 +2333,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-2" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('5point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('5point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-5p-1" data-val="50">50%</div><button class="stepper-btn" onmousedown="startStep('5point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('5point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                         </div>
-                        <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Often 5 is the highest (excellent) and 1 is the lowest (fail).</p>
-                    </div>
+                                            </div>
 
                     <div id="scale-config-10point" class="scale-config-container" style="display: none;">
-                        <label class="field-label">10-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">10</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '10', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '10', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-10" data-val="95">95%</div><button class="stepper-btn" onmousedown="startStep('10point', '10', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '10', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">9</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '9', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '9', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-9" data-val="85">85%</div><button class="stepper-btn" onmousedown="startStep('10point', '9', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '9', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
@@ -2271,21 +2348,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-2" data-val="15">15%</div><button class="stepper-btn" onmousedown="startStep('10point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('10point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-10p-1" data-val="5">5%</div><button class="stepper-btn" onmousedown="startStep('10point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('10point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                         </div>
-                        <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">A highly precise numerical scale where 10 is perfect.</p>
-                    </div>
+                                            </div>
 
                     <div id="scale-config-4point" class="scale-config-container" style="display: none;">
-                        <label class="field-label">4-Point Scale Minimums (%)</label>
                         <div style="display: grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 24px; row-gap: 8px;">
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">4</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '4', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '4', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-4" data-val="90">90%</div><button class="stepper-btn" onmousedown="startStep('4point', '4', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '4', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">3</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '3', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '3', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-3" data-val="80">80%</div><button class="stepper-btn" onmousedown="startStep('4point', '3', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '3', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600;">2</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '2', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '2', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-2" data-val="70">70%</div><button class="stepper-btn" onmousedown="startStep('4point', '2', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '2', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                             <div style="display: flex; align-items: center; gap: 12px;"><span style="width: 24px; font-weight: 600; color: var(--error-red);">1</span><div class="stepper-control"><button class="stepper-btn" onmousedown="startStep('4point', '1', -1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '1', -1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button><div class="stepper-val-text" id="bounds-4p-1" data-val="60">60%</div><button class="stepper-btn" onmousedown="startStep('4point', '1', 1)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep('4point', '1', 1)" ontouchend="stopStep()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
                         </div>
-                        <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Used to measure mastery of specific skills rather than overall percentages.</p>
-                    </div>
+                                            </div>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Set the minimum score required for each level.</p>
                 </div>
-
                                         </div>
                                     </div>
                                     </div>
@@ -2320,10 +2394,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         
                         <!-- Left Sidebar -->
                         <div class="access-sidebar-container">
-                            <div style="position: relative; z-index: 9999;">
-                                <button class="grading-sidebar-button" id="access-button-time-limit" onclick="toggleTimeLimitPopover(event)" style="display:flex; justify-content:space-between; align-items:center; background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 12px 14px; width: 100%;">
-                                    <span style="font-weight: 500; color: var(--text-main);">Time Limit</span>
-                                    <span id="sidebar-time-limit-val" style="font-size: 11px; background: rgba(0,122,255,0.1); padding: 4px 8px; border-radius: 6px; font-weight: 600; color: var(--apple-blue);">None</span>
+                                <button class="grading-sidebar-button" id="access-button-time-limit" onclick="toggleTimeLimitPopover(event)" style="display:block; text-align: left; background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 0; width: 100%;">
+                                    <div id="time-limit-btn-inner">
+                                        <span style="font-weight: 500; color: var(--text-main); width: 100%; text-align: left;">Time Limit</span>
+                                        <span id="sidebar-time-limit-val" style="font-size: 11px; background: rgba(0,122,255,0.1); padding: 4px 8px; border-radius: 6px; font-weight: 600; color: var(--apple-blue);">None</span>
+                                    </div>
                                 </button>
                                 
                                 <!-- Time Limit Popover -->
@@ -2337,7 +2412,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                             <span id="duration-indefinite-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; border-radius: 14px; pointer-events: none;">Indefinite</span>
                                         </div>
                                         <button class="icon-button" onclick="closeTimeLimitPopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
                                         </button>
                                     </div>
                                     <style>
@@ -2376,7 +2451,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     </div>
                                     <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0; line-height: 1.4; text-align: left; text-wrap: balance;">Limit the total time a student has to complete the quiz once started.</p>
                                 </div>
-                            </div>
                             
                             <!-- Segmented Control -->
                             <div class="access-segmented-control" id="access-segmented-control" style="--idx: 0;">
@@ -2384,12 +2458,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <div class="access-slider-inner" id="access-slider-inner">
                                         <div class="access-slider-text">Indefinite</div>
                                         <div class="access-slider-text">Deadline</div>
-                                        <div class="access-slider-text">Quiz Date</div>
+                                        <div class="access-slider-text">Scheduled</div>
                                     </div>
                                 </div>
                                 <button class="access-segmented-button active" id="access-button-indefinite" onclick="selectAccessMode('indefinite')">Indefinite</button>
                                 <button class="access-segmented-button" id="access-button-deadline" onclick="selectAccessMode('deadline')">Deadline</button>
-                                <button class="access-segmented-button" id="access-button-exam" onclick="selectAccessMode('exam')">Quiz Date</button>
+                                <button class="access-segmented-button" id="access-button-exam" onclick="selectAccessMode('exam')">Scheduled</button>
                             </div>
                         </div>
                         <div id="access-right-panel" style="position: relative; height: 100%; min-width: 0;">
@@ -2401,7 +2475,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                         <button class="icon-button" onclick="changeCalendarMonth(-1)" style="padding: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-main);">
                                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
                                         </button>
-                                        <div id="calendar-month-year-container" style="position: relative; min-width: 0; flex: 1 1 auto; padding: 0 8px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 12px; overflow: hidden;"
+                                        <div id="calendar-month-year-container" style="position: relative; width: 135px; flex-shrink: 0; padding: 0 8px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 12px; overflow: hidden;"
                                              onmouseover="document.getElementById('calendar-month-year').style.opacity='0'; document.getElementById('calendar-today-button').style.opacity='1';"
                                              onmouseout="document.getElementById('calendar-month-year').style.opacity='1'; document.getElementById('calendar-today-button').style.opacity='0';"
                                              onclick="goToToday(event)">
@@ -2415,11 +2489,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <div id="calendar-time-selectors" style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
                                         <!-- Time popover trigger -->
                                         <div style="position: relative;">
-                                            <button id="calendar-time-button" onclick="toggleTimePopover(event, 'start')" style="background: rgba(0,0,0,0.05); border: none; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); white-space: nowrap;">12:00</button>
+                                            <button id="calendar-time-button" onclick="toggleTimePopover(event, 'start')" style="border: none; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); white-space: nowrap;">12:00</button>
                                         </div>
                                         <div id="calendar-time-button-end-container" style="display: none; position: relative; align-items: center; gap: 8px;">
                                             <span style="font-size: 12px; color: var(--text-secondary);">to</span>
-                                            <button id="calendar-time-button-end" onclick="toggleTimePopover(event, 'end')" style="background: rgba(0,0,0,0.05); border: none; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); white-space: nowrap;">13:00</button>
+                                            <button id="calendar-time-button-end" onclick="toggleTimePopover(event, 'end')" style="border: none; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); white-space: nowrap;">13:00</button>
                                         </div>
                                     </div>
                                 </div>
@@ -2437,7 +2511,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             <!-- Indefinite View -->
                             <div id="access-indefinite-view" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; color: var(--text-secondary);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock-alert" style="width: 32px; height: 32px; margin-bottom: 12px; opacity: 0.5;"><path d="M12 6v6l4 2"/><path d="M20 12v5"/><path d="M20 21h.01"/><path d="M21.25 8.2A10 10 0 1 0 16 21.16"/></svg>
-                                <p style="font-size: 14px; margin: 0; line-height: 1.4; max-width: 200px;">The quiz is open indefinitely. It only requires the Play Password.</p>
+                                <p style="font-size: 14px; margin: 0; line-height: 1.4; max-width: 200px;">The quiz is open indefinitely.</p>
                             </div>
                             
                             <!-- Time Limit View relocated to Popover -->
@@ -2453,7 +2527,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
                                         <div class="options-island-title" style="margin-bottom: 0;">
                                             <div class="island-icon-box" style="background-color: var(--apple-blue); color: #fff;">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shuffle-icon lucide-shuffle"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22"/><path d="M2 6h1.972a4 4 0 0 1 3.6 2.2"/><path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"/></svg>
                                             </div>
                                             Randomize Questions
                                         </div>
@@ -2469,7 +2543,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
                                         <div class="options-island-title" style="margin-bottom: 0;">
                                             <div class="island-icon-box" style="background-color: #AF52DE; color: #fff;">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up-icon lucide-arrow-down-up"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
                                             </div>
                                             Randomize Answers
                                         </div>
@@ -2766,6 +2840,33 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     </div>
 </div>
 
+<div id="scale-type-picker-popover" class="time-popover apple-alert" onclick="event.stopPropagation()" style="width: max-content; padding: 16px 14px; margin: 0;">
+    <style>
+        #timer-scale .timer-item, #timer-scale-fg .timer-item-fg { text-align: left; padding-left: 20px; box-sizing: border-box; }
+    </style>
+    <div class="time-popover-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-left: 10px;">Scale Type</div>
+        <button class="icon-button" onclick="closeScaleTypePopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+        </button>
+    </div>
+    <div class="time-popover-accordion">
+        <div style="min-height: 0; overflow: hidden;">
+            <div class="timer-picker-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 0; padding-top: 4px;">
+                <div class="time-dials-wrapper" style="display: flex; width: 100%;">
+                    <div class="timer-group time-dials" style="flex: 1; text-align: center;">
+                        <div class="timer-column" id="timer-scale" onscroll="handleTimerScroll(this, 'scale')"></div>
+                        <div class="timer-column-fg-wrapper">
+                            <div class="timer-column-fg" id="timer-scale-fg"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="scale-popover-transition-label"></button>
+</div>
+
 <div id="time-picker-popover" class="time-popover apple-alert" onclick="event.stopPropagation()" style="width: max-content; padding: 16px 14px; margin: 0;">
     <div class="time-popover-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <div id="time-picker-title-container" style="position: relative; height: 28px; display: flex; align-items: center; cursor: pointer; border-radius: 14px; overflow: hidden; padding: 0 10px;"
@@ -2776,7 +2877,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <span id="time-picker-now-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; border-radius: 14px; pointer-events: none;">Now</span>
         </div>
         <button class="icon-button" onclick="closeTimePopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
         </button>
     </div>
     <div class="time-popover-accordion">
@@ -2803,10 +2904,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         </div>
                     </div>
                 </div>
-                <button id="popover-fake-text"></button>
             </div>
         </div>
     </div>
+    <button id="popover-transition-label"></button>
 </div>
 
 <div class="modal-overlay" id="error-modal" onclick="closeErrorModal()">
@@ -2826,10 +2927,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div class="explanation-modal-wrapper" onclick="event.stopPropagation()">
         <div class="explanation-modal-box" id="image-modal-box" onclick="closeImagePopover();">
             <button class="explanation-modal-top-button close-button" onclick="toggleImagePopover(event)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
             <button class="explanation-modal-top-button save-button" onclick="saveModalImage()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
             </button>
             <p class="explanation-modal-title" id="image-modal-title">Add Image</p>
             <div class="explanation-image-area no-island" id="image-preview-area">
@@ -2874,10 +2975,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div class="explanation-modal-wrapper" onclick="event.stopPropagation()">
         <div class="explanation-modal-box" id="explanation-modal-box" onclick="closeExplanationPopover();">
             <button class="explanation-modal-top-button close-button" id="explanation-top-cancel" onclick="toggleExplanationPopover(event)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
             <button class="explanation-modal-top-button save-button" id="explanation-top-save" onclick="saveExplanationanation()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
             </button>
             <p class="explanation-modal-title" id="explanation-modal-title">Explain Answer</p>
         <textarea class="explanation-modal-textarea" id="explanation-modal-textarea" placeholder="Explanation" rows="1"></textarea>
@@ -4071,6 +4172,21 @@ let isBuilderOverrideActive = false;
             
             if (builderQuestions.length === 0) {
                 addBuilderQuestion();
+                
+                // Initialize default access settings for new quiz
+                const now = new Date();
+                const startStr = generateLocalDateStr(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes());
+                
+                const later = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour later
+                const endStr = generateLocalDateStr(later.getFullYear(), later.getMonth() + 1, later.getDate(), later.getHours(), later.getMinutes());
+                
+                const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 1 day later
+                const deadlineStr = generateLocalDateStr(tomorrow.getFullYear(), tomorrow.getMonth() + 1, tomorrow.getDate(), tomorrow.getHours(), tomorrow.getMinutes());
+                
+                accessSettings = { mode: 'indefinite', deadline: deadlineStr, examStart: startStr, examEnd: endStr };
+                if (typeof updateTimeLimitButtonText === 'function') updateTimeLimitButtonText();
+                if (typeof updateTimerBadge === 'function') updateTimerBadge();
+                
                 await QuizDB.removeItem('builderIsEdit');
             }
             await saveBuilderState();
@@ -4804,6 +4920,12 @@ let isBuilderOverrideActive = false;
 
     function startQuiz() {
         quizData = JSON.parse(JSON.stringify(loadedQuizData));
+        quizData.forEach((q, i) => {
+            q.originalGlobalIndex = i;
+            if (q.options && Array.isArray(q.options)) {
+                q.options.forEach((opt, optIdx) => opt.originalIndex = optIdx);
+            }
+        });
 
         if (selectedMode === 'random') {
             const qToggle = document.getElementById('toggle-random-questions');
@@ -5608,15 +5730,24 @@ let isBuilderOverrideActive = false;
         if (quizMetadata.mode === 'exam') {
             // Exam Mode: No review phase. Record answer, score, clean up, and advance immediately.
             const rawItem = quizData[currentQuestionIndex];
-            const globalIndex = loadedQuizData.indexOf(rawItem);
+            const globalIndex = rawItem.originalGlobalIndex;
             
             const chosen = isTF ? [...trueFalsePlayStates] : [...selectedOptionionIndexes].sort((a, b) => a - b);
             
-            const originalChosen = isTF ? chosen : chosen.map(c => {
-                return (currentData.options && currentData.options[c] && currentData.options[c].originalIndex !== undefined) 
-                    ? currentData.options[c].originalIndex 
-                    : c;
-            });
+            let originalChosen;
+            if (isTF) {
+                originalChosen = new Array(chosen.length).fill('empty');
+                currentData.options.forEach((opt, idx) => {
+                    const origIdx = opt.originalIndex !== undefined ? opt.originalIndex : idx;
+                    originalChosen[origIdx] = chosen[idx];
+                });
+            } else {
+                originalChosen = chosen.map(c => {
+                    return (currentData.options && currentData.options[c] && currentData.options[c].originalIndex !== undefined) 
+                        ? currentData.options[c].originalIndex 
+                        : c;
+                });
+            }
             
             userAnswers[globalIndex] = originalChosen;
             userTimings[globalIndex] = Date.now() - currentQuestionStartTime;
@@ -5657,15 +5788,24 @@ let isBuilderOverrideActive = false;
                 isQuestionReviewed = true;
                 
                 const rawItem = quizData[currentQuestionIndex];
-                const globalIndex = loadedQuizData.indexOf(rawItem);
+                const globalIndex = rawItem.originalGlobalIndex;
                 
                 const chosen = isTF ? [...trueFalsePlayStates] : [...selectedOptionionIndexes].sort((a, b) => a - b);
                 
-                const originalChosen = isTF ? chosen : chosen.map(c => {
-                    return (currentData.options && currentData.options[c] && currentData.options[c].originalIndex !== undefined) 
-                        ? currentData.options[c].originalIndex 
-                        : c;
-                });
+                let originalChosen;
+                if (isTF) {
+                    originalChosen = new Array(chosen.length).fill('empty');
+                    currentData.options.forEach((opt, idx) => {
+                        const origIdx = opt.originalIndex !== undefined ? opt.originalIndex : idx;
+                        originalChosen[origIdx] = chosen[idx];
+                    });
+                } else {
+                    originalChosen = chosen.map(c => {
+                        return (currentData.options && currentData.options[c] && currentData.options[c].originalIndex !== undefined) 
+                            ? currentData.options[c].originalIndex 
+                            : c;
+                    });
+                }
                 
                 userAnswers[globalIndex] = originalChosen;
                 userTimings[globalIndex] = Date.now() - currentQuestionStartTime;
@@ -5813,8 +5953,8 @@ let isBuilderOverrideActive = false;
         let maxPoints = 0;
         let earnedPoints = 0;
 
-        for (let qIdx = 0; qIdx < quizData.length; qIdx++) {
-            const rawData = quizData[qIdx];
+        for (let qIdx = 0; qIdx < loadedQuizData.length; qIdx++) {
+            const rawData = loadedQuizData[qIdx];
             let data = rawData;
             
             if (rawData.encryptedBlock && sessionCryptoKey) {
@@ -5868,7 +6008,7 @@ let isBuilderOverrideActive = false;
 
         const percentage = maxPoints > 0 ? Math.round((earnedPoints / maxPoints) * 100) : 0;
 
-        const hasWeightedQuestions = quizData.some(q => (q.points || 1) > 1);
+        const hasWeightedQuestions = loadedQuizData.some(q => (q.points || 1) > 1);
         if (hasWeightedQuestions) {
             scoreCircleEl.innerHTML = `<span style="font-size:18px;line-height:1.1">${earnedPoints}<br><span style="font-size:13px;font-weight:500;opacity:0.7">/ ${maxPoints} pt</span></span>`;
         } else {
@@ -5946,8 +6086,8 @@ let isBuilderOverrideActive = false;
         reviewListEl.innerHTML = '';
         let correctCount = 0;
 
-        for (let qIdx = 0; qIdx < quizData.length; qIdx++) {
-            const rawData = quizData[qIdx];
+        for (let qIdx = 0; qIdx < loadedQuizData.length; qIdx++) {
+            const rawData = loadedQuizData[qIdx];
             let data = rawData;
             
             if (rawData.encryptedBlock && sessionCryptoKey) {
@@ -6080,7 +6220,7 @@ let isBuilderOverrideActive = false;
             numRow.style.fontSize = '12px';
             numRow.style.color = 'var(--text-tertiary)';
             numRow.style.fontWeight = '500';
-            numRow.innerText = `Question ${qIdx + 1} of ${quizData.length}`;
+            numRow.innerText = `Question ${qIdx + 1} of ${loadedQuizData.length}`;
 
             bottomRow.appendChild(numRow);
             typeHeader.appendChild(bottomRow);
@@ -6206,12 +6346,13 @@ let isBuilderOverrideActive = false;
             reviewListEl.appendChild(itemDiv);
         }
         
+        const detailedResults = document.getElementById('detailed-results');
         if (hasWeightedQuestions) {
-            document.getElementById('detailed-results').innerText =
-                `${earnedPoints} of ${maxPoints} points earned across ${quizData.length} question${quizData.length !== 1 ? 's' : ''} (${percentage}%).`;
+            detailedResults.textContent =
+                `${earnedPoints} of ${maxPoints} points earned across ${loadedQuizData.length} question${loadedQuizData.length !== 1 ? 's' : ''} (${percentage}%).`;
         } else {
-            document.getElementById('detailed-results').innerText =
-                `You answered ${correctCount} of ${quizData.length} question${quizData.length !== 1 ? 's' : ''} correctly.`;
+            detailedResults.textContent =
+                `You answered ${correctCount} of ${loadedQuizData.length} question${loadedQuizData.length !== 1 ? 's' : ''} correctly.`;
         }
     }
 
@@ -6427,13 +6568,18 @@ let isBuilderOverrideActive = false;
     });
 
     function selectGradingType(type) {
-        document.querySelectorAll('.grading-sidebar-button').forEach(button => {
-            if (button.id === 'sidebar-button-' + type) button.classList.add('active');
-            else button.classList.remove('active');
+        document.querySelectorAll('#grading-segmented-control .access-segmented-button').forEach(button => {
+            button.classList.remove('active');
         });
+        const activeBtn = document.getElementById(`grading-button-${type}`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const segmentedControl = document.getElementById('grading-segmented-control');
+        if (type === 'pass_fail') segmentedControl.style.setProperty('--idx', '0');
+        else if (type === 'grouped_grades') segmentedControl.style.setProperty('--idx', '1');
+        else if (type === 'percentage') segmentedControl.style.setProperty('--idx', '2');
         
         animateIslandHeight('#grading-fields', () => {
-            document.getElementById('grouped-grades-submenu').style.display = type === 'grouped_grades' ? 'flex' : 'none';
             document.getElementById('grade-slider-wrapper').style.display = (type === 'pass_fail' || type === 'percentage') ? 'block' : 'none';
             document.getElementById('grade-grouped-container').style.display = type === 'grouped_grades' ? 'block' : 'none';
             document.getElementById('grade-percentage-text').style.display = type === 'percentage' ? 'block' : 'none';
@@ -6443,20 +6589,187 @@ let isBuilderOverrideActive = false;
         saveBuilderState();
     }
 
-    function selectGroupedScale(scaleType) {
-        document.querySelectorAll('.grading-sub-button').forEach(el => {
-            if (el.id === 'sub-button-' + scaleType) el.classList.add('active');
-            else el.classList.remove('active');
-        });
+    function selectGroupedScale(scaleType, delayUpdate = false) {
+        const namesMap = { 'letter': 'Letter', '5point': '5-Point', '10point': '10-Point', '4point': '4-Point' };
         
-        animateIslandHeight('#grading-fields', () => {
+        document.getElementById('current-scale-type-val').innerText = namesMap[scaleType] || 'Letter';
+        document.getElementById('current-scale-type-val').setAttribute('data-val', scaleType);
+        
+        const updateDom = () => {
             document.querySelectorAll('.scale-config-container').forEach(el => el.style.display = 'none');
             const activeConfig = document.getElementById('scale-config-' + scaleType);
             if (activeConfig) activeConfig.style.display = 'block';
-        });
+        };
+        
+        if (delayUpdate) {
+            setTimeout(updateDom, 400);
+        } else {
+            animateIslandHeight('#grading-fields', updateDom);
+        }
         
         saveBuilderState();
         updateGradingSummary();
+    }
+    
+    function toggleScaleTypePopover(e) {
+        if (e) e.stopPropagation();
+        const popover = document.getElementById('scale-type-picker-popover');
+        const button = document.getElementById('scale-type-popover-btn');
+        
+        if (popover.classList.contains('active')) {
+            closeScaleTypePopover(true);
+        } else {
+            closeAllPopovers(true);
+            if (popover.parentNode !== document.body) {
+                document.body.appendChild(popover);
+            }
+            
+            button.classList.add('active-time-btn');
+            
+            popover.style.transition = 'none';
+            popover.style.display = 'flex';
+            popover.style.transform = 'translate(0px, 0px)';
+            popover.style.left = '0px';
+            popover.style.top = '0px';
+            
+            const btnRect = button.getBoundingClientRect();
+            autoScrollForPopover(btnRect, 272);
+            
+            popover.dataset.initialBtnDocX = btnRect.left + window.scrollX;
+            popover.dataset.initialBtnDocY = btnRect.top + window.scrollY;
+            
+            const btnCenterX = btnRect.left + window.scrollX + btnRect.width / 2;
+            const btnCenterY = btnRect.top + window.scrollY + btnRect.height / 2;
+            
+            const timerContainer = popover.querySelector('.timer-picker-container');
+            const popOffsetY = timerContainer ? (timerContainer.offsetTop + timerContainer.offsetHeight / 2 + 1) : 160;
+            const popWidth = popover.offsetWidth || 200;
+            const popHeight = popover.offsetHeight || 272;
+            
+            let popLeft = btnCenterX - popWidth / 2;
+            const padding = 16;
+            
+            if (popLeft + popWidth > window.innerWidth - padding) {
+                popLeft = window.innerWidth - padding - popWidth;
+            }
+            if (popLeft < padding) {
+                popLeft = padding;
+            }
+            
+            popover.style.left = popLeft + 'px';
+            popover.style.top = (btnCenterY - popOffsetY) + 'px';
+            
+            const relativeBtnCenterX = btnCenterX - popLeft;
+            
+            const clipTop = Math.max(0, popOffsetY - btnRect.height / 2);
+            const clipBottom = Math.max(0, popHeight - popOffsetY - btnRect.height / 2);
+            const clipLeft = Math.max(0, relativeBtnCenterX - btnRect.width / 2);
+            const clipRight = Math.max(0, popWidth - relativeBtnCenterX - btnRect.width / 2);
+            
+            popover.style.setProperty('--clip-origin-x', relativeBtnCenterX + 'px');
+            popover.style.setProperty('--clip-origin-y', popOffsetY + 'px');
+            
+            popover.style.setProperty('--clip-top', `${clipTop}px`);
+            popover.style.setProperty('--clip-bottom', `${clipBottom}px`);
+            popover.style.setProperty('--clip-left', `${clipLeft}px`);
+            popover.style.setProperty('--clip-right', `${clipRight}px`);
+            popover.style.setProperty('--btn-width', `${btnRect.width}px`);
+            popover.style.setProperty('--btn-height', `${btnRect.height}px`);
+            
+            const transitionLabel = document.getElementById('scale-popover-transition-label');
+            if (transitionLabel) {
+                transitionLabel.innerText = button.innerText;
+                transitionLabel.style.width = btnRect.width + 'px';
+                transitionLabel.style.height = btnRect.height + 'px';
+                transitionLabel.style.left = '50%';
+                transitionLabel.style.top = popOffsetY + 'px';
+            }
+            
+            void popover.offsetWidth; // force reflow
+            
+            popover.style.transition = ''; // restore css transitions
+            
+            requestAnimationFrame(() => {
+                popover.classList.add('active');
+                if (typeof timePopoverSyncRAF !== 'undefined' && !timePopoverSyncRAF) {
+                    timePopoverSyncRAF = requestAnimationFrame(syncTimePopover);
+                }
+            });
+            
+            const currentScaleType = document.getElementById('current-scale-type-val').getAttribute('data-val') || 'letter';
+            const scaleCol = document.getElementById('timer-scale');
+            if (scaleCol) {
+                const scaleIndex = ['letter', '5point', '10point', '4point'].indexOf(currentScaleType);
+                if (scaleIndex >= 0) {
+                    const itemHeight = 36;
+                    scaleCol.scrollTop = scaleIndex * itemHeight;
+                    const fg = document.getElementById('timer-scale-fg');
+                    if (fg) fg.style.transform = `translateY(-${82 + scaleIndex * itemHeight}px)`;
+                }
+            }
+        }
+    }
+    
+    function closeScaleTypePopover(isCancel = false, fadeOnly = false) {
+        const popover = document.getElementById('scale-type-picker-popover');
+        if (!popover || !popover.classList.contains('active')) return;
+        
+        const button = document.getElementById('scale-type-popover-btn');
+        
+        if (!isCancel) {
+            const scaleCol = document.getElementById('timer-scale');
+            const items = scaleCol.querySelectorAll('.timer-item');
+            const centerPos = scaleCol.scrollTop + scaleCol.offsetHeight / 2;
+            let selectedItem = null;
+            let minDiff = Infinity;
+            items.forEach(item => {
+                const itemCenter = item.offsetTop + item.offsetHeight / 2;
+                const diff = Math.abs(itemCenter - centerPos);
+                if (diff < minDiff) { minDiff = diff; selectedItem = item; }
+            });
+            if (selectedItem) {
+                const scaleType = selectedItem.getAttribute('data-val');
+                selectGroupedScale(scaleType, fadeOnly);
+                if (button) {
+                    const transitionLabel = document.getElementById('scale-popover-transition-label');
+                    if (transitionLabel) {
+                        transitionLabel.innerText = selectedItem.innerText;
+                    }
+                }
+            }
+        } else if (button) {
+            const transitionLabel = document.getElementById('scale-popover-transition-label');
+            if (transitionLabel) transitionLabel.innerText = button.innerText;
+        }
+        
+        if (button) {
+            const transitionLabel = document.getElementById('scale-popover-transition-label');
+            if (transitionLabel) {
+                const newBtnRect = button.getBoundingClientRect();
+                popover.style.setProperty('--btn-width', newBtnRect.width + 'px');
+                popover.style.setProperty('--btn-height', newBtnRect.height + 'px');
+            }
+        }
+        
+        void popover.offsetWidth; // Force reflow to commit variables before transition
+        
+        if (fadeOnly) popover.classList.add('fade-out-only');
+        popover.classList.remove('active');
+        popover.classList.add('closing');
+        
+        if (button) {
+            button.classList.remove('active-time-btn');
+            if (!fadeOnly) {
+                button.classList.add('closing-hide-text');
+                setTimeout(() => { button.classList.remove('closing-hide-text'); }, 380);
+            }
+        }
+        
+        setTimeout(() => { 
+            popover.classList.remove('closing'); 
+            popover.classList.remove('fade-out-only'); 
+            popover.style.display = 'none'; 
+        }, fadeOnly ? 150 : 400);
     }
 
 
@@ -6623,19 +6936,21 @@ let isBuilderOverrideActive = false;
         classTopicIsland.classList.remove('island-hidden-horizontal');
         
         gradingIsland.style.cursor = 'pointer';
+        
         fields.classList.remove('open-fields');
         collapsedSummary.classList.add('open-summary');
         doneButton.style.display = 'none';
         
         updateGradingSummary();
+        closeAllPopovers(true);
     }
 
     function updateGradingSummary() {
         const typeSpan = document.getElementById('summary-grading-type-val');
         const settingsSpan = document.getElementById('summary-grading-settings-val');
         
-        const activeButton = document.querySelector('.grading-sidebar-button.active');
-        const typeId = activeButton ? activeButton.id.replace('sidebar-button-', '') : 'pass_fail';
+        const activeButton = document.querySelector('#grading-segmented-control .access-segmented-button.active');
+        const typeId = activeButton ? activeButton.id.replace('grading-button-', '') : 'pass_fail';
         
         let typeStr = "Pass or Fail";
         let settingsStr = "";
@@ -6646,14 +6961,11 @@ let isBuilderOverrideActive = false;
             settingsStr = val + "% Passing Score";
         } else if (typeId === 'grouped_grades') {
             typeStr = "Grouped Grades";
-            const activeScale = document.querySelector('.grading-sub-button.active');
-            if (activeScale) {
-                const scaleType = activeScale.id.replace('sub-button-', '');
-                if (scaleType === 'letter') settingsStr = "Letter Scale";
-                else if (scaleType === '5point') settingsStr = "5-Point Scale";
-                else if (scaleType === '10point') settingsStr = "10-Point Scale";
-                else if (scaleType === '4point') settingsStr = "4-Point Scale";
-            }
+            const scaleType = document.getElementById('current-scale-type-val').getAttribute('data-val');
+            if (scaleType === 'letter') settingsStr = "Letter";
+            else if (scaleType === '5point') settingsStr = "5-Point";
+            else if (scaleType === '10point') settingsStr = "10-Point";
+            else if (scaleType === '4point') settingsStr = "4-Point";
         } else if (typeId === 'percentage') {
             typeStr = "Percentage";
             settingsStr = "Raw Score (0-100%)";
@@ -6910,7 +7222,7 @@ let isBuilderOverrideActive = false;
                 html = `<span ${nowrapStyle}><span ${opacityStyle}>On</span> ${s.full}</span> <span ${nowrapStyle}><span ${opacityStyle}>to</span> ${endStr}</span>`;
                 if (timeLimitStr) html += ` <span ${nowrapStyle}><span ${opacityStyle}>for</span> ${timeLimitStr}</span>`;
             } else {
-                html = "Quiz Date";
+                html = "Scheduled";
             }
         } else {
             iconSvg = indefiniteSvg;
@@ -6967,10 +7279,10 @@ let isBuilderOverrideActive = false;
             
             if (viewId === 'deadline') {
                 document.getElementById('calendar-time-button-end-container').style.display = 'none';
-                document.getElementById('calendar-hint-text').textContent = "Select a deadline day.";
+                document.getElementById('calendar-hint-text').textContent = "Students can access the quiz until this time.";
             } else if (viewId === 'exam') {
                 document.getElementById('calendar-time-button-end-container').style.display = 'flex';
-                document.getElementById('calendar-hint-text').textContent = "Select a date for exam.";
+                document.getElementById('calendar-hint-text').textContent = "Students can only access the quiz during this time.";
             }
             
             // Sync calendar display to the first date if available
@@ -6993,6 +7305,21 @@ let isBuilderOverrideActive = false;
     function animateIslandHeight(containerSelector, updateFn) {
         const container = document.querySelector(containerSelector);
         if (!container) {
+            updateFn();
+            return;
+        }
+
+        let isExpanded = false;
+        if (container.id === 'grading-fields') {
+            isExpanded = container.classList.contains('open-fields');
+        } else if (container.id === 'timer-fields') {
+            const island = container.closest('.options-island');
+            isExpanded = island && island.classList.contains('expanded');
+        } else {
+            isExpanded = container.offsetHeight > 0;
+        }
+
+        if (!isExpanded) {
             updateFn();
             return;
         }
@@ -7079,6 +7406,45 @@ let isBuilderOverrideActive = false;
         });
     }    
     let isAutoScrolling = false;
+    function autoScrollForPopover(buttonRect, popoverHeight = 250) {
+        if (!buttonRect) return;
+        const safeTop = 120;    // Top safe zone (Header buttons)
+        const safeBottom = 150; // Bottom safe zone (Segmented control)
+        
+        const popoverTop = buttonRect.top;
+        const popoverBottom = buttonRect.bottom + popoverHeight;
+        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const maxBottom = vh - safeBottom;
+        
+        let targetScrollY = window.scrollY;
+        
+        if (popoverBottom > maxBottom) {
+            targetScrollY += (popoverBottom - maxBottom);
+        }
+        
+        const currentTopAfterScroll = popoverTop - (targetScrollY - window.scrollY);
+        if (currentTopAfterScroll < safeTop) {
+            targetScrollY = window.scrollY + popoverTop - safeTop;
+        }
+        
+        if (Math.abs(targetScrollY - window.scrollY) > 2) {
+            isAutoScrolling = true;
+            window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+            if (window.autoScrollTimeout) clearTimeout(window.autoScrollTimeout);
+            window.autoScrollTimeout = setTimeout(() => { isAutoScrolling = false; }, 800);
+        }
+    }
+
+    document.addEventListener('focusin', (e) => {
+        const target = e.target;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || target.classList.contains('editable-input')) {
+            // Delay to let mobile keyboard animation and native browser scrolling finish
+            setTimeout(() => {
+                const rect = target.getBoundingClientRect();
+                autoScrollForPopover(rect, 0); 
+            }, 300);
+        }
+    });
 
     // Aggressive scroll listeners removed to prevent bounce closures
 
@@ -7104,6 +7470,7 @@ let isBuilderOverrideActive = false;
     }
 
     function closeAllPopovers(fadeOnly = true) {
+        closeScaleTypePopover(false, fadeOnly);
         closeTimeLimitPopover(fadeOnly);
         closeTimePopover(fadeOnly);
         document.querySelectorAll('.trueFalse-popover.open, .score-popover.open, .explanation-popover.active, .image-popover.active').forEach(p => { 
@@ -7121,7 +7488,7 @@ let isBuilderOverrideActive = false;
         if (e.target.closest('.time-limit-popover-container, .trueFalse-popover, .score-popover, .explanation-popover, .time-popover, .image-popover, .add-question-popover')) return;
         if (e.target.closest('#access-button-time-limit, .true-false-btn, .score-btn, .explanation-btn, .image-btn, #calendar-time-button, #calendar-time-button-end, .add-question-btn, #timer-done-button')) return;
         
-        const isInsideExpandedIsland = !!e.target.closest('.options-island.expanded');
+        const isInsideExpandedIsland = !!e.target.closest('.options-island.expanded, .options-island.island-expanded-horizontal');
         closeAllPopovers(!isInsideExpandedIsland);
     }, true);
 
@@ -7135,7 +7502,7 @@ let isBuilderOverrideActive = false;
         if (popover.classList.contains('open')) {
             closeTimeLimitPopover(false);
         } else {
-            closeAllPopovers(true);
+            closeAllPopovers(false);
             
             if (popover.parentNode !== document.body) {
                 document.body.appendChild(popover);
@@ -7145,21 +7512,29 @@ let isBuilderOverrideActive = false;
                 const buttonRect = e.currentTarget.getBoundingClientRect();
                 popover.style.top = (buttonRect.bottom + window.scrollY + 8) + 'px';
                 
-                const isMobile = window.innerWidth <= 600;
-                
-                popover.style.width = '';
-                popover.style.minWidth = ''; 
+                const isMobile = window.innerWidth <= 600 || document.body.classList.contains('is-mobile-access');
                 
                 if (isMobile) {
-                    // Center it visually on mobile or attach to left edge safely
-                    let leftPos = buttonRect.left;
-                    if (leftPos + 240 > window.innerWidth) {
-                        leftPos = window.innerWidth - 240 - 16; // Keep 16px margin from right edge
+                    let clickX = (e && e.clientX) ? e.clientX : buttonRect.left + buttonRect.width / 2;
+                    let popoverWidth = 248; // Actual width (220) + padding (14*2)
+                    let leftPos = clickX - (popoverWidth / 2);
+                    
+                    // Constrain strictly within the button's boundaries
+                    if (leftPos + popoverWidth > buttonRect.right) {
+                        leftPos = buttonRect.right - popoverWidth;
                     }
+                    if (leftPos < buttonRect.left) {
+                        leftPos = buttonRect.left;
+                    }
+                    
+                    // Fallback bounds just in case
                     if (leftPos < 16) leftPos = 16;
+                    
                     popover.style.left = leftPos + 'px';
+                    popover.style.right = 'auto';
                 } else {
                     popover.style.left = buttonRect.left + 'px';
+                    popover.style.right = 'auto';
                 }
             }
             
@@ -7171,12 +7546,7 @@ let isBuilderOverrideActive = false;
                 
                 // Auto scroll if popover is too close to the header or goes below screen
                 const buttonRect = button.getBoundingClientRect();
-                const headerOffset = 140; // Approx height of sticky header + some padding
-                if (buttonRect.top < headerOffset || buttonRect.bottom + 250 > window.innerHeight) {
-                    isAutoScrolling = true;
-                    window.scrollTo({ top: window.scrollY + buttonRect.top - headerOffset, behavior: 'smooth' });
-                    setTimeout(() => { isAutoScrolling = false; }, 600);
-                }
+                autoScrollForPopover(buttonRect, 360);
             }
             setTimeout(() => setTimerPickerValues(timerSettings.h, timerSettings.m, timerSettings.s), 10);
         }
@@ -7204,7 +7574,7 @@ let isBuilderOverrideActive = false;
         let startX = 0, startY = 0;
         
         accessSegControl.addEventListener('pointerdown', (e) => {
-            const isHorizontal = window.innerWidth <= 600;
+            const isHorizontal = window.innerWidth <= 800;
             if (!isHorizontal) return; 
             
             isPointerDown = true;
@@ -7221,7 +7591,7 @@ let isBuilderOverrideActive = false;
 
         accessSegControl.addEventListener('pointermove', (e) => {
             if (!isPointerDown) return;
-            const isHorizontal = window.innerWidth <= 600;
+            const isHorizontal = window.innerWidth <= 800;
             if (!isHorizontal) return;
             
             const deltaX = e.clientX - startX;
@@ -7256,7 +7626,7 @@ let isBuilderOverrideActive = false;
                 accessSlider.classList.remove('dragging');
                 accessSegControl.releasePointerCapture(e.pointerId);
                 
-                const isHorizontal = window.innerWidth <= 600;
+                const isHorizontal = window.innerWidth <= 800;
                 if (isHorizontal) {
                     const rect = accessSegControl.getBoundingClientRect();
                     const deltaX = e.clientX - startX;
@@ -7312,6 +7682,12 @@ let isBuilderOverrideActive = false;
             let endH = end ? end.getHours() : 10;
             let endM = end ? end.getMinutes() : 0;
             
+            // Prevent end time from being earlier than start time
+            if (startH * 60 + startM > endH * 60 + endM) {
+                endH = startH;
+                endM = startM;
+            }
+            
             accessSettings.examStart = generateLocalDateStr(y, m, d, startH, startM);
             accessSettings.examEnd = generateLocalDateStr(y, m, d, endH, endM);
         }
@@ -7325,7 +7701,8 @@ let isBuilderOverrideActive = false;
         const month = calendarDate.getMonth();
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         
-        document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+        const span = document.getElementById('calendar-month-year');
+        span.textContent = `${monthNames[month]} ${year}`;
         
         const firstDay = new Date(year, month, 1).getDay();
         // Convert to Monday-start (0 = Monday, 6 = Sunday)
@@ -7333,6 +7710,9 @@ let isBuilderOverrideActive = false;
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         
         const grid = document.getElementById('calendar-grid');
+        grid.style.position = 'relative'; // Ensure pill positions correctly
+        grid.style.zIndex = '1';
+        
         let html = '';
         
         let startD = parseDateObj(accessSettings.mode === 'deadline' ? accessSettings.deadline : accessSettings.examStart);
@@ -7343,22 +7723,28 @@ let isBuilderOverrideActive = false;
             html += `<div></div>`;
         }
         
+        let selectedCellIndex = -1;
+        
         // Days
         for (let i = 1; i <= daysInMonth; i++) {
             let currentCellDate = new Date(year, month, i);
             let currentCellTime = currentCellDate.getTime();
             
             let isSelected = false;
-            let isRange = false;
+            let isRange = false; // Add range logic later if needed
             
             if (startD) {
                 let sdTime = new Date(startD.getFullYear(), startD.getMonth(), startD.getDate()).getTime();
                 if (currentCellTime === sdTime) isSelected = true;
             }
             
-            let style = `cursor: pointer; padding: 6px 0; border-radius: 6px; transition: background 0.2s; font-size: 14px;`;
             if (isSelected) {
-                style += ` background: var(--apple-blue); color: #fff; font-weight: 600;`;
+                selectedCellIndex = i + startOffset - 1;
+            }
+            
+            let style = `cursor: pointer; padding: 6px 0; border-radius: 6px; transition: color 0.3s; font-size: 14px; position: relative; z-index: 2;`;
+            if (isSelected) {
+                style += ` color: #fff; font-weight: 600;`;
             } else if (isRange) {
                 style += ` background: rgba(0,122,255,0.15); color: var(--apple-blue); font-weight: 600;`;
             } else {
@@ -7366,13 +7752,76 @@ let isBuilderOverrideActive = false;
             }
             
             // Hover effect using onmouseover
-            html += `<div style="${style}" 
+            html += `<div class="${isSelected ? 'calendar-selected-cell' : ''}" style="${style}" 
                         onmouseover="if(!${isSelected}) this.style.background='rgba(0,0,0,0.05)'" 
                         onmouseout="if(!${isSelected}) this.style.background='transparent'"
                         onclick="selectCalendarDay(event, ${i})">${i}</div>`;
         }
         
+        const existingPill = document.getElementById('calendar-selector-pill');
+        if (existingPill) existingPill.remove(); // detach safely to preserve inline styles
         grid.innerHTML = html;
+        
+        if (selectedCellIndex >= 0) {
+            const cell = grid.children[selectedCellIndex];
+            if (cell) {
+                let pill = existingPill;
+                let isNew = false;
+                if (!pill) {
+                    pill = document.createElement('div');
+                    pill.id = 'calendar-selector-pill';
+                    pill.style.position = 'absolute';
+                    pill.style.background = 'var(--apple-blue)';
+                    pill.style.borderRadius = '6px';
+                    pill.style.transition = 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
+                    pill.style.zIndex = '1';
+                    pill.style.opacity = '0';
+                    isNew = true;
+                }
+                
+                grid.appendChild(pill);
+                
+                // Force a reflow BEFORE updating coordinates so that the browser
+                // registers the old coordinates and transitions to the new ones
+                if (!isNew) {
+                    void pill.offsetWidth;
+                }
+                
+                // Use offset metrics for pixel-perfect positioning
+                if (cell.offsetWidth > 0) {
+                    pill.style.top = cell.offsetTop + 'px';
+                    pill.style.left = cell.offsetLeft + 'px';
+                    pill.style.width = cell.offsetWidth + 'px';
+                    pill.style.height = cell.offsetHeight + 'px';
+                    
+                    if (isNew) {
+                        // Trigger reflow and fade in
+                        void pill.offsetWidth;
+                        pill.style.opacity = '1';
+                    }
+                }
+            }
+        } else if (existingPill) {
+            existingPill.style.opacity = '0';
+            setTimeout(() => existingPill.remove(), 150);
+        }
+
+        // Attach ResizeObserver to handle window resize and initial zero-height un-collapsing
+        if (!window._calendarGridObserver) {
+            window._calendarGridObserver = new ResizeObserver(() => {
+                const pill = document.getElementById('calendar-selector-pill');
+                const selectedCell = grid.querySelector('.calendar-selected-cell');
+                if (pill && selectedCell && selectedCell.offsetWidth > 0) {
+                    pill.style.top = selectedCell.offsetTop + 'px';
+                    pill.style.left = selectedCell.offsetLeft + 'px';
+                    pill.style.width = selectedCell.offsetWidth + 'px';
+                    pill.style.height = selectedCell.offsetHeight + 'px';
+                    pill.style.opacity = '1';
+                }
+            });
+            window._calendarGridObserver.observe(grid);
+        }
+
         updateCalendarTimeButtons();
     }
     
@@ -7401,64 +7850,78 @@ let isBuilderOverrideActive = false;
     let timePopoverSyncRAF = null;
 
     function syncTimePopover() {
-        const popover = document.getElementById('time-picker-popover');
-        if (!popover || (!popover.classList.contains('active') && !popover.classList.contains('closing'))) {
+        const popovers = document.querySelectorAll('.time-popover.active, .time-popover.closing:not(.fade-out-only)');
+        if (popovers.length === 0) {
             timePopoverSyncRAF = null;
-            if (popover) {
+            document.querySelectorAll('.time-popover').forEach(p => {
+                p.dataset.closingStartTime = "";
+                p.style.transitionProperty = '';
+                p.style.clipPath = '';
+            });
+            return;
+        }
+
+        popovers.forEach(popover => {
+            const isClosing = popover.classList.contains('closing');
+            if (isClosing) {
+                if (!popover.dataset.closingStartTime) {
+                    popover.dataset.closingStartTime = Date.now();
+                    // Disable CSS transition for clip-path so JS can take over seamlessly during resize layout thrashing
+                    popover.style.transitionProperty = 'background-color, border-color, box-shadow, opacity, visibility';
+                }
+            } else {
                 popover.dataset.closingStartTime = "";
                 popover.style.transitionProperty = '';
                 popover.style.clipPath = '';
             }
-            return;
-        }
 
-        const isClosing = popover.classList.contains('closing');
-        if (isClosing) {
-            if (!popover.dataset.closingStartTime) {
-                popover.dataset.closingStartTime = Date.now();
-                // Disable CSS transition for clip-path so JS can take over seamlessly during resize layout thrashing
-                popover.style.transitionProperty = 'background-color, border-color, box-shadow, opacity, visibility';
-            }
-        } else {
-            popover.dataset.closingStartTime = "";
-            popover.style.transitionProperty = '';
-            popover.style.clipPath = '';
-        }
-
-        if (typeof calendarEditingTarget !== 'undefined' && calendarEditingTarget) {
-            const button = calendarEditingTarget === 'start' ? document.getElementById('calendar-time-button') : document.getElementById('calendar-time-button-end');
-            if (button && popover.dataset.initialBtnDocX && popover.dataset.initialBtnDocY) {
-                const btnRect = button.getBoundingClientRect();
-                const currentDocX = btnRect.left + window.scrollX;
-                const currentDocY = btnRect.top + window.scrollY;
-                
-                const dx = currentDocX - parseFloat(popover.dataset.initialBtnDocX);
-                const dy = currentDocY - parseFloat(popover.dataset.initialBtnDocY);
-
-                popover.style.transform = `translate(${dx}px, ${dy}px)`;
-
-                if (isClosing) {
-                    const elapsed = Date.now() - parseInt(popover.dataset.closingStartTime);
-                    const progress = Math.min(1, elapsed / 350);
-                    // Standard ease-out equivalent to cubic-bezier(0.16, 1, 0.3, 1)
-                    const easeProgress = 1 - Math.pow(1 - progress, 3);
-                    
-                    const targetTop = parseFloat(popover.style.getPropertyValue('--clip-top')) || 0;
-                    const targetBottom = parseFloat(popover.style.getPropertyValue('--clip-bottom')) || 0;
-                    const targetLeft = parseFloat(popover.style.getPropertyValue('--clip-left')) || 0;
-                    const targetRight = parseFloat(popover.style.getPropertyValue('--clip-right')) || 0;
-
-                    const currentTop = targetTop * easeProgress;
-                    const currentBottom = targetBottom * easeProgress;
-                    const currentLeft = targetLeft * easeProgress;
-                    const currentRight = targetRight * easeProgress;
-                    
-                    const currentRadius = 28 - (22 * easeProgress);
-
-                    popover.style.clipPath = `inset(${currentTop}px ${currentRight}px ${currentBottom}px ${currentLeft}px round ${currentRadius}px)`;
+            let button = null;
+            if (popover.id === 'scale-type-picker-popover') {
+                button = document.getElementById('scale-type-popover-btn');
+            } else if (typeof calendarEditingTarget !== 'undefined' && calendarEditingTarget) {
+                // If it's a clone, it remembers its original button via dataset. If not, use the current global target.
+                let target = calendarEditingTarget;
+                if (popover.id === 'time-picker-popover-clone') {
+                    // The clone should track the button it originated from, but for simplicity
+                    // the closing animation calculates clip-path directly from inline --clip-top etc.
+                    // We just need the button for translating (scrolling).
+                    target = popover.dataset.originalTarget || calendarEditingTarget;
                 }
+                button = target === 'start' ? document.getElementById('calendar-time-button') : document.getElementById('calendar-time-button-end');
             }
-        }
+            
+            if (button && popover.dataset.initialBtnDocX && popover.dataset.initialBtnDocY) {
+                    const btnRect = button.getBoundingClientRect();
+                    const currentDocX = btnRect.left + window.scrollX;
+                    const currentDocY = btnRect.top + window.scrollY;
+                    
+                    const dx = currentDocX - parseFloat(popover.dataset.initialBtnDocX);
+                    const dy = currentDocY - parseFloat(popover.dataset.initialBtnDocY);
+
+                    popover.style.transform = `translate(${dx}px, ${dy}px)`;
+
+                    if (isClosing) {
+                        const elapsed = Date.now() - parseInt(popover.dataset.closingStartTime);
+                        const progress = Math.min(1, elapsed / 350);
+                        // Standard ease-out equivalent to cubic-bezier(0.16, 1, 0.3, 1)
+                        const easeProgress = 1 - Math.pow(1 - progress, 3);
+                        
+                        const targetTop = parseFloat(popover.style.getPropertyValue('--clip-top')) || 0;
+                        const targetBottom = parseFloat(popover.style.getPropertyValue('--clip-bottom')) || 0;
+                        const targetLeft = parseFloat(popover.style.getPropertyValue('--clip-left')) || 0;
+                        const targetRight = parseFloat(popover.style.getPropertyValue('--clip-right')) || 0;
+
+                        const currentTop = targetTop * easeProgress;
+                        const currentBottom = targetBottom * easeProgress;
+                        const currentLeft = targetLeft * easeProgress;
+                        const currentRight = targetRight * easeProgress;
+                        
+                        const currentRadius = 28 - (22 * easeProgress);
+
+                        popover.style.clipPath = `inset(${currentTop}px ${currentRight}px ${currentBottom}px ${currentLeft}px round ${currentRadius}px)`;
+                    }
+            }
+        });
 
         timePopoverSyncRAF = requestAnimationFrame(syncTimePopover);
     }
@@ -7477,7 +7940,7 @@ let isBuilderOverrideActive = false;
                 // 1. Read the time and start closing the REAL popover
                 closeTimePopover(false); 
                 
-                // 2. Create the clone from the REAL popover (which now has the old fake text and lost .active)
+                // 2. Create the clone from the REAL popover (which now has the old transition label and lost .active)
                 const clone = popover.cloneNode(true);
                 clone.id = 'time-picker-popover-clone';
                 clone.style.zIndex = '99998'; // Ensure clone renders UNDER the opening real popover
@@ -7486,27 +7949,29 @@ let isBuilderOverrideActive = false;
                 document.body.appendChild(clone);
                 
                 // 4. Force the clone to transition from active to closed
+                clone.dataset.originalTarget = calendarEditingTarget; // Tag clone with its button
                 clone.classList.add('active'); // force clone to be open
                 void clone.offsetWidth; // force reflow
                 clone.classList.remove('active'); // trigger shrink transition on the clone!
                 
                 // Clean up the clone after 350ms
                 setTimeout(() => {
-                    if (clone.parentNode) clone.parentNode.removeChild(clone);
+                    clone.remove();
                 }, 400);
                 
                 // Rescue the REAL popover from the .closing state immediately,
                 // so that it doesn't animate its repositioning to the new target!
                 popover.classList.remove('closing');
                 popover.classList.remove('fade-out-only');
+                if (typeof timePopoverCloseTimeout !== 'undefined') clearTimeout(timePopoverCloseTimeout);
                 
-                // Now, the REAL popover is closed (and its fake text is clear).
+                // Now, the REAL popover is closed (and its transition label is clear).
                 // We just continue to let it open for the NEW target!
             }
         }
         
         if (!isAlreadyActive) {
-            closeAllPopovers(); // Ensure other popovers (e.g. Time Limit) close
+            closeAllPopovers(false); // Ensure other popovers (e.g. Time Limit) close with normal morph
         }
         
         calendarEditingTarget = target;
@@ -7519,6 +7984,7 @@ let isBuilderOverrideActive = false;
             popover.style.transform = 'translate(0px, 0px)';
             
             const btnRect = button.getBoundingClientRect();
+            autoScrollForPopover(btnRect, 272);
             
             popover.dataset.initialBtnDocX = btnRect.left + window.scrollX;
             popover.dataset.initialBtnDocY = btnRect.top + window.scrollY;
@@ -7531,27 +7997,44 @@ let isBuilderOverrideActive = false;
             const popWidth = popover.offsetWidth || 200;
             const popHeight = popover.offsetHeight || 272;
             
-            popover.style.left = (btnCenterX - popWidth / 2) + 'px';
+            let popLeft = btnCenterX - popWidth / 2;
+            const padding = 16;
+            
+            if (popLeft + popWidth > window.innerWidth - padding) {
+                popLeft = window.innerWidth - padding - popWidth;
+            }
+            if (popLeft < padding) {
+                popLeft = padding;
+            }
+            
+            popover.style.left = popLeft + 'px';
             popover.style.top = (btnCenterY - popOffsetY) + 'px';
+            
+            const relativeBtnCenterX = btnCenterX - popLeft;
             
             const clipTop = Math.max(0, popOffsetY - btnRect.height / 2);
             const clipBottom = Math.max(0, popHeight - popOffsetY - btnRect.height / 2);
-            const clipLeft = Math.max(0, popWidth / 2 - btnRect.width / 2);
-            const clipRight = Math.max(0, popWidth / 2 - btnRect.width / 2);
+            const clipLeft = Math.max(0, relativeBtnCenterX - btnRect.width / 2);
+            const clipRight = Math.max(0, popWidth - relativeBtnCenterX - btnRect.width / 2);
+            
+            popover.style.setProperty('--clip-origin-x', relativeBtnCenterX + 'px');
+            popover.style.setProperty('--clip-origin-y', popOffsetY + 'px');
             
             popover.style.setProperty('--clip-top', `${clipTop}px`);
             popover.style.setProperty('--clip-bottom', `${clipBottom}px`);
             popover.style.setProperty('--clip-left', `${clipLeft}px`);
             popover.style.setProperty('--clip-right', `${clipRight}px`);
-            popover.style.setProperty('--clip-origin-y', `${popOffsetY}px`);
             popover.style.setProperty('--btn-width', `${btnRect.width}px`);
             popover.style.setProperty('--btn-height', `${btnRect.height}px`);
-        }
-        
-        const fakeText = document.getElementById('popover-fake-text');
-        if (fakeText) {
-            const button = target === 'start' ? document.getElementById('calendar-time-button') : document.getElementById('calendar-time-button-end');
-            if (button) fakeText.innerHTML = button.innerHTML;
+            
+            const transitionLabel = document.getElementById('popover-transition-label');
+            if (transitionLabel) {
+                transitionLabel.innerText = button.innerText;
+                transitionLabel.style.width = btnRect.width + 'px';
+                transitionLabel.style.height = btnRect.height + 'px';
+                transitionLabel.style.left = '50%';
+                transitionLabel.style.top = popOffsetY + 'px';
+            }
         }
         
         void popover.offsetWidth; // force reflow
@@ -7606,6 +8089,7 @@ let isBuilderOverrideActive = false;
     }
 
     function closeTimePopoverOnScroll(e) {
+        if (typeof isAutoScrolling !== 'undefined' && isAutoScrolling) return;
         const popover = document.getElementById('time-picker-popover');
         if (popover && popover.contains(e.target)) return;
         closeTimePopover(false);
@@ -7616,21 +8100,26 @@ let isBuilderOverrideActive = false;
         const btn1 = document.getElementById('calendar-time-button');
         const btn2 = document.getElementById('calendar-time-button-end');
         if (popover && !popover.contains(e.target) && (!btn1 || !btn1.contains(e.target)) && (!btn2 || !btn2.contains(e.target))) {
-            closeTimePopover();
+            closeTimePopover(false);
         }
     }
+    
+    let timePopoverCloseTimeout = null;
     
     function closeTimePopover(fadeOnly = true) {
         const popover = document.getElementById('time-picker-popover');
         if (!popover || !popover.classList.contains('active')) return;
         
+        if (timePopoverCloseTimeout) clearTimeout(timePopoverCloseTimeout);
+        
         if (fadeOnly) popover.classList.add('fade-out-only');
         popover.classList.remove('active');
         popover.classList.add('closing');
-        setTimeout(() => {
+        timePopoverCloseTimeout = setTimeout(() => {
             popover.classList.remove('closing');
             popover.classList.remove('fade-out-only');
-        }, fadeOnly ? 150 : 350);
+            popover.style.display = 'none';
+        }, fadeOnly ? 150 : 400);
         document.removeEventListener('click', closeTimePopoverOutside);
         document.removeEventListener('scroll', closeTimePopoverOnScroll, true);
         
@@ -7681,8 +8170,16 @@ let isBuilderOverrideActive = false;
             accessSettings.deadline = newStr;
         } else if (isEnd) {
             accessSettings.examEnd = newStr;
+            // Prevent end time from being earlier than start time
+            if (accessSettings.examStart && parseDateObj(accessSettings.examEnd) < parseDateObj(accessSettings.examStart)) {
+                accessSettings.examEnd = accessSettings.examStart;
+            }
         } else {
             accessSettings.examStart = newStr;
+            // Prevent end time from being earlier than start time
+            if (accessSettings.examEnd && parseDateObj(accessSettings.examEnd) < parseDateObj(accessSettings.examStart)) {
+                accessSettings.examEnd = accessSettings.examStart;
+            }
         }
         
         updateCalendarTimeButtons();
@@ -7692,14 +8189,19 @@ let isBuilderOverrideActive = false;
         
         if (button) {
             button.classList.remove('active-time-btn');
-            button.classList.add('closing-hide-text');
-            setTimeout(() => {
-                button.classList.remove('closing-hide-text');
-            }, 350);
+            if (!fadeOnly) {
+                button.classList.add('closing-hide-text');
+                setTimeout(() => {
+                    button.classList.remove('closing-hide-text');
+                }, 380);
+            }
             
-            const fakeText = document.getElementById('popover-fake-text');
-            if (fakeText) {
-                fakeText.innerHTML = button.innerHTML;
+            const transitionLabel = document.getElementById('popover-transition-label');
+            if (transitionLabel) {
+                transitionLabel.innerText = button.innerText;
+                const newBtnRect = button.getBoundingClientRect();
+                popover.style.setProperty('--btn-width', newBtnRect.width + 'px');
+                popover.style.setProperty('--btn-height', newBtnRect.height + 'px');
             }
         }
         
@@ -7873,7 +8375,9 @@ let isBuilderOverrideActive = false;
             accessSettings.examEnd = generateLocalDateStr(y, m, d, endH, endM);
         }
         
-        renderCustomCalendar();
+        animateIslandHeight('#timer-fields', () => {
+            renderCustomCalendar();
+        });
         saveBuilderState();
         updateTimerBadge();
     }
@@ -7897,19 +8401,41 @@ let isBuilderOverrideActive = false;
         
         const chCol = document.getElementById('calendar-time-ch');
         const cmCol = document.getElementById('calendar-time-cm');
+        const campmCol = document.getElementById('calendar-time-campm');
         const itemHeight = 36;
-        chCol.scrollTo({ top: h * itemHeight, behavior: 'smooth' });
-        cmCol.scrollTo({ top: m * itemHeight, behavior: 'smooth' });
+        
+        let displayH = h % 12;
+        if (displayH === 0) displayH = 12;
+        const hIndex = displayH - 1;
+        const ampmIndex = h >= 12 ? 1 : 0;
+        
+        if (chCol) {
+            chCol.scrollTop = hIndex * itemHeight;
+            const fg = document.getElementById('calendar-time-ch-fg');
+            if (fg) fg.style.transform = `translateY(-${82 + hIndex * itemHeight}px)`;
+        }
+        if (cmCol) {
+            cmCol.scrollTop = m * itemHeight;
+            const fg = document.getElementById('calendar-time-cm-fg');
+            if (fg) fg.style.transform = `translateY(-${82 + m * itemHeight}px)`;
+        }
+        if (campmCol) {
+            campmCol.scrollTop = ampmIndex * itemHeight;
+            const fg = document.getElementById('calendar-time-campm-fg');
+            if (fg) fg.style.transform = `translateY(-${82 + ampmIndex * itemHeight}px)`;
+        }
         
         updateCalendarTimeButtons();
         saveBuilderState();
+        closeTimePopover(false);
     }
 
     function renderTimerPicker() {
-        ['h', 'm', 's', 'ch', 'cm', 'campm'].forEach(unit => {
+        ['h', 'm', 's', 'ch', 'cm', 'campm', 'scale'].forEach(unit => {
             let isCalendar = unit === 'ch' || unit === 'cm' || unit === 'campm';
-            const col = document.getElementById(isCalendar ? 'calendar-time-' + unit : 'timer-' + unit);
-            const fgCol = document.getElementById(isCalendar ? 'calendar-time-' + unit + '-fg' : 'timer-' + unit + '-fg');
+            let isScale = unit === 'scale';
+            const col = document.getElementById(isCalendar ? 'calendar-time-' + unit : (isScale ? 'timer-scale' : 'timer-' + unit));
+            const fgCol = document.getElementById(isCalendar ? 'calendar-time-' + unit + '-fg' : (isScale ? 'timer-scale-fg' : 'timer-' + unit + '-fg'));
             if (!col) return;
             let html = '<div style="height: 82px;"></div>';
             let fgHtml = '<div style="height: 82px;"></div>';
@@ -7918,6 +8444,14 @@ let isBuilderOverrideActive = false;
                 ['AM', 'PM'].forEach((valStr, i) => {
                     html += `<div class="timer-item ${isCalendar ? 'cal-item' : ''}" data-val="${i}">${valStr}</div>`;
                     fgHtml += `<div class="timer-item-fg ${isCalendar ? 'cal-item-fg' : ''}">${valStr}</div>`;
+                });
+            } else if (unit === 'scale') {
+                const scaleNames = ['Letter', '5-Point', '10-Point', '4-Point'];
+                const scaleVals = ['letter', '5point', '10point', '4point'];
+                scaleNames.forEach((valStr, i) => {
+                    const val = scaleVals[i];
+                    html += `<div class="timer-item" data-val="${val}">${valStr}</div>`;
+                    fgHtml += `<div class="timer-item-fg">${valStr}</div>`;
                 });
             } else if (unit === 'ch') {
                 for (let i = 1; i <= 12; i++) {
@@ -7946,7 +8480,8 @@ let isBuilderOverrideActive = false;
 
     function handleTimerScroll(col, unit) {
         let isCalendar = unit === 'ch' || unit === 'cm' || unit === 'campm';
-        const fgCol = document.getElementById(isCalendar ? `calendar-time-${unit}-fg` : `timer-${unit}-fg`);
+        let isScale = unit === 'scale';
+        const fgCol = document.getElementById(isCalendar ? `calendar-time-${unit}-fg` : (isScale ? `timer-scale-fg` : `timer-${unit}-fg`));
         if (fgCol) {
             fgCol.style.transform = `translateY(-${82 + col.scrollTop}px)`;
         }
@@ -7976,6 +8511,53 @@ let isBuilderOverrideActive = false;
             
             if (saveTimerTimeout) clearTimeout(saveTimerTimeout);
             saveTimerTimeout = setTimeout(() => {
+                if (isCalendar && accessSettings.mode === 'exam' && calendarEditingTarget === 'end') {
+                    const chCol = document.getElementById('calendar-time-ch');
+                    const cmCol = document.getElementById('calendar-time-cm');
+                    const campmCol = document.getElementById('calendar-time-campm');
+                    
+                    if (chCol && cmCol && campmCol && accessSettings.examStart) {
+                        const getC = (col) => {
+                            const centerPos = col.scrollTop + col.offsetHeight / 2;
+                            let minDiff = Infinity, sel = null;
+                            col.querySelectorAll('.timer-item').forEach(item => {
+                                const diff = Math.abs(item.offsetTop + item.offsetHeight / 2 - centerPos);
+                                if (diff < minDiff) { minDiff = diff; sel = item; }
+                            });
+                            return sel ? parseInt(sel.getAttribute('data-val'), 10) : 0;
+                        };
+                        
+                        let h12 = getC(chCol) || 12;
+                        let m = getC(cmCol);
+                        let ampm = getC(campmCol);
+                        
+                        let h24 = h12;
+                        if (ampm === 1 && h12 < 12) h24 += 12;
+                        if (ampm === 0 && h12 === 12) h24 = 0;
+                        
+                        let startD = parseDateObj(accessSettings.examStart);
+                        if (startD) {
+                            let startH24 = startD.getHours();
+                            let startM = startD.getMinutes();
+                            
+                            if (h24 * 60 + m < startH24 * 60 + startM) {
+                                let snapH12 = startH24 % 12;
+                                if (snapH12 === 0) snapH12 = 12;
+                                let snapAMPM = startH24 >= 12 ? 1 : 0;
+                                
+                                const getOffset = (col, item) => item.offsetTop - col.children[0].offsetTop - (col.clientHeight / 2) + (item.offsetHeight / 2);
+                                
+                                const hItem = chCol.querySelector(`.timer-item[data-val="${snapH12}"]`);
+                                const mItem = cmCol.querySelector(`.timer-item[data-val="${startM}"]`);
+                                const ampmItem = campmCol.querySelector(`.timer-item[data-val="${snapAMPM}"]`);
+                                
+                                if (hItem) chCol.scrollTo({ top: getOffset(chCol, hItem), behavior: 'smooth' });
+                                if (mItem) cmCol.scrollTo({ top: getOffset(cmCol, mItem), behavior: 'smooth' });
+                                if (ampmItem) campmCol.scrollTo({ top: getOffset(campmCol, ampmItem), behavior: 'smooth' });
+                            }
+                        }
+                    }
+                }
                 saveBuilderState();
             }, 300);
         }
@@ -8066,9 +8648,9 @@ let isBuilderOverrideActive = false;
             },
             idCounter: builderIdCounter,
             options: {
-                gradingType: document.querySelector('.grading-sidebar-button.active') ? document.querySelector('.grading-sidebar-button.active').id.replace('sidebar-button-', '') : 'pass_fail',
+                gradingType: document.querySelector('#grading-segmented-control .access-segmented-button.active') ? document.querySelector('#grading-segmented-control .access-segmented-button.active').id.replace('grading-button-', '') : 'pass_fail',
                 grade: document.getElementById('grade-slider') ? document.getElementById('grade-slider').value : 60,
-                groupedScale: document.querySelector('.grading-sub-button.active') ? document.querySelector('.grading-sub-button.active').id.replace('sub-button-', '') : 'letter',
+                groupedScale: document.getElementById('current-scale-type-val') ? (document.getElementById('current-scale-type-val').getAttribute('data-val') || 'letter') : 'letter',
                 groupedBounds: {
                     letter: {
                         a: getBoundValue('bounds-letter-a') || 90,
@@ -8285,8 +8867,8 @@ let isBuilderOverrideActive = false;
     window.openAddQuestionPopover = function(triggerEl) {
         if (activeAddQuestionPopover) {
             closeAddQuestionPopover();
-            return;
         }
+        autoScrollForPopover(triggerEl.getBoundingClientRect(), 220);
 
         const popover = document.createElement('div');
         popover.className = 'add-question-popover';
@@ -8484,6 +9066,9 @@ let isBuilderOverrideActive = false;
     
     function toggleExplanationPopover(e) {
         e.stopPropagation();
+        const button = e.currentTarget;
+        autoScrollForPopover(button.getBoundingClientRect(), 200);
+
         if (!explanationModalContext.hasOriginalContent) {
             closeExplanationanationModal();
             return;
@@ -8775,6 +9360,7 @@ let isBuilderOverrideActive = false;
     function openScorePopover(pillBtn, qId) {
         closeAllPopovers();
         if (activeScorePopover) closeScorePopover();
+        autoScrollForPopover(pillBtn.getBoundingClientRect(), 140);
 
         const row = pillBtn.closest('.question-input-row');
         if (row) row.classList.add('score-active-row');
@@ -8902,6 +9488,7 @@ let isBuilderOverrideActive = false;
     function openTFPopover(triggerEl, anchorEl, qId, optId) {
         const row = anchorEl.closest('.builder-option-row');
         if (Date.now() - lastTFPopoverCloseTime < 300 && lastTFPopoverClosedRow === row) return;
+        autoScrollForPopover(triggerEl.getBoundingClientRect(), 120);
         const getCurState = () => {
             const question = builderQuestions.find(q => q.id === qId);
             if (!question) return '';
@@ -9114,6 +9701,13 @@ let isBuilderOverrideActive = false;
         const isDoc = target === document || target === document.documentElement || target === window;
         const st = isDoc ? window.scrollY : target.scrollTop;
         const sl = isDoc ? window.scrollX : target.scrollLeft;
+        
+        if (typeof isAutoScrolling !== 'undefined' && isAutoScrolling) {
+            popoverScrollState.initialScrolls.set(target, { top: st, left: sl });
+            if (window.autoScrollTimeout) clearTimeout(window.autoScrollTimeout);
+            window.autoScrollTimeout = setTimeout(() => { isAutoScrolling = false; }, 300);
+            return;
+        }
         
         if (!popoverScrollState.initialScrolls.has(target)) {
             popoverScrollState.initialScrolls.set(target, { top: st, left: sl });
@@ -9332,7 +9926,6 @@ let isBuilderOverrideActive = false;
                 removeOptionButton.title = canRemove ? 'Remove answer' : 'At least 2 answers are required';
                 removeOptionButton.onclick = (e) => {
                     e.stopPropagation();
-                    if (!canRemove) return;
                     const currentRow = removeOptionButton.closest('.builder-option-row');
                     document.querySelectorAll('.builder-option-row.revealed').forEach(r => {
                         if (r !== currentRow) r.classList.remove('revealed');
@@ -9783,6 +10376,7 @@ let isBuilderOverrideActive = false;
         dragHasMoved = false;
 
         document.querySelectorAll('.builder-option-row.revealed').forEach(r => r.classList.remove('revealed'));
+        if (builderViewMode === 'select') closeTFPopover();
 
         const qaPanel = group.closest('.builder-qa-panel');
         if (qaPanel) qaPanel.style.overflow = 'visible';
@@ -10046,9 +10640,9 @@ let isBuilderOverrideActive = false;
             name: builderQuizNameEl.value.trim() || 'Quiz Studio Workspace Session',
             description: builderQuizDescEl.value.trim() || '',
             options: {
-                gradingType: document.querySelector('.grading-sidebar-button.active') ? document.querySelector('.grading-sidebar-button.active').id.replace('sidebar-button-', '') : 'pass_fail',
+                gradingType: document.querySelector('#grading-segmented-control .access-segmented-button.active') ? document.querySelector('#grading-segmented-control .access-segmented-button.active').id.replace('grading-button-', '') : 'pass_fail',
                 grade: document.getElementById('grade-slider') ? parseInt(document.getElementById('grade-slider').value, 10) : 60,
-                groupedScale: document.querySelector('.grading-sub-button.active') ? document.querySelector('.grading-sub-button.active').id.replace('sub-button-', '') : 'letter',
+                groupedScale: document.getElementById('current-scale-type-val') ? (document.getElementById('current-scale-type-val').getAttribute('data-val') || 'letter') : 'letter',
                 groupedBounds: {
                     letter: {
                         a: getBoundValue('bounds-letter-a') || 90,
@@ -10411,6 +11005,9 @@ let isBuilderOverrideActive = false;
 
     function toggleImagePopover(event) {
         event.stopPropagation();
+        const button = event.currentTarget;
+        autoScrollForPopover(button.getBoundingClientRect(), 200);
+
         if (!imageModalPendingBase64) {
             closeImageModal();
             return;
@@ -10452,7 +11049,7 @@ let isBuilderOverrideActive = false;
             imageCaptionTextarea.readOnly = true;
             imagePreviewArea.style.pointerEvents = 'none';
             if (saveButton) {
-                saveButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>';
+                saveButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>';
                 saveButton.style.fontSize = '';
                 saveButton.style.fontWeight = '';
                 saveButton.style.color = '';
@@ -10469,7 +11066,7 @@ let isBuilderOverrideActive = false;
             imageCaptionTextarea.readOnly = false;
             imagePreviewArea.style.pointerEvents = 'auto';
             if (saveButton) {
-                saveButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>';
+                saveButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>';
                 saveButton.style.fontSize = '';
                 saveButton.style.fontWeight = '';
                 saveButton.style.color = '';
@@ -11354,6 +11951,140 @@ let isBuilderOverrideActive = false;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Access Island FLIP Layout Animation on Resize
+        const accessMql = window.matchMedia('(max-width: 712px)');
+        
+        function triggerAccessLayoutSwap(e) {
+            const shouldBeMobile = e.matches;
+            const accessIsland = document.getElementById('island-timer');
+            const container = document.getElementById('timer-fields');
+            
+            // Only animate if the island is currently expanded and visible
+            if (!accessIsland || !container || !accessIsland.classList.contains('expanded')) {
+                document.body.classList.toggle('is-mobile-access', shouldBeMobile);
+                return;
+            }
+            
+            const elementsToAnimate = [
+                // FLIP animate the calendar components and time limit button
+                document.getElementById('access-button-time-limit'),
+                document.getElementById('access-calendar-header'),
+                document.getElementById('calendar-time-selectors'),
+                ...document.querySelectorAll('#calendar-grid > div')
+            ].filter(Boolean);
+            
+            // 1. FIRST: Capture bounding rects and old height
+            const firstRects = new Map();
+            elementsToAnimate.forEach(el => {
+                firstRects.set(el, el.getBoundingClientRect());
+            });
+            const oldHeight = container.offsetHeight;
+            
+            // 2. TOGGLE: Apply new layout instantly without CSS transitions interfering
+            const disableTransitions = document.createElement('style');
+            disableTransitions.innerHTML = '* { transition: none !important; }';
+            document.head.appendChild(disableTransitions);
+            
+            document.body.classList.toggle('is-mobile-access', shouldBeMobile);
+            
+            // Force synchronous layout recalculation
+            const newHeight = container.offsetHeight;
+            
+            // Now that layout is snapped to final state, read the final computed transforms
+            const finalTransforms = new Map();
+            elementsToAnimate.forEach(el => {
+                const comp = window.getComputedStyle(el).transform;
+                finalTransforms.set(el, comp !== 'none' ? comp : '');
+            });
+            
+            // Remove the transition blocker so normal CSS transitions can work later
+            document.head.removeChild(disableTransitions);
+            
+            // 3. LAST & INVERT: Animate container height (accordion) and element positions (FLIP)
+            if (oldHeight !== newHeight) {
+                container.style.transition = 'none';
+                container.style.overflow = 'hidden';
+                
+                if (container.layoutAnim) container.layoutAnim.cancel();
+                
+                const anim = container.animate([
+                    { height: oldHeight + 'px' },
+                    { height: newHeight + 'px' }
+                ], {
+                    duration: 400,
+                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+                });
+                container.layoutAnim = anim;
+                
+                const accessWrapper = container.querySelector('.access-wrapper');
+                let ro;
+                if (accessWrapper) {
+                    ro = new ResizeObserver(() => {
+                        if (anim.playState !== 'running') {
+                            ro.disconnect();
+                            return;
+                        }
+                        // accessWrapper.offsetHeight represents the exact true intrinsic height needed
+                        const targetHeight = accessWrapper.offsetHeight;
+                        const effect = anim.effect;
+                        if (effect) {
+                            const keyframes = effect.getKeyframes();
+                            if (keyframes && keyframes.length > 1) {
+                                keyframes[1].height = targetHeight + 'px';
+                                effect.setKeyframes(keyframes);
+                            }
+                        }
+                    });
+                    ro.observe(accessWrapper);
+                }
+                
+                anim.onfinish = () => {
+                    container.style.transition = '';
+                    container.style.height = '';
+                    container.style.overflow = '';
+                    container.layoutAnim = null;
+                    if (ro) ro.disconnect();
+                };
+                anim.oncancel = () => {
+                    container.style.height = '';
+                    container.style.overflow = '';
+                    if (ro) ro.disconnect();
+                };
+            } else {
+                container.style.height = 'auto';
+            }
+            
+            elementsToAnimate.forEach(el => {
+                const first = firstRects.get(el);
+                const last = el.getBoundingClientRect();
+                
+                if (first.width === 0 || last.width === 0) return;
+                
+                const deltaX = first.left - last.left;
+                const deltaY = first.top - last.top;
+                
+                if (deltaX !== 0 || deltaY !== 0) {
+                    const baseTransform = finalTransforms.get(el);
+                    const startTransform = `translate(${deltaX}px, ${deltaY}px) ${baseTransform}`.trim();
+                    const endTransform = baseTransform || 'translate(0, 0)';
+                    
+                    el.animate([
+                        { transform: startTransform },
+                        { transform: endTransform }
+                    ], {
+                        duration: 400,
+                        easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                        fill: 'auto'
+                    });
+                }
+            });
+        }
+
+        if (accessMql.matches) {
+            document.body.classList.add('is-mobile-access');
+        }
+        accessMql.addEventListener('change', triggerAccessLayoutSwap);
+
         document.querySelectorAll('.card-canvas-bg').forEach(canvas => {
             canvas.particleAnim = new ParticleCardAnimation(canvas);
         });
@@ -11512,6 +12243,66 @@ let isBuilderOverrideActive = false;
                 }
             });
         });
+
+        // Smooth accordion animation when Time Limit button wraps to a new line
+        const timeLimitBtnInner = document.getElementById('time-limit-btn-inner');
+        const timeLimitBtn = document.getElementById('access-button-time-limit');
+        if (timeLimitBtnInner && timeLimitBtn) {
+            timeLimitBtn.style.overflow = 'hidden';
+            let targetHeight = timeLimitBtnInner.offsetHeight;
+            let animObj = null;
+            let popoverAnimObj = null;
+            
+            const ro = new ResizeObserver(entries => {
+                const newIntrinsicHeight = entries[0].target.offsetHeight;
+                if (targetHeight > 0 && newIntrinsicHeight > 0 && Math.abs(newIntrinsicHeight - targetHeight) > 5) {
+                    const oldH = timeLimitBtn.offsetHeight; // Current visual height
+                    targetHeight = newIntrinsicHeight;
+                    
+                    if (animObj) animObj.cancel();
+                    if (popoverAnimObj) popoverAnimObj.cancel();
+                    
+                    const popover = document.getElementById('access-time-limit-view');
+                    const isPopoverOpen = popover && popover.classList.contains('open');
+                    
+                    if (isPopoverOpen) {
+                        const currentVisualAbsTop = popover.getBoundingClientRect().top + window.scrollY;
+                        const btnVisualTop = timeLimitBtn.getBoundingClientRect().top + window.scrollY;
+                        const finalAbsTop = btnVisualTop + newIntrinsicHeight + 8;
+                        
+                        popoverAnimObj = popover.animate([
+                            { top: `${currentVisualAbsTop}px` },
+                            { top: `${finalAbsTop}px` }
+                        ], {
+                            duration: 350,
+                            easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+                        });
+                        
+                        popover.style.top = `${finalAbsTop}px`;
+                        
+                        popoverAnimObj.onfinish = () => {
+                            popoverAnimObj = null;
+                        };
+                    }
+                    
+                    animObj = timeLimitBtn.animate([
+                        { height: `${oldH}px` },
+                        { height: `${newIntrinsicHeight}px` }
+                    ], {
+                        duration: 350,
+                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+                    });
+                    
+                    animObj.onfinish = () => {
+                        timeLimitBtn.style.height = ''; // Restore to auto
+                        animObj = null;
+                    };
+                } else {
+                    targetHeight = newIntrinsicHeight;
+                }
+            });
+            ro.observe(timeLimitBtnInner);
+        }
     });
 </script>
 
