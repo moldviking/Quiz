@@ -1067,9 +1067,17 @@
         /* Ensure text in side-by-side islands truncates properly */
         #island-class-topic .options-island-title > div, #island-grading .options-island-title > div { min-width: 0; }
         #class-topic-collapsed-summary > div > div, #grading-collapsed-summary > div > div { min-width: 0; }
+        #island-class-topic .island-content-wrapper, #island-grading .island-content-wrapper,
+        #island-class-topic .island-accordion-wrapper, #island-grading .island-accordion-wrapper,
+        #island-class-topic .island-accordion, #island-grading .island-accordion,
+        #island-class-topic .island-accordion-inner, #island-grading .island-accordion-inner { min-width: 0; }
         #island-class-topic .options-island-title span, #island-grading .options-island-title span,
         #class-topic-collapsed-summary span, #grading-collapsed-summary span {
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
+        }
+        #island-class-topic .options-island-title span span, #island-grading .options-island-title span span,
+        #class-topic-collapsed-summary span span, #grading-collapsed-summary span span {
+            display: inline !important; white-space: inherit; overflow: visible; text-overflow: clip;
         }
         .options-island-row { display: flex; justify-content: space-between; align-items: flex-start; }
         .options-island .text-input, .options-island .custom-select-button { background-color: var(--bg-card); }
@@ -2271,7 +2279,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                         <div class="island-icon-box" style="background-color: var(--apple-blue); color: #fff;">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v8l3-3 3 3V2"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
                                         </div>
-                                        <span>Overview</span>
+                                        <span style="color: var(--text-secondary);"><span style="color: var(--text-main);">Overview</span></span>
                                     </div>
                                     <button id="class-topic-done-button" onclick="collapseClassTopic(event)" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
                                 </div>
@@ -2281,11 +2289,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <div class="island-accordion-inner" style="display: flex; flex-direction: column; gap: 12px;">
                                         <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
                                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Class</span>
-                                            <span id="summary-class-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;">Empty</span>
+                                            <span id="summary-class-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;"><span>Empty</span></span>
                                         </div>
                                         <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
                                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Topic</span>
-                                            <span id="summary-topic-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;">Empty</span>
+                                            <span id="summary-topic-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;"><span>Empty</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -2329,7 +2337,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                         <div class="island-icon-box" style="background-color: #34C759; color: #fff;">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>
                                         </div>
-                                        <span>Grading</span>
+                                        <span style="color: var(--text-secondary);"><span style="color: var(--text-main);">Grading</span></span>
                                     </div>
                                     <button id="grading-done-button" onclick="collapseGrading(event)" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
                                 </div>
@@ -2339,11 +2347,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <div class="island-accordion-inner" style="display: flex; flex-direction: column; gap: 12px;">
                                         <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
                                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Grading Type</span>
-                                            <span id="summary-grading-type-val" style="color: var(--text-main); font-weight: 500; font-size: 15px;">Pass or Fail</span>
+                                            <span id="summary-grading-type-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;"><span style="color: var(--text-main);">Pass or Fail</span></span>
                                         </div>
                                         <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
                                             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Settings</span>
-                                            <span id="summary-grading-settings-val" style="color: var(--text-main); font-weight: 500; font-size: 15px;">60% Passing Score</span>
+                                            <span id="summary-grading-settings-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;"><span style="color: var(--text-main);">60% Passing Score</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -2554,7 +2562,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                     <div class="island-accordion-inner" style="display: flex; justify-content: flex-end;">
                                         <div class="timer-badge badge-indefinite" id="timer-badge">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                            <span id="timer-badge-text" style="display: inline-flex; white-space: nowrap; justify-content: flex-end; gap: 4px; text-align: right;">Indefinite</span>
+                                            <span id="timer-badge-text" style="display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; text-align: right;">Indefinite</span>
                                         </div>
                                     </div>
                                 </div>
@@ -7271,11 +7279,18 @@ let isBuilderOverrideActive = false;
             else if (scaleType === '4point') settingsStr = "4-Point";
         } else if (typeId === 'percentage') {
             typeStr = "Percentage";
-            settingsStr = "Raw Score (0-100%)";
+            const val = getBoundValue('bounds-passing-pass');
+            settingsStr = val + "% Passing Score";
         }
         
-        if (typeSpan) typeSpan.innerText = typeStr;
-        if (settingsSpan) settingsSpan.innerText = settingsStr;
+        if (typeSpan) {
+            typeSpan.style.color = 'var(--text-secondary)';
+            typeSpan.innerHTML = `<span style="color: var(--text-main);">${typeStr}</span>`;
+        }
+        if (settingsSpan) {
+            settingsSpan.style.color = 'var(--text-secondary)';
+            settingsSpan.innerHTML = `<span style="color: var(--text-main);">${settingsStr}</span>`;
+        }
     }
 
     function handleClassTopicClick(event) {
@@ -7339,19 +7354,19 @@ let isBuilderOverrideActive = false;
         if (section) classStr += section;
         
         if (classStr) {
-            classValEl.textContent = classStr;
-            classValEl.style.color = 'var(--text-main)';
-        } else {
-            classValEl.textContent = 'Empty';
             classValEl.style.color = 'var(--text-secondary)';
+            classValEl.innerHTML = `<span style="color: var(--text-main);">${classStr}</span>`;
+        } else {
+            classValEl.style.color = 'var(--text-secondary)';
+            classValEl.innerHTML = `<span>Empty</span>`;
         }
 
         if (topic) {
-            topicValEl.textContent = topic;
-            topicValEl.style.color = 'var(--text-main)';
-        } else {
-            topicValEl.textContent = 'Empty';
             topicValEl.style.color = 'var(--text-secondary)';
+            topicValEl.innerHTML = `<span style="color: var(--text-main);">${topic}</span>`;
+        } else {
+            topicValEl.style.color = 'var(--text-secondary)';
+            topicValEl.innerHTML = `<span>Empty</span>`;
         }
     }
 
@@ -7542,7 +7557,7 @@ let isBuilderOverrideActive = false;
         
         badgeContainer.innerHTML = `
             ${iconSvg}
-            <span id="timer-badge-text" style="display: inline-flex; white-space: nowrap; justify-content: flex-end; gap: 4px; text-align: right;">${html}</span>
+            <span id="timer-badge-text" style="display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; text-align: right;">${html}</span>
         `;
         
         badgeContainer.style.display = currentDisplay;
