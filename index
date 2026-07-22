@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Quiz Studio</title>
+    
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    
+    <script>
+        if (localStorage.getItem('appModeSync') === 'builder' || localStorage.getItem('appModeSync') === 'play') {
+            document.documentElement.classList.add('hide-home-initially');
+        }
+    </script>
+    <style>
+        .hide-home-initially #mode-select-view { display: none !important; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+<script>
+var eyeOpenSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
+var eyeClosedSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
+</script>
+<script src="js/vendor/heic2any.min.js"></script>
+<!--
+JSZip v3.10.1 - A JavaScript class for generating and reading zip files
+<http://stuartk.com/jszip>
+
+(c) 2009-2016 Stuart Knightley <stuart [at] stuartk.com>
+Dual licenced under the MIT license or GPLv3. See https://raw.github.com/Stuk/jszip/main/LICENSE.markdown.
+
+JSZip uses the library pako released under the MIT license :
+https://github.com/nodeca/pako/blob/main/LICENSE
+-->
+<script src="js/vendor/jszip.min.js"></script>
+</head>
+<body>
+
+<div class="quiz-container" id="main-container">
+
+    <div class="sticky-action-bar" id="sticky-action-bar" style="display:none;">
+        <button class="glass-exit-button" id="exit-button" onclick="openExitModal()" style="display:none;">
+            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            Exit
+        </button>
+        <button class="later-button" id="later-button" onclick="markQuestionLater()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock-arrow-right-icon lucide-clock-arrow-right"><path d="M12 6v6l2 1"/><path d="M13.5 21.885A10 10 0 1 1 22 12"/><path d="M14 18h8"/><path d="m18 22 4-4-4-4"/></svg>
+            Later
+        </button>
+        <button class="glass-exit-button" id="builder-back-button" onclick="openBuilderExitModal()" style="display:none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            Back
+        </button>
+        <button class="glass-exit-button glass-download-button" id="builder-download-button" onclick="openDownloadModal()" style="display:none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download-icon lucide-download"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+            Download
+        </button>
+        <button class="glass-exit-button" id="results-done-button" onclick="confirmDone()" style="display:none; margin-left: auto;">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Done
+        </button>
+    </div>
+
+    <div id="mode-select-view" class="summary-card">
+        <h2>Quiz Studio</h2>
+        <p>Select an option to start your workspace session.</p>
+        <div class="mode-choice-grid">
+            <button class="mode-choice-button button-play" onclick="goToPlayUpload()">
+                <canvas class="card-canvas-bg" data-svg-path="M8 5v14l11-7z"></canvas>
+                <div class="mode-bottom-content">
+                    <div class="mode-choice-header">
+                        <div class="mode-icon-container">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                        <span class="mode-title">Play Quiz</span>
+                    </div>
+                    <span class="mode-sub">Select a quiz and start answering.</span>
+                </div>
+            </button>
+            <button class="mode-choice-button button-check" onclick="triggerCheckAnswers()">
+                <div id="continue-checking-badge" onclick="resumeSession(event, 'check_answers')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Checking</div>
+                <canvas class="card-canvas-bg" data-svg-path="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></canvas>
+                <div class="mode-bottom-content">
+                    <div class="mode-choice-header">
+                        <div class="mode-icon-container">
+                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                        </div>
+                        <span class="mode-title">Check Answers</span>
+                    </div>
+                    <span class="mode-sub">Evaluate a student's submitted results file.</span>
+                </div>
+            </button>
+            <button class="mode-choice-button button-create" onclick="triggerCreateQuiz()">
+                <div id="continue-editing-badge" onclick="resumeSession(event, 'builder')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Editing</div>
+                <canvas class="card-canvas-bg" data-svg-path="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></canvas>
+                <div class="mode-bottom-content">
+                    <div class="mode-choice-header">
+                        <div class="mode-icon-container">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </div>
+                        <span class="mode-title">Create Quiz</span>
+                    </div>
+                    <span class="mode-sub">Build a quiz with your own questions.</span>
+                </div>
+            </button>
+            <button class="mode-choice-button button-edit" onclick="triggerBuilderUpload()">
+                <div id="continue-editing-edit-badge" onclick="resumeSession(event, 'builder')" style="display: none; position: absolute; top: 16px; right: 16px; background: rgba(0, 0, 0, 0.4); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); z-index: 10; pointer-events: auto; cursor: pointer;">Continue Editing</div>
+                <canvas class="card-canvas-bg" data-svg-path="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></canvas>
+                <div class="mode-bottom-content">
+                    <div class="mode-choice-header">
+                        <div class="mode-icon-container">
+                            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </div>
+                        <span class="mode-title">Edit Quiz</span>
+                    </div>
+                    <span class="mode-sub">Update or tweak questions.</span>
+                </div>
+            </button>
+        </div>
+
+    </div>
+    
+    <div id="upcoming-exam-pill" class="upcoming-exam-pill" style="display:none;" onclick="document.getElementById('exam-ready-modal').classList.add('active')">
+        <div class="exam-pill-content">
+            <span class="exam-pill-name" id="exam-pill-name">Quiz Name</span>
+            <span class="exam-pill-timer" id="exam-pill-timer">00:00</span>
+        </div>
+    </div>
+    
+    <input type="file" id="results-file-selector" accept=".zip" style="display:none;">
+    <input type="file" id="file-selector" accept=".zip" style="display:none;">
+    <input type="file" id="builder-file-selector" accept=".zip" style="display:none;">
+
+    <div id="quiz-game" style="display: none;">
+        <div class="header-info">
+            <div class="header-top">
+                <p class="quiz-name" id="display-name">Loading...</p>
+                <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
+                    <div id="timer-display-play" style="display: none; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 13px; color: var(--text-secondary); margin-bottom: 2px;">00:00:00</div>
+                    <p class="progress" id="progress">Question 1 of 3</p>
+                </div>
+            </div>
+            <p class="quiz-description" id="display-description"></p>
+        </div>
+        <div class="play-question-header" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px;">
+            <div style="flex: 1; min-width: 0;">
+                <h2 id="question-text" style="margin-top: 0;">Loading...</h2>
+                <p class="play-points-badge" id="play-points" style="display:none;"></p>
+                <p class="multi-select-hint" id="multi-select-hint" style="display:none; margin-top: 10px;">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    Select all answers that apply
+                </p>
+            </div>
+            <div id="play-question-image-wrap" class="option-image-wrap" style="display:none; cursor: zoom-in; width: 140px; height: 140px;" title="Nagyításhoz kattints ide">
+                <img id="play-question-image" class="option-image" src="" alt="Question Image" />
+            </div>
+        </div>
+        
+        <div class="options-container" id="options"></div>
+        <button class="next-button" id="next-button" disabled onclick="handleMainAction()">Check</button>
+    </div>
+    
+    <div id="quiz-results" class="summary-card" style="display: none;">
+        <div style="display: flex; align-items: center; justify-content: flex-start; gap: 16px; margin-bottom: 24px;">
+            <div class="score-circle" id="final-score" style="margin: 0; width: 80px; height: 80px; font-size: 24px; flex-shrink: 0;">0%</div>
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <h2 id="result-status" style="margin: 0; text-align: left;">Results</h2>
+                <p id="detailed-results" style="margin: 4px 0 0 0; text-align: left; font-size: 14px; color: var(--text-secondary);"></p>
+            </div>
+        </div>
+        
+        <div class="review-area" id="review-list"></div>
+    </div>
+
+    <div id="teacher-results-view" class="summary-card" style="display: none;">
+        <h2 id="teacher-result-title" style="margin-bottom: 4px;">Student Results</h2>
+        <p id="teacher-result-subtitle" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;"></p>
+        <div style="display: flex; align-items: center; justify-content: flex-start; gap: 16px; margin-bottom: 24px;">
+            <div class="score-circle" id="teacher-final-score" style="margin: 0; width: 80px; height: 80px; font-size: 24px; flex-shrink: 0;">0%</div>
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <h2 id="teacher-result-status" style="margin: 0; text-align: left;">Results</h2>
+                <p id="teacher-detailed-results" style="margin: 4px 0 0 0; text-align: left; font-size: 14px; color: var(--text-secondary);"></p>
+            </div>
+        </div>
+        <div class="review-area" id="teacher-review-list"></div>
+    </div>
+
+    <div id="builder-view" style="display: none;">
+        <h2>Quiz Studio Builder</h2>
+
+        <div class="builder-meta-card">
+            <div id="builder-quiz-name" class="text-input builder-meta-input" contenteditable="true" data-placeholder="TITLE"></div>
+            <div class="builder-meta-separator"></div>
+            <div id="builder-quiz-description" class="textarea-input builder-meta-textarea" contenteditable="true" data-placeholder="Summary"></div>
+        </div>
+
+        <div class="builder-meta-card options-card" id="builder-options-card">
+
+            <div class="options-content-grid">
+                <div class="options-content-wrapper">
+                    <div class="options-content" id="options-content">
+                        <div class="options-island-grid">
+                            <div class="options-island" id="island-class-topic" onclick="handleClassTopicClick(event)" style="cursor: pointer; min-height: 172px;">
+                                <div class="island-content-wrapper" style="width: 100%; display: flex; flex-direction: column;">
+                                <div class="options-island-title" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div class="island-icon-box" style="background-color: var(--apple-blue); color: #fff;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v8l3-3 3 3V2"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+                                        </div>
+                                        <span style="color: var(--text-secondary);"><span style="color: var(--text-main);">Overview</span></span>
+                                    </div>
+                                    <button id="class-topic-done-button" onclick="collapseClassTopic(event)" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
+                                </div>
+                                
+                                <div class="island-accordion-wrapper" style="display: grid; grid-template-columns: 1fr;">
+                                <div id="class-topic-collapsed-summary" class="island-accordion open-summary" style="grid-column: 1; grid-row: 1;">
+                                    <div class="island-accordion-inner" style="display: flex; flex-direction: column; gap: 12px;">
+                                        <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Class</span>
+                                            <span id="summary-class-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;"><span>Empty</span></span>
+                                        </div>
+                                        <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Topic</span>
+                                            <span id="summary-topic-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;"><span>Empty</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="class-topic-fields" class="island-accordion" style="grid-column: 1; grid-row: 1;">
+                                    <div class="island-accordion-inner">
+                                    <div class="topic-grid-1">
+                                        <div>
+                                            <input type="text" id="meta-school" class="text-input" placeholder="School" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
+                                        </div>
+                                        <div>
+                                            <input type="text" id="meta-classroom" class="text-input" placeholder="Room" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
+                                        </div>
+                                        <div>
+                                            <input type="text" id="meta-grade" class="text-input" placeholder="Grade" oninput="saveBuilderState(); updateClassTopicSummary();" style="margin-bottom: 0; padding: 10px 10px;">
+                                        </div>
+                                        <div>
+                                            <input type="text" id="meta-section" class="text-input" placeholder="Section" oninput="saveBuilderState(); updateClassTopicSummary();" style="margin-bottom: 0; padding: 10px 10px;">
+                                        </div>
+                                    </div>
+                                    <div class="topic-grid-2">
+                                        <div>
+                                            <input type="text" id="meta-subject" class="text-input" placeholder="Subject" oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
+                                        </div>
+                                        <div>
+                                            <input type="text" id="meta-topic" class="text-input" placeholder="Topic" oninput="saveBuilderState(); updateClassTopicSummary();" style="margin-bottom: 0; padding: 10px 10px;">
+                                        </div>
+                                        <div>
+                                            <input type="text" id="meta-version" class="text-input" placeholder="Ver." oninput="saveBuilderState();" style="margin-bottom: 0; padding: 10px 10px;">
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="options-island" id="island-grading" onclick="handleGradingClick(event)" style="cursor: pointer; overflow: visible; min-height: 172px;">
+                                <div class="island-content-wrapper" style="width: 100%; display: flex; flex-direction: column;">
+                                <div class="options-island-title" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div class="island-icon-box" style="background-color: #34C759; color: #fff;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>
+                                        </div>
+                                        <span style="color: var(--text-secondary);"><span style="color: var(--text-main);">Grading</span></span>
+                                    </div>
+                                    <button id="grading-done-button" onclick="collapseGrading(event)" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
+                                </div>
+
+                                <div class="island-accordion-wrapper" style="display: grid; grid-template-columns: 1fr;">
+                                <div id="grading-collapsed-summary" class="island-accordion open-summary" style="grid-column: 1; grid-row: 1;">
+                                    <div class="island-accordion-inner" style="display: flex; flex-direction: column; gap: 12px;">
+                                        <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Grading Type</span>
+                                            <span id="summary-grading-type-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;"><span style="color: var(--text-main);">Pass or Fail</span></span>
+                                        </div>
+                                        <div style="font-size: 14px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Settings</span>
+                                            <span id="summary-grading-settings-val" style="color: var(--text-secondary); font-weight: 500; font-size: 15px;"><span style="color: var(--text-main);">60% Passing Score</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="grading-fields" class="island-accordion" style="grid-column: 1; grid-row: 1;">
+                                    <div class="island-accordion-inner">
+                                    <div class="access-wrapper">
+                                        <div class="access-sidebar-container">
+                                            <div class="access-segmented-control" id="grading-segmented-control" style="--idx: 0;">
+                                                <div class="access-slider" id="grading-slider"></div>
+                                                <button class="access-segmented-button active" id="grading-button-pass_fail" onclick="selectGradingType('pass_fail')">Pass or Fail</button>
+                                                <button class="access-segmented-button" id="grading-button-grouped_grades" onclick="selectGradingType('grouped_grades')">Grouped</button>
+                                                <button class="access-segmented-button" id="grading-button-percentage" onclick="selectGradingType('percentage')">Percentage</button>
+                                            </div>
+                                        </div>
+                                        <div id="grading-right-panel" style="position: relative; height: 100%; min-width: 0;">
+                                            <div id="grade-slider-wrapper" style="margin-bottom: 0;">
+                                                <label class="field-label" id="grade-label">Passing Score</label>
+                                                <div style="margin-top: 8px;">
+                                                    <div class="grade-capsule grade-success passing-capsule" id="capsule-passfail" onclick="openScaleStepperPopover('passing', 'pass', event)" style="padding: 0 16px; gap: 8px;">
+                                                        <span style="font-size: 15px; font-weight: 500; color: var(--text-main);">Score at least</span>
+                                                        <div style="width: 96px; display: flex; justify-content: center; height: 100%; align-items: center;">
+                                                            <span class="grade-capsule-val" id="bounds-passing-pass" data-val="60">60%</span>
+                                                        </div>
+                                                        <span style="font-size: 15px; font-weight: 500; color: var(--text-main);">to pass.</span>
+                                                    </div>
+                                                    <div class="grade-capsule grade-success passing-capsule" id="capsule-percentage" onclick="openScaleStepperPopover('percentage', 'pass', event)" style="padding: 0 16px; gap: 8px; display: none;">
+                                                        <span style="font-size: 15px; font-weight: 500; color: var(--text-main);">Score at least</span>
+                                                        <div style="width: 96px; display: flex; justify-content: center; height: 100%; align-items: center;">
+                                                            <span class="grade-capsule-val" id="bounds-percentage-pass" data-val="50">50%</span>
+                                                        </div>
+                                                        <span style="font-size: 15px; font-weight: 500; color: var(--text-main);">to pass.</span>
+                                                    </div>
+                                                </div>
+                                                <p id="grade-percentage-text" style="display: none; font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Students receive their percentage score.</p>
+                                                <p id="grade-passfail-text" style="display: none; font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Students receive their Pass or Fail status only.</p>
+                                            </div>
+                                            <style>
+                    .grade-capsule {
+                        background: var(--bg-card);
+                        border-radius: 999px;
+                        padding: 0 0 0 12px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 8px;
+                        cursor: pointer;
+                        user-select: none;
+                        -webkit-user-select: none;
+                        width: fit-content;
+                        box-sizing: border-box;
+                        min-width: 86px;
+                        height: 42px;
+                        border: 1px solid var(--border-color, rgba(0,0,0,0.08));
+                    }
+                    .stepper-container {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        background: var(--sel-green, #34c759);
+                        border-radius: 999px;
+                        padding: 0 4px;
+                        height: 100%;
+                        margin: 0 -1px 0 25px; /* offset for inactive state */
+                        width: 46px; /* inactive width */
+                        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                    }
+                    .grade-capsule:hover .stepper-container,
+                    .grade-capsule.stepper-expanded .stepper-container {
+                        margin-left: 0px; /* shift left to compensate */
+                        width: 96px; /* active width (+50px) */
+                        transform: scale(1.05);
+                        box-shadow: 0 4px 12px var(--shadow-color, rgba(52, 199, 89, 0.4));
+                    }
+                    .stepper-container .grade-capsule-val {
+                        position: absolute;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        color: #ffffff;
+                        font-size: 15px;
+                        font-weight: 600;
+                        pointer-events: none;
+                    }
+                    .stepper-container .stepper-btn {
+                        border-radius: 50%;
+                        width: 0px;
+                        height: 26px;
+                        border: none;
+                        background: transparent;
+                        cursor: pointer;
+                        color: #ffffff;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 0;
+                        overflow: hidden;
+                        transform: scale(0.5);
+                        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                    }
+                    .grade-capsule:hover .stepper-btn,
+                    .grade-capsule.stepper-expanded .stepper-btn {
+                        width: 26px;
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                    .stepper-container .stepper-btn:hover,
+                    .stepper-container .stepper-btn:active {
+                        background-color: transparent !important;
+                        color: #ffffff !important;
+                    }
+
+                    .grade-capsule-label {
+                        color: var(--text-main);
+                        font-weight: 600;
+                        font-size: 15px;
+                    }
+                    .grade-capsule-val {
+                        color: var(--text-secondary);
+                        font-size: 15px;
+                        font-weight: 500;
+                    }
+                    .grade-capsule.grade-success .grade-capsule-label {
+                        color: var(--color-success);
+                    }
+                    .grade-capsule.grade-warning .grade-capsule-label {
+                        color: var(--color-warning);
+                    }
+                    .grade-capsule.grade-error .grade-capsule-label {
+                        color: var(--color-error);
+                    }
+                </style>
+                <div id="grade-grouped-container" style="margin-bottom: 0; display: none;">
+                    <div style="position: relative; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;" id="grouped-scale-selector-wrapper">
+                        <label class="field-label" id="scale-type-label" style="margin-bottom: 0;">Scale Type</label>
+                        <button id="scale-type-popover-btn" onclick="toggleScaleTypePopover(event)" style="border: none; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); white-space: nowrap;">
+                            <span id="current-scale-type-val" data-val="letter">Letter</span>
+                        </button>
+                    </div>
+                    
+                    <div id="scale-configs-wrapper">
+                        <div id="scale-config-letter" class="scale-config-container active">
+                            <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('letter', 'a', event)"><span class="grade-capsule-label">A</span><span class="grade-capsule-val" id="bounds-letter-a" data-val="90">90%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('letter', 'b', event)"><span class="grade-capsule-label">B</span><span class="grade-capsule-val" id="bounds-letter-b" data-val="80">80%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('letter', 'c', event)"><span class="grade-capsule-label">C</span><span class="grade-capsule-val" id="bounds-letter-c" data-val="70">70%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('letter', 'd', event)"><span class="grade-capsule-label">D</span><span class="grade-capsule-val" id="bounds-letter-d" data-val="60">60%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('letter', 'f', event)"><span class="grade-capsule-label">F</span><span class="grade-capsule-val" id="bounds-letter-f" data-val="50">50%</span></div>
+                            </div>
+                        </div>
+
+                        <div id="scale-config-5point" class="scale-config-container">
+                            <div style="display: grid; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('5point', '5', event)"><span class="grade-capsule-label">5</span><span class="grade-capsule-val" id="bounds-5p-5" data-val="90">90%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('5point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-5p-4" data-val="80">80%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('5point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-5p-3" data-val="70">70%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('5point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-5p-2" data-val="60">60%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('5point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-5p-1" data-val="50">50%</span></div>
+                            </div>
+                        </div>
+
+                        <div id="scale-config-10point" class="scale-config-container">
+                            <div style="display: grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '10', event)"><span class="grade-capsule-label">10</span><span class="grade-capsule-val" id="bounds-10p-10" data-val="95">95%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '9', event)"><span class="grade-capsule-label">9</span><span class="grade-capsule-val" id="bounds-10p-9" data-val="85">85%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('10point', '8', event)"><span class="grade-capsule-label">8</span><span class="grade-capsule-val" id="bounds-10p-8" data-val="75">75%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '7', event)"><span class="grade-capsule-label">7</span><span class="grade-capsule-val" id="bounds-10p-7" data-val="65">65%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '6', event)"><span class="grade-capsule-label">6</span><span class="grade-capsule-val" id="bounds-10p-6" data-val="55">55%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('10point', '5', event)"><span class="grade-capsule-label">5</span><span class="grade-capsule-val" id="bounds-10p-5" data-val="45">45%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-10p-4" data-val="35">35%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-10p-3" data-val="25">25%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-10p-2" data-val="15">15%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('10point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-10p-1" data-val="5">5%</span></div>
+                            </div>
+                        </div>
+
+                        <div id="scale-config-4point" class="scale-config-container">
+                            <div style="display: grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 12px; row-gap: 12px; grid-auto-columns: minmax(0, 1fr); width: 100%;">
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('4point', '4', event)"><span class="grade-capsule-label">4</span><span class="grade-capsule-val" id="bounds-4p-4" data-val="90">90%</span></div>
+                                <div class="grade-capsule grade-success" onclick="openScaleStepperPopover('4point', '3', event)"><span class="grade-capsule-label">3</span><span class="grade-capsule-val" id="bounds-4p-3" data-val="80">80%</span></div>
+                                <div class="grade-capsule grade-warning" onclick="openScaleStepperPopover('4point', '2', event)"><span class="grade-capsule-label">2</span><span class="grade-capsule-val" id="bounds-4p-2" data-val="70">70%</span></div>
+                                <div class="grade-capsule grade-error" onclick="openScaleStepperPopover('4point', '1', event)"><span class="grade-capsule-label">1</span><span class="grade-capsule-val" id="bounds-4p-1" data-val="60">60%</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0;">Set the minimum score required for each level.</p>
+                </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="options-island full-width" id="island-timer" onclick="toggleOptionionsIsland('island-timer', event)">
+                                <div class="options-island-title" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div class="island-icon-box" style="background-color: #5856D6; color: #fff;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                        </div>
+                                        <span>Time & Access</span>
+                                    </div>
+                                    <button id="timer-done-button" style="display: none; background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); border: none; border-radius: 12px; padding: 4px 12px; font-size: 13px; font-weight: 600; cursor: pointer;">Done</button>
+                                </div>
+                                
+                                <div class="island-accordion-wrapper" style="display: grid; grid-template-columns: 1fr;">
+                                <div id="timer-collapsed-summary" class="island-accordion open-summary" style="grid-column: 1; grid-row: 1;">
+                                    <div class="island-accordion-inner" style="display: flex; justify-content: flex-end;">
+                                        <div class="timer-badge badge-indefinite" id="timer-badge">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                            <span id="timer-badge-text" style="display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; text-align: right;">Indefinite</span>
+                                        </div>
+                                    </div>
+                                </div>
+                
+                <div id="timer-fields" class="island-accordion" style="grid-column: 1; grid-row: 1;">
+                <div class="island-accordion-inner">
+                    <div class="access-wrapper">
+                        
+                        <!-- Left Sidebar -->
+                        <div class="access-sidebar-container">
+                                <button class="grading-sidebar-button" id="access-button-time-limit" onclick="toggleTimeLimitPopover(event)" style="display:block; text-align: left; background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 0; width: 100%;">
+                                    <div id="time-limit-btn-inner">
+                                        <span style="font-weight: 500; color: var(--text-main); width: 100%; text-align: left;">Time Limit</span>
+                                        <span id="sidebar-time-limit-val" style="font-size: 11px; background: rgba(0,122,255,0.1); padding: 4px 8px; border-radius: 6px; font-weight: 600; color: var(--apple-blue);">None</span>
+                                    </div>
+                                </button>
+                                
+                                <!-- Time Limit Popover -->
+                                <div id="access-time-limit-view" class="time-limit-popover-container" onclick="event.stopPropagation()">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <div id="duration-hover-container" style="position: relative; height: 28px; display: flex; align-items: center; cursor: pointer; border-radius: 14px; overflow: hidden; padding: 0 10px;"
+                                             onmouseover="document.getElementById('duration-label-text').style.opacity='0'; document.getElementById('duration-indefinite-button').style.opacity='1';"
+                                             onmouseout="document.getElementById('duration-label-text').style.opacity='1'; document.getElementById('duration-indefinite-button').style.opacity='0';"
+                                             onclick="resetDurationToIndefinite(event)">
+                                            <span id="duration-label-text" style="position: relative; transition: opacity 0.2s; font-size: 16px; font-weight: 400; color: var(--text-main); pointer-events: none; white-space: nowrap;">Duration</span>
+                                            <span id="duration-indefinite-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 400; border-radius: 14px; pointer-events: none;">Indefinite</span>
+                                        </div>
+                                        <button class="icon-button" onclick="closeTimeLimitPopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                                        </button>
+                                    </div>
+                                    <style>
+                                        #timer-h .timer-item, #timer-h-fg .timer-item-fg { padding-right: 46px; box-sizing: border-box; text-align: center; }
+                                        #timer-m .timer-item, #timer-m-fg .timer-item-fg { padding-right: 34px; box-sizing: border-box; text-align: center; }
+                                        #timer-s .timer-item, #timer-s-fg .timer-item-fg { padding-right: 26px; box-sizing: border-box; text-align: center; }
+                                    </style>
+                                    <div class="timer-picker-container" id="timer-picker-container" style="display: flex; justify-content: center; margin-bottom: 0;">
+                                        <div style="position: relative; display: flex; align-items: center; margin-right: 6px; height: 100%;">
+                                            <div class="timer-group" style="width: 74px; flex: none;">
+                                                <div class="timer-column" id="timer-h" onscroll="handleTimerScroll(this, 'h')"></div>
+                                                <div class="timer-column-fg-wrapper">
+                                                    <div class="timer-column-fg" id="timer-h-fg"></div>
+                                                </div>
+                                            </div>
+                                            <div class="timer-label" style="position: absolute; left: 30px; pointer-events: none; color: var(--text-secondary); font-size: 14px; z-index: 10;">hours</div>
+                                        </div>
+                                        <div style="position: relative; display: flex; align-items: center; margin-right: 6px; height: 100%;">
+                                            <div class="timer-group" style="width: 62px; flex: none;">
+                                                <div class="timer-column" id="timer-m" onscroll="handleTimerScroll(this, 'm')"></div>
+                                                <div class="timer-column-fg-wrapper">
+                                                    <div class="timer-column-fg" id="timer-m-fg"></div>
+                                                </div>
+                                            </div>
+                                            <div class="timer-label" style="position: absolute; left: 30px; pointer-events: none; color: var(--text-secondary); font-size: 14px; z-index: 10;">min</div>
+                                        </div>
+                                        <div style="position: relative; display: flex; align-items: center; height: 100%;">
+                                            <div class="timer-group" style="width: 54px; flex: none;">
+                                                <div class="timer-column" id="timer-s" onscroll="handleTimerScroll(this, 's')"></div>
+                                                <div class="timer-column-fg-wrapper">
+                                                    <div class="timer-column-fg" id="timer-s-fg"></div>
+                                                </div>
+                                            </div>
+                                            <div class="timer-label" style="position: absolute; left: 30px; pointer-events: none; color: var(--text-secondary); font-size: 14px; z-index: 10;">sec</div>
+                                        </div>
+                                    </div>
+                                    <p style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0; line-height: 1.4; text-align: left; text-wrap: balance;">Limit the total time a student has to complete the quiz once started.</p>
+                                </div>
+                            
+                            <!-- Segmented Control -->
+                            <div class="access-segmented-control" id="access-segmented-control" style="--idx: 0;">
+                                <div class="access-slider" id="access-slider"></div>
+                                <button class="access-segmented-button active" id="access-button-indefinite" onclick="selectAccessMode('indefinite')">Indefinite</button>
+                                <button class="access-segmented-button" id="access-button-deadline" onclick="selectAccessMode('deadline')">Deadline</button>
+                                <button class="access-segmented-button" id="access-button-exam" onclick="selectAccessMode('exam')">Scheduled</button>
+                            </div>
+                        </div>
+                        <div id="access-right-panel" style="position: relative; height: 100%; min-width: 0;">
+                            
+                            <!-- Calendar View -->
+                            <div id="access-calendar-view" style="display: none; flex-direction: column; height: 100%;">
+                                <div id="access-calendar-header" class="calendar-header-flex">
+                                    <div style="font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                                        <button class="icon-button" onclick="changeCalendarMonth(-1)" style="padding: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-main);">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                        </button>
+                                        <div id="calendar-month-year-container" style="position: relative; width: 135px; flex-shrink: 0; padding: 0 8px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 12px; overflow: hidden;"
+                                             onmouseover="document.getElementById('calendar-month-year').style.opacity='0'; document.getElementById('calendar-today-button').style.opacity='1';"
+                                             onmouseout="document.getElementById('calendar-month-year').style.opacity='1'; document.getElementById('calendar-today-button').style.opacity='0';"
+                                             onclick="goToToday(event)">
+                                            <span id="calendar-month-year" style="position: relative; transition: opacity 0.2s; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; color: var(--text-main); pointer-events: none;">Month 2026</span>
+                                            <span id="calendar-today-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 400; border-radius: 12px; pointer-events: none;">Today</span>
+                                        </div>
+                                        <button class="icon-button" onclick="changeCalendarMonth(1)" style="padding: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-main);">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                        </button>
+                                    </div>
+                                    <div id="calendar-time-selectors" style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
+                                        <!-- Time popover trigger -->
+                                        <div style="position: relative;">
+                                            <button id="calendar-time-button" onclick="toggleTimePopover(event, 'start')" style="border: none; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); white-space: nowrap;">12:00</button>
+                                        </div>
+                                        <div id="calendar-time-button-end-container" style="display: none; position: relative; align-items: center; gap: 8px;">
+                                            <span style="font-size: 12px; color: var(--text-secondary);">to</span>
+                                            <button id="calendar-time-button-end" onclick="toggleTimePopover(event, 'end')" style="border: none; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); white-space: nowrap;">13:00</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="calendar-grid-header" style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">
+                                    <div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>
+                                </div>
+                                <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center;">
+                                    <!-- Days injected here -->
+                                </div>
+                                
+                                <p id="calendar-hint-text" style="font-size: 13px; color: var(--text-secondary); margin: 16px 0 0 0; line-height: 1.4;">Select a deadline day.</p>
+                            </div>
+                            
+                            <!-- Indefinite View -->
+                            <div id="access-indefinite-view" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; color: var(--text-secondary);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock-alert" style="width: 32px; height: 32px; margin-bottom: 12px; opacity: 0.5;"><path d="M12 6v6l4 2"/><path d="M20 12v5"/><path d="M20 21h.01"/><path d="M21.25 8.2A10 10 0 1 0 16 21.16"/></svg>
+                                <p style="font-size: 14px; margin: 0; line-height: 1.4; max-width: 200px;">The quiz is open indefinitely.</p>
+                            </div>
+                            
+                            <!-- Time Limit View relocated to Popover -->
+                            
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+                            </div>
+                            <div class="options-island" id="island-random-questions">
+                                <div class="options-island-row" style="gap: 16px;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
+                                        <div class="options-island-title" style="margin-bottom: 0;">
+                                            <div class="island-icon-box" style="background-color: var(--apple-blue); color: #fff;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shuffle-icon lucide-shuffle"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22"/><path d="M2 6h1.972a4 4 0 0 1 3.6 2.2"/><path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"/></svg>
+                                            </div>
+                                            Randomize Questions
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; display: block;">Allow shuffling the order of questions. Students cannot change this in Exam mode.</span>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" id="random-questions-toggle" class="ios-toggle" onchange="saveBuilderState();">
+                                </div>
+                            </div>
+                            <div class="options-island" id="island-random-answers">
+                                <div class="options-island-row" style="gap: 16px;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
+                                        <div class="options-island-title" style="margin-bottom: 0;">
+                                            <div class="island-icon-box" style="background-color: #AF52DE; color: #fff;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up-icon lucide-arrow-down-up"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
+                                            </div>
+                                            Randomize Answers
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; display: block;">Allow shuffling the order of answers. Students cannot change this in Exam mode.</span>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" id="random-answers-toggle" class="ios-toggle" onchange="saveBuilderState();">
+                                </div>
+                            </div>
+                            <div class="options-island full-width" id="island-later">
+                                <div class="options-island-row" style="gap: 16px;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
+                                        <div class="options-island-title" style="margin-bottom: 0;">
+                                            <div class="island-icon-box" style="background-color: rgba(255, 149, 0, 0.15); color: #FF9500;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l2 1"/><path d="M13.5 21.885A10 10 0 1 1 22 12"/><path d="M14 18h8"/><path d="m18 22 4-4-4-4"/></svg>
+                                            </div>
+                                            Get Back Later
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; display: block;">During the test you can return once to questions you marked as "Later".</span>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" id="later-toggle" class="ios-toggle" onchange="saveBuilderState();">
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <hr class="builder-meta-divider">
+
+        <div class="builder-question-list" id="builder-question-list"></div>
+
+        <div id="builder-error-display" class="download-error-banner"></div>
+        <div id="builder-success-display" class="success-banner"></div>
+    </div>
+
+    <div class="bottom-action-bar" id="bottom-action-bar">
+            <div class="segmented-control" id="control-container">
+                <input type="radio" name="mode" id="button-customize" checked>
+                <input type="radio" name="mode" id="button-select">
+
+                <div class="labels-container">
+                    <label for="button-customize" class="segment">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <g transform="translate(0.13, 2.55) scale(0.9)">
+                                <path d="m 2,16 4.039,-9.69 a 0.5,0.5 0 0 1 0.923,0 L 11,16" stroke-width="2" />
+                                <path d="M 3.304,13 H 9.696" stroke-width="2" />
+                            </g>
+                            <g transform="translate(8.84, 5.27) scale(0.595)">
+                                <path d="M 17,22 H 16 A 4,4 0 0 1 12,18 V 6 a 4,4 0 0 1 4,-4 h 1" stroke-width="1.2" />
+                                <path d="m 7,22 h 1 a 4,4 0 0 0 4,-4" stroke-width="1.2" />
+                                <path d="m 7,2 h 1 a 4,4 0 0 1 4,4" stroke-width="1.2" />
+                            </g>
+                        </svg>
+                    </label>
+                    <label for="button-select" class="segment select-segment">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="6" width="22" height="12" rx="2" stroke-width="1.5" />
+                            <polyline points="3.5,11.5 6,14 11,9" stroke-width="1.5" />
+                            <line x1="13.5" y1="9.5" x2="20.5" y2="9.5" stroke-width="1.5" />
+                            <line x1="13.5" y1="12" x2="20.5" y2="12" stroke-width="1.5" />
+                            <line x1="13.5" y1="14.5" x2="20.5" y2="14.5" stroke-width="1.5" />
+                        </svg>
+                    </label>
+                </div>
+
+                <div class="selector" id="selector">
+                    <div class="selector-inner" id="selector-inner">
+                        <label for="button-customize" class="segment active-segment">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <g transform="translate(0.13, 2.55) scale(0.9)">
+                                    <path d="m 2,16 4.039,-9.69 a 0.5,0.5 0 0 1 0.923,0 L 11,16" stroke-width="2" />
+                                    <path d="M 3.304,13 H 9.696" stroke-width="2" />
+                                </g>
+                                <g transform="translate(8.84, 5.27) scale(0.595)">
+                                    <path d="M 17,22 H 16 A 4,4 0 0 1 12,18 V 6 a 4,4 0 0 1 4,-4 h 1" stroke-width="1.2" />
+                                    <path d="m 7,22 h 1 a 4,4 0 0 0 4,-4" stroke-width="1.2" />
+                                    <path d="m 7,2 h 1 a 4,4 0 0 1 4,4" stroke-width="1.2" />
+                                </g>
+                            </svg>
+                        </label>
+                        <label for="button-select" class="segment active-segment select-segment">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="6" width="22" height="12" rx="2" stroke-width="1.5" />
+                                <polyline points="3.5,11.5 6,14 11,9" stroke-width="1.5" />
+                                <line x1="13.5" y1="9.5" x2="20.5" y2="9.5" stroke-width="1.5" />
+                                <line x1="13.5" y1="12" x2="20.5" y2="12" stroke-width="1.5" />
+                                <line x1="13.5" y1="14.5" x2="20.5" y2="14.5" stroke-width="1.5" />
+                            </svg>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="next-button" id="results-download-bottom-button" onclick="submitResults()" style="display:none; margin: 0; box-shadow: 0 4px 16px rgba(0,0,0,0.3); width: 100%;">Submit Results</button>
+            <div class="add-button" id="floating-add-question-button" aria-label="Add item" style="position: relative;" onclick="openAddQuestionPopover(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; pointer-events: none;"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+        </div>
+</div>
+
+<div class="modal-overlay" id="session-conflict-modal" onclick="if(event.target===this) closeSessionConflictModal()">
+    <div class="apple-alert" style="width: 320px;">
+        <div class="alert-content">
+            <h3 class="alert-title">Session in Progress</h3>
+            <p class="alert-message" id="session-conflict-message">You have a session in progress.</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-button" id="session-conflict-button-new" style="background-color: #ffffff; color: var(--apple-blue);">Upload New</button>
+            <button class="alert-button primary" id="session-conflict-button-continue">Continue</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="done-confirm-modal" onclick="if(event.target===this) closeDoneConfirmModal()">
+    <div class="apple-alert">
+        <div class="alert-content">
+            <h3 class="alert-title" id="done-confirm-title">Finish Session?</h3>
+            <p class="alert-message" id="done-confirm-message">Are you sure you want to finish?</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-button secondary" onclick="closeDoneConfirmModal()">Cancel</button>
+            <button class="alert-button destructive" onclick="executeDoneConfirm()">Done</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="exit-modal">
+    <div class="apple-alert">
+        <div class="alert-content">
+            <h3 class="alert-title">Exit Quiz?</h3>
+            <p class="alert-message">Are you sure you want to leave? Your current progress in this session will be lost.</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-button cancel-button" onclick="closeExitModal()">Cancel</button>
+            <button class="alert-button destructive" onclick="confirmExit()">Exit</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="builder-exit-modal">
+    <div class="apple-alert">
+        <div class="alert-content">
+            <h3 class="alert-title">Leave Builder?</h3>
+            <p class="alert-message">Any questions you haven't downloaded yet will be lost if you leave now.</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-button cancel-button" onclick="closeBuilderExitModal()">Cancel</button>
+            <button class="alert-button destructive" onclick="confirmBuilderExit()">Leave</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="download-modal">
+    <div class="apple-alert">
+        <div class="alert-content" id="download-modal-box">
+            <h3 class="alert-title">Export Settings</h3>
+            <div style="margin-top: 16px;">
+                <select id="download-mode-select" class="text-input" style="cursor: pointer; width: 100%;" onchange="updateDownloadFields()">
+                    <option value="open">Open (No Protection)</option>
+                    <option value="practice">Practice Mode</option>
+                    <option value="exam">Quiz Mode</option>
+                </select>
+            </div>
+            <div id="download-fields-container" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, margin-top 0.35s cubic-bezier(0.25, 1, 0.5, 1); margin-top: 0px; flex-direction: column; gap: 12px; display: flex;">
+                <div style="text-align: left; font-size: 13px; font-weight: 600; color: var(--text-main); opacity: 0.7; margin-top: 0px; margin-bottom: -4px; padding-left: 2px;">Passwords</div>
+                <div class="password-wrapper">
+                    <input type="password" id="download-play-password" class="text-input" placeholder="Play Password" oninput="this.classList.remove('input-error')">
+                    <button class="password-eye-button" onclick="togglePasswordVisibility('download-play-password', this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </button>
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="download-builder-password" class="text-input" placeholder="Builder Password" oninput="this.classList.remove('input-error')">
+                    <button class="password-eye-button" onclick="togglePasswordVisibility('download-builder-password', this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="download-error-message" style="color: var(--error-red); font-size: 13px; margin-top: 8px; display: none; text-align: center;"></div>
+            <div id="download-progress-message" style="display: none; margin-top: 12px; align-items: center; justify-content: center; gap: 8px; color: var(--apple-blue); font-size: 13px; font-weight: 500;">
+                <svg viewBox="0 0 50 50" style="width: 16px; height: 16px; animation: spin-rotate 2s linear infinite;">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke-width="4" stroke="currentColor" stroke-linecap="round" style="animation: spin-dash 1.5s ease-in-out infinite;"></circle>
+                </svg>
+                Analyzing and optimizing package size...
+            </div>
+        </div>
+        <div class="alert-buttons">
+            <button id="download-cancel-button" class="alert-button secondary" onclick="closeDownloadModal()">Cancel</button>
+            <button id="download-confirm-button" class="alert-button primary" onclick="confirmDownloadModal()">Download</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="play-setup-modal">
+    <div class="apple-alert" id="play-setup-box" style="transition: height 0.3s ease; overflow: hidden; position: relative; max-width: 340px; margin: 0 auto;">
+        
+        <div id="step-password" style="display: none;">
+            <div class="alert-content">
+                <h3 class="alert-title">Protected Quiz</h3>
+                <p class="alert-message">This quiz is password protected. Enter the password to open it:</p>
+                <div class="password-wrapper">
+                    <input type="password" id="prompt-password-input" class="text-input" placeholder="Password">
+                    <button class="password-eye-button" onclick="togglePasswordVisibility('prompt-password-input', this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </button>
+                </div>
+                <p id="password-error-message" style="color: var(--error-red); font-size: 13px; margin: 4px 0 0 4px; display: none;">Incorrect password.</p>
+            </div>
+            <div class="alert-buttons">
+                <button class="alert-button secondary" onclick="cancelPasswordPrompt()">Cancel</button>
+                <button class="alert-button primary" onclick="submitPasswordPrompt()">Open</button>
+            </div>
+        </div>
+
+        <div id="step-config" style="display: none;">
+            <div class="alert-content">
+                <h3 class="alert-title" id="config-quiz-name-modal" style="margin-bottom: 4px;">Quiz Title</h3>
+                <p class="alert-message" id="config-quiz-description-modal" style="margin-bottom: 16px;">Description</p>
+                
+                <p style="text-align: left; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 14px;">Question Order</p>
+                <div class="options-container modal-button-bg" style="margin-bottom: 12px; box-shadow: none;">
+                    <button class="option-button selected" id="button-seq" onclick="selectMode('seq')">
+                        <div style="padding-left: 26px;">Sequential</div>
+                    </button>
+                    <button class="option-button" id="button-random" onclick="selectMode('random')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg id="random-chevron" viewBox="0 0 24 24" style="width: 18px; height: 18px; transition: transform 0.3s ease; fill: currentColor;"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                            <span>Randomized</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div id="random-options-wrapper" style="max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.3s ease, margin-bottom 0.3s ease, opacity 0.3s ease; margin-bottom: 0;">
+                    <div id="random-options-container" class="modal-button-bg" style="border-radius: 12px; padding: 12px; text-align: left;">
+                        <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; cursor: pointer;">
+                            <span style="font-size: 14px; font-weight: 500; color: var(--text-main);">Randomize Questions</span>
+                            <input type="checkbox" id="toggle-random-questions" class="ios-toggle" checked onchange="handleRandomToggle(this, 'questions')">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                            <span style="font-size: 14px; font-weight: 500; color: var(--text-main);">Randomize Answers</span>
+                            <input type="checkbox" id="toggle-random-answers" class="ios-toggle" checked onchange="handleRandomToggle(this, 'answers')">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="alert-buttons">
+                <button class="alert-button secondary" onclick="cancelConfig()">Cancel</button>
+                <button class="alert-button primary" onclick="startQuiz()">Start Quiz</button>
+            </div>
+        </div>
+
+        <div id="step-student" style="display: none;">
+            <div class="alert-content">
+                <h3 class="alert-title">Student Identification</h3>
+                <p class="alert-message" id="student-info-message">Please enter your name to continue.</p>
+                <div style="margin-top: 16px;">
+                    <input type="text" id="student-name-input" class="text-input" placeholder="Your Name">
+                </div>
+                <p id="student-error-message" style="color: var(--error-red); font-size: 13px; margin: 4px 0 0 4px; display: none;">Name is required for this quiz.</p>
+            </div>
+            <div class="alert-buttons">
+                <button class="alert-button secondary" onclick="cancelStudentInfo()">Cancel</button>
+                <button class="alert-button primary" onclick="submitStudentInfo()">Continue</button>
+            </div>
+        </div>
+
+        <div id="step-exam-register" style="display: none;">
+            <div class="alert-content">
+                <h3 class="alert-title" id="step-exam-register-title">Register to Quiz</h3>
+                <p class="alert-description">Would you like to register and wait for this quiz to begin?</p>
+            </div>
+            <div class="alert-buttons">
+                <button class="alert-button secondary" onclick="dismissUpcomingExam()">Dismiss</button>
+                <button class="alert-button primary" onclick="confirmRegisterUpcomingExam()" style="font-weight: 600;">Register</button>
+            </div>
+        </div>
+
+        <div id="step-exam-ready" style="display: none;">
+            <div class="alert-content">
+                <h3 class="alert-title">Quiz is Ready</h3>
+                <p class="alert-description" id="step-exam-ready-description">The quiz is starting now.</p>
+            </div>
+            <div class="alert-buttons">
+                <button class="alert-button secondary" onclick="dismissUpcomingExam()">Dismiss</button>
+                <button id="button-join-exam-modal" class="alert-button primary" onclick="joinUpcomingExam()" style="font-weight: 600;">Join</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="scale-type-picker-popover" class="time-popover apple-alert" onclick="event.stopPropagation()" style="width: max-content; padding: 16px 14px; margin: 0;">
+    <style>
+        #timer-scale .timer-item, #timer-scale-fg .timer-item-fg { text-align: left; padding-left: 20px; box-sizing: border-box; }
+    </style>
+    <div class="time-popover-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-size: 16px; font-weight: 400; color: var(--text-main); margin-left: 10px;">Scale Type</div>
+        <button class="icon-button" onclick="closeScaleTypePopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+        </button>
+    </div>
+    <div class="time-popover-accordion">
+        <div style="min-height: 0; overflow: hidden;">
+            <div class="timer-picker-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 0; padding-top: 4px;">
+                <div class="time-dials-wrapper" style="display: flex; width: 100%;">
+                    <div class="timer-group time-dials" style="flex: 1; text-align: center;">
+                        <div class="timer-column" id="timer-scale" onscroll="handleTimerScroll(this, 'scale')"></div>
+                        <div class="timer-column-fg-wrapper">
+                            <div class="timer-column-fg" id="timer-scale-fg"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="scale-popover-transition-label"></button>
+</div>
+
+<div id="time-picker-popover" class="time-popover apple-alert" onclick="event.stopPropagation()" style="width: max-content; padding: 16px 14px; margin: 0;">
+    <div class="time-popover-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div id="time-picker-title-container" style="position: relative; height: 28px; display: flex; align-items: center; cursor: pointer; border-radius: 14px; overflow: hidden; padding: 0 10px;"
+             onmouseover="document.getElementById('time-picker-title-text').style.opacity='0'; document.getElementById('time-picker-now-button').style.opacity='1';"
+             onmouseout="document.getElementById('time-picker-title-text').style.opacity='1'; document.getElementById('time-picker-now-button').style.opacity='0';"
+             onclick="goToNow()">
+            <span id="time-picker-title-text" style="position: relative; transition: opacity 0.2s; font-size: 16px; font-weight: 400; color: var(--text-main); pointer-events: none; white-space: nowrap;">Select Time</span>
+            <span id="time-picker-now-button" style="position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 0.2s; background: var(--apple-blue); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 400; border-radius: 14px; pointer-events: none;">Now</span>
+        </div>
+        <button class="icon-button" onclick="closeTimePopover(false)" style="background: var(--apple-blue); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+        </button>
+    </div>
+    <div class="time-popover-accordion">
+        <div style="min-height: 0; overflow: hidden;">
+            <div class="timer-picker-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 0; padding-top: 4px;">
+                <div class="time-dials-wrapper" style="display: flex; width: 100%;">
+                    <div class="timer-group time-dials" style="flex: 1; text-align: center;">
+                        <div class="timer-column" id="calendar-time-ch" onscroll="handleTimerScroll(this, 'ch')" style="text-align: center;"></div>
+                        <div class="timer-column-fg-wrapper">
+                            <div class="timer-column-fg" id="calendar-time-ch-fg" style="text-align: center;"></div>
+                        </div>
+                    </div>
+                    <div class="time-dials colon-dial" style="width: 0px; display: flex; justify-content: center; overflow: visible; pointer-events: none; z-index: 10;">:</div>
+                    <div class="timer-group time-dials" style="flex: 1; text-align: center;">
+                        <div class="timer-column" id="calendar-time-cm" onscroll="handleTimerScroll(this, 'cm')" style="text-align: center;"></div>
+                        <div class="timer-column-fg-wrapper">
+                            <div class="timer-column-fg" id="calendar-time-cm-fg" style="text-align: center;"></div>
+                        </div>
+                    </div>
+                    <div class="timer-group time-dials" style="flex: 1; text-align: center;">
+                        <div class="timer-column" id="calendar-time-campm" onscroll="handleTimerScroll(this, 'campm')" style="text-align: center;"></div>
+                        <div class="timer-column-fg-wrapper">
+                            <div class="timer-column-fg" id="calendar-time-campm-fg" style="text-align: center;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="popover-transition-label"></button>
+</div>
+
+<div class="modal-overlay" id="error-modal" onclick="closeErrorModal()">
+    <div class="apple-alert" onclick="event.stopPropagation()">
+        <div class="alert-content">
+            <h3 class="alert-title" id="error-modal-title">Error</h3>
+            <p class="alert-description" id="error-modal-description">Something went wrong.</p>
+        </div>
+        <div class="alert-buttons">
+            <button class="alert-button primary" onclick="closeErrorModal()">OK</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="image-modal-overlay" id="image-modal">
+    <div class="explanation-modal-wrapper" onclick="event.stopPropagation()">
+        <div class="explanation-modal-box" id="image-modal-box" onclick="closeImagePopover();">
+            <button class="explanation-modal-top-button close-button" onclick="toggleImagePopover(event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <button class="explanation-modal-top-button save-button" onclick="saveModalImage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+            </button>
+            <p class="explanation-modal-title" id="image-modal-title">Add Image</p>
+            <div class="explanation-image-area no-island" id="image-preview-area">
+                <div class="explanation-image-placeholder" id="image-preview-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/></svg>
+                    <span>Attach Image</span>
+                </div>
+                <img id="image-preview-image" src="" alt="" style="display:none; width:100%; max-height:200px; object-fit:contain; border-radius:12px;">
+                <textarea class="explanation-modal-textarea" id="image-caption-textarea" placeholder="Caption" rows="1" style="display:none; margin-top:14px; margin-bottom:0; width:100%;"></textarea>
+            </div>
+            <input type="file" id="image-file-input" accept="image/*" style="display:none;">
+        </div>
+        <div class="explanation-popover" id="image-popover" onclick="event.stopPropagation()">
+            <button class="explanation-popover-button" onclick="closeImageModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                Cancel
+            </button>
+            <button class="explanation-popover-button danger" id="image-popover-remove-button" onclick="removeModalImage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-minus-icon lucide-image-minus"><path d="M21 9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><line x1="16" x2="22" y1="5" y2="5"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                Remove
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="image-modal-overlay" id="image-view-modal" onclick="closeImgViewModal()">
+    <div class="image-modal-box" onclick="event.stopPropagation()">
+        <p class="image-modal-title" id="image-view-modal-title" style="text-align: center;">Preview Question Image</p>
+        <div style="background-color: var(--option-bg); border-radius: 18px; margin-bottom: 14px; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="image-preview-area view-only" id="image-view-modal-preview-area" style="cursor:zoom-in; height:250px; border:none; margin-bottom: 0; background-color: transparent; border-radius: 0;">
+                <img id="image-view-modal-image" src="" alt="" style="width:100%;height:100%;object-fit:contain; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);">
+            </div>
+            <div id="image-view-modal-caption" style="display: none; padding: 12px 16px; font-size: 14px; color: var(--text-secondary); text-align: left; background-color: transparent; border-top: 1px solid var(--border-color);"></div>
+        </div>
+        <div class="image-modal-actions">
+            <button class="image-modal-button secondary" style="flex:1;" onclick="closeImgViewModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="explanation-modal-overlay" id="explanation-modal">
+    <div class="explanation-modal-wrapper" onclick="event.stopPropagation()">
+        <div class="explanation-modal-box" id="explanation-modal-box" onclick="closeExplanationPopover();">
+            <button class="explanation-modal-top-button close-button" id="explanation-top-cancel" onclick="toggleExplanationPopover(event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <button class="explanation-modal-top-button save-button" id="explanation-top-save" onclick="saveExplanationanation()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+            </button>
+            <p class="explanation-modal-title" id="explanation-modal-title">Explain Answer</p>
+        <textarea class="explanation-modal-textarea" id="explanation-modal-textarea" placeholder="Explanation" rows="1"></textarea>
+        <div class="explanation-image-area" id="explanation-image-area">
+            <div class="explanation-image-placeholder" id="explanation-image-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/></svg>
+                <span>Attach Image</span>
+            </div>
+            <img id="explanation-image-preview" src="" alt="" style="display:none; width:100%; max-height:200px; object-fit:contain; border-radius:12px;">
+            <button class="explanation-image-remove-button top-left" id="explanation-inline-remove-button" onclick="removeExplanationImage(event)" title="Remove image" style="display:none;">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+            <textarea class="explanation-modal-textarea" id="explanation-image-caption-textarea" placeholder="Caption" rows="1" style="display:none; margin-top:14px; margin-bottom:0; width:100%;"></textarea>
+        </div>
+        <input type="file" id="explanation-image-file-input" accept="image/*" style="display:none;">
+    </div>
+    <div class="explanation-popover" id="explanation-popover" onclick="event.stopPropagation()">
+        <button class="explanation-popover-button" onclick="closeExplanationanationModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            Cancel
+        </button>
+        <button class="explanation-popover-button danger" onclick="removeExplanationanation()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.9A10 10 0 1 1 21.9 12"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/><path d="M16 19h6"/></svg>
+            Remove
+        </button>
+    </div>
+</div>
+
+<div id="lightbox-overlay" class="lightbox-overlay" onclick="closeLightbox(event)">
+    <div class="lightbox-close" onclick="closeLightbox(event)">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
+    <img class="lightbox-image" id="lightbox-image" src="" alt="Zoomed" onclick="event.stopPropagation()">
+</div>
+
+<div id="media-popover" class="time-popover apple-alert" onclick="event.stopPropagation()" style="width: 280px;">
+</div>
+    <script src="js/crypto.js"></script>
+    <script src="js/imageConverter.js"></script>
+    <script src="js/state/store.js"></script>
+    <script src="js/core/database.js"></script>
+    <script src="js/core/fileIo.js"></script>
+    <script src="js/core/engine.js"></script>
+    <script src="js/ui/richText.js"></script>
+    <script src="js/ui/modals.js"></script>
+    <script src="js/ui/popovers.js"></script>
+    <script src="js/ui/builder.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
